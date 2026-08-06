@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="resource/logomini.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json">
+  <title>背书哇！</title>
+  <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+  <div class="wrap">
+    <!-- Sidebar -->
+    <aside class="side" id="sidebar">
+      <div class="side-head">
+        <div class="logo" id="logoBtn">
+          <span class="logo-text">背书哇</span>
+          <span class="version">v0.2.0</span>
+        </div>
+        <button class="icon-btn" id="collapseBtn" title="收起侧栏"></button>
+      </div>
+      <div class="search-wrap">
+        <input type="text" id="searchIn" class="search-in" placeholder="搜索篇目/作者/诗句...">
+      </div>
+      <div class="side-nav" id="sideNav"></div>
+      <div class="side-foot">
+        <button class="side-tab active" id="modeBtn1">文</button>
+        <button class="side-tab" id="modeBtn2">法</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <header class="topbar">
+        <button class="icon-btn" id="menuBtn"></button>
+        <div class="greet" id="greet"></div>
+        <div class="topbar-right">
+          <button class="icon-btn" id="searchBtn"></button>
+          <button class="icon-btn" id="themeBtn"></button>
+          <button class="icon-btn" id="shortcutBtn" title="快捷键"></button>
+          <button class="icon-btn" id="settingsBtn"></button>
+        </div>
+      </header>
+      <div class="mode-indicator" id="modeIndicator"><span id="modeIndicatorText">文</span></div>
+      <div class="content-body" id="contentBody">
+        <div class="view-art" id="viewArt">
+          <div class="art-header">
+            <h2 class="art-title" id="artTitle"></h2>
+            <span class="art-author" id="artAuthor"></span>
+          </div>
+          <div class="art-body" id="artBody"></div>
+        </div>
+        <div class="view-author hidden" id="viewAuthorDetail"></div>
+        <div class="view-flashcard hidden" id="viewFlashcard"></div>
+        <div class="view-wordgame hidden" id="viewWordGame"></div>
+        <div class="view-dynasty hidden" id="viewDynasty"></div>
+      </div>
+      <!-- Audio Player -->
+      <div class="player hidden" id="audioPlayer">
+        <button class="player-btn" id="playerPlay"></button>
+        <div class="player-info">
+          <div class="player-title" id="playerTitle"></div>
+          <div class="player-progress">
+            <div class="player-progress-bar" id="playerProgressBar"></div>
+          </div>
+        </div>
+        <div class="player-time" id="playerTime">0:00 / 0:00</div>
+        <button class="player-btn" id="playerLoop"></button>
+        <select class="player-speed" id="playerSpeed">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>1x</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2x</option>
+        </select>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-panel hidden" id="settingsPanel">
+    <div class="settings-header">
+      <h3>设置</h3>
+      <button class="icon-btn" id="settingsClose"></button>
+    </div>
+    <div class="settings-body" id="settingsBody"></div>
+  </div>
+
+  <!-- Shortcut Panel -->
+  <div class="shortcut-panel hidden" id="shortcutPanel">
+    <div class="shortcut-header">
+      <h3>快捷键</h3>
+      <button class="icon-btn" id="shortcutClose"></button>
+    </div>
+    <div class="shortcut-body" id="shortcutBody">
+      <div class="shortcut-item"><kbd>←</kbd> / <kbd>→</kbd><span>切换篇目</span></div>
+      <div class="shortcut-item"><kbd>Space</kbd><span>播放/暂停音频</span></div>
+      <div class="shortcut-item"><kbd>/</kbd><span>聚焦搜索框</span></div>
+      <div class="shortcut-item"><kbd>F</kbd><span>闪卡模式</span></div>
+      <div class="shortcut-item"><kbd>T</kbd><span>切换主题</span></div>
+      <div class="shortcut-item"><kbd>Esc</kbd><span>关闭面板</span></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Data scripts (load order: articles -> authors -> jushi -> cilei -> situational) -->
+  <script src="src/data/articles.js"></script>
+  <script src="src/data/authors.js"></script>
+  <script src="src/data/jushi.js"></script>
+  <script src="src/data/ci-lei-huo-yong.js"></script>
+  <script src="src/data/situational-questions.js"></script>
+
+  <!-- App logic -->
+  <script src="src/js/app.js"></script>
+
+  <!-- Service Worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+          console.log('[SW] Registered:', reg.scope);
+        }).catch(function(err) {
+          console.warn('[SW] Registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

@@ -263,7 +263,7 @@
     /* ===== HAMBURGER & RESPONSIVE ===== */
     .hamburger{display:none;position:fixed;top:8px;left:8px;z-index:20;width:40px;height:40px;border:none;background:var(--card);cursor:pointer;font-size:20px;color:var(--fg);align-items:center;justify-content:center}
     .side-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:14}
-    @media (max-width:300px){
+    @media (max-width:768px){
       .hamburger{display:flex}
       .side{position:fixed;top:0;left:0;bottom:0;z-index:15;transform:translateX(-100%);transition:transform .25s ease;width:280px}
       .side.open{transform:translateX(0);box-shadow:4px 0 24px var(--shadow)}
@@ -319,7 +319,7 @@
       .fs-ctrl{bottom:54px;right:4px}
       .fs-btn{width:28px;height:28px;font-size:14px}
       /* 小屏隐藏次要工具按钮，避免挤压 */
-      #shortcutBtn{display:none}
+      /* #shortcutBtn{display:none} -- P3: 快捷键面板已实现，不再隐藏 */
     }
 
     /* exercise mode */
@@ -1817,7 +1817,53 @@ document.addEventListener('DOMContentLoaded', function() {
     getLoop: function(){ return this.get('audioloop', false); },
     setLoop: function(v){ this.set('audioloop', v); },
     getWallpaper: function(){ return this.get('wallpaper', {current:'bg.png', rotate:false, interval:30, index:0}); },
-    setWallpaper: function(v){ this.set('wallpaper', v); }
+    setWallpaper: function(v){ this.set('wallpaper', v); },
+    /* ===== 学习连续打卡 (Streak) ===== */
+    getStreak: function(){
+      var s = this.get('streak', {days:0, lastDate:''});
+      if (s.lastDate) {
+        var today = this.getDailyKey();
+        if (s.lastDate !== today) {
+          var last = new Date(s.lastDate);
+          var now = new Date(today);
+          var diff = Math.round((now - last) / 86400000);
+          if (diff > 1) { s.days = 0; }
+        }
+      }
+      return s;
+    },
+    updateStreak: function(){
+      var s = this.get('streak', {days:0, lastDate:''});
+      var today = this.getDailyKey();
+      if (s.lastDate === today) return s;
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      var yKey = yesterday.getFullYear() + '-' +
+        ('0'+(yesterday.getMonth()+1)).slice(-2) + '-' +
+        ('0'+yesterday.getDate()).slice(-2);
+      if (s.lastDate === yKey) { s.days = (s.days||0) + 1; }
+      else if (s.lastDate === today) { /* already counted */ }
+      else { s.days = 1; }
+      s.lastDate = today;
+      this.set('streak', s);
+      return s;
+    },
+    /* ===== 学习时间统计 ===== */
+    addStudyTime: function(minutes){
+      var dk = this.getDailyKey();
+      this.recordDaily(dk, 'studyTime', minutes);
+    },
+    getStudyTime: function(){
+      var ds = this.getDailyStats();
+      var total = 0;
+      for (var d in ds) { total += (ds[d].studyTime || 0); }
+      var today = this.getDailyKey();
+      var todayTime = (ds[today] && ds[today].studyTime) || 0;
+      return { total: total, today: todayTime };
+    },
+    /* ===== 页面状态保存/恢复 ===== */
+    setLastState: function(state){ this.set('lastState', state); },
+    getLastState: function(){ return this.get('lastState', null); }
   };
 
   /* ===== Toast 通知系统 ===== */
@@ -1838,7 +1884,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function findArt(id){ for(var i=0;i<D.length;i++){ if(D[i].id===id) return D[i]; } return null; }
   function getArticleDifficulty(article){
-    return '';
+    if (!article || !article.text) return '';
+    var text = article.text;
+    var len = text.length;
+    // Difficulty factors: length, punctuation density (complex sentences), unique characters
+    var difficulty = 0;
+    // Length factor (0-3 points)
+    if (len > 800) difficulty += 3;
+    else if (len > 400) difficulty += 2;
+    else if (len > 150) difficulty += 1;
+    // Sentence count (approximate by period/comma count)
+    var sentences = text.split(/[。！？]/).length;
+    if (sentences > 15) difficulty += 2;
+    else if (sentences > 8) difficulty += 1;
+    // Unique character ratio (higher = more diverse vocabulary = harder)
+    var chars = {};
+    for (var i = 0; i < text.length; i++) {
+      if (text.charCodeAt(i) > 0x4e00) chars[text[i]] = true;
+    }
+    var uniqueCount = Object.keys(chars).length;
+    if (uniqueCount > 200) difficulty += 2;
+    else if (uniqueCount > 100) difficulty += 1;
+
+    // Map to star rating
+    if (difficulty >= 5) return '★★★';
+    if (difficulty >= 3) return '★★☆';
+    return '★☆☆';
   }
 
   /* ===== STATE ===== */
@@ -2935,46 +3006,102 @@ document.addEventListener('DOMContentLoaded', function() {
     // 间隔复习字段：新错题默认 1 天后进入复习队列
     item.reviewLevel = item.reviewLevel || 0;
     item.nextReviewDate = item.nextReviewDate || (Date.now() + 86400000);
+    item.uid = item.uid || ('w_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
     wb.push(item);
     this.set('wrongbook', wb);
   };
-  Store.removeWrongBook = function(idx) { var wb = this.getWrongBook(); wb.splice(idx, 1); this.set('wrongbook', wb); };
+  Store.removeWrongBook = function(idx) {
+    var wb = this.getWrongBook();
+    if (typeof idx === 'string') {
+      for (var i = 0; i < wb.length; i++) { if (wb[i].uid === idx) { wb.splice(i, 1); break; } }
+    } else { wb.splice(idx, 1); }
+    this.set('wrongbook', wb);
+  };
   Store.clearWrongBook = function() { this.set('wrongbook', []); };
-  // 错题间隔复习：返回今日到期错题的索引数组（兼容历史无字段数据）
+  // 错题间隔复习：返回今日到期错题的 UID 数组（兼容历史无 uid 数据）
   Store.getTodayWrongReviews = function() {
     var wb = this.getWrongBook();
     var now = Date.now();
     var result = [];
     for (var i = 0; i < wb.length; i++) {
       var item = wb[i];
-      if (!item.nextReviewDate || item.nextReviewDate <= now) result.push(i);
+      if (!item.nextReviewDate || item.nextReviewDate <= now) result.push(item.uid || i);
     }
     return result;
   };
-  // 错题间隔复习：根据答题结果更新复习等级；最高级答对则移出错题本（已掌握）
+  // SM-2 自适应间隔复习算法
+  // 基于正确率反馈动态调整复习间隔，比固定间隔更高效
   Store.scheduleWrongReview = function(idx, correct) {
     var wb = this.getWrongBook();
-    if (!wb[idx]) return { mastered: false };
-    var intervals = [1, 3, 7, 14, 30];
-    var item = wb[idx];
-    var currentLevel = item.reviewLevel || 0;
-    if (correct) {
-      var nextLevel = Math.min(currentLevel + 1, intervals.length - 1);
-      if (nextLevel >= intervals.length - 1) {
-        wb.splice(idx, 1);
-        this.set('wrongbook', wb);
-        return { mastered: true };
+    var i = -1;
+    if (typeof idx === 'string') {
+      for (var j = 0; j < wb.length; j++) { if (wb[j].uid === idx) { i = j; break; } }
+    } else { i = idx; }
+    if (i < 0 || !wb[i]) return { mastered: false };
+    var item = wb[i];
+
+    // SM-2 parameters
+    var DEFAULT_EASE = 2.5;
+    var MIN_EASE = 1.3;
+    var MAX_INTERVAL = 180; // 6 months cap
+    var MASTERY_THRESHOLD = 5; // 5 consecutive correct = mastered
+
+    // Initialize SM-2 fields if missing (migrate from old format)
+    if (item.smInterval === undefined) {
+      item.smInterval = 1;
+      item.smRepetition = 0;
+      item.smEase = DEFAULT_EASE;
+      item.consecutiveCorrect = 0;
+      // Migrate old reviewLevel
+      if (item.reviewLevel) {
+        item.smRepetition = item.reviewLevel;
+        var oldIntervals = [1, 3, 7, 14, 30];
+        item.smInterval = oldIntervals[Math.min(item.reviewLevel, oldIntervals.length - 1)];
       }
-      item.reviewLevel = nextLevel;
-      item.nextReviewDate = Date.now() + intervals[nextLevel] * 86400000;
-      item.lastReviewedAt = Date.now();
-    } else {
-      item.reviewLevel = 0;
-      item.nextReviewDate = Date.now() + intervals[0] * 86400000;
-      item.lastReviewedAt = Date.now();
     }
+
+    if (correct) {
+      item.consecutiveCorrect = (item.consecutiveCorrect || 0) + 1;
+      // Check mastery
+      if (item.consecutiveCorrect >= MASTERY_THRESHOLD) {
+        wb.splice(i, 1);
+        this.set('wrongbook', wb);
+        return { mastered: true, nextInterval: 0 };
+      }
+      // SM-2 interval calculation
+      if (item.smRepetition === 0) {
+        item.smInterval = 1;
+      } else if (item.smRepetition === 1) {
+        item.smInterval = 3;
+      } else {
+        item.smInterval = Math.min(Math.round(item.smInterval * item.smEase), MAX_INTERVAL);
+      }
+      item.smRepetition++;
+      // Increase ease factor slightly for correct answers
+      item.smEase = Math.min(item.smEase + 0.1, 3.0);
+      item.reviewLevel = Math.min(item.smRepetition, 4); // Backward-compat for UI
+    } else {
+      // Reset on wrong answer
+      item.consecutiveCorrect = 0;
+      item.smRepetition = 0;
+      item.smInterval = 1;
+      // Decrease ease factor (SM-2 formula: EF' = EF - 0.2, min 1.3)
+      item.smEase = Math.max(item.smEase - 0.2, MIN_EASE);
+      item.reviewLevel = 0;
+    }
+
+    item.nextReviewDate = Date.now() + item.smInterval * 86400000;
+    item.lastReviewedAt = Date.now();
     this.set('wrongbook', wb);
-    return { mastered: false };
+
+    // Return interval label for UI
+    var intervalLabel;
+    if (item.smInterval === 1) intervalLabel = '1 天后';
+    else if (item.smInterval < 7) intervalLabel = item.smInterval + ' 天后';
+    else if (item.smInterval < 30) intervalLabel = Math.round(item.smInterval / 7) + ' 周后';
+    else intervalLabel = Math.round(item.smInterval / 30) + ' 个月后';
+
+    return { mastered: false, nextInterval: item.smInterval, nextIntervalLabel: intervalLabel };
   };
   Store.getStats = function() {
     return this.get('practiceStats', { totalAttempts:0, totalCorrect:0, blank:{attempts:0,correct:0}, match:{attempts:0,correct:0}, pair:{attempts:0,correct:0}, situational:{attempts:0,correct:0} });
@@ -3795,16 +3922,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     hideAllViews();
     viewArt.classList.remove('hidden');
-    var idx = indices[0];
+    var uid = indices[0];
     var wb = Store.getWrongBook();
-    var item = wb[idx];
+    var item = null;
+    for (var k = 0; k < wb.length; k++) { if (wb[k].uid === uid || k === uid) { item = wb[k]; break; } }
     if (!item) { showWrongReviewSummary(); return; }
     var totalEstimate = wrongReviewState.totalCount + indices.length;
     artTitle.textContent = '错题重练 (' + (wrongReviewState.totalCount + 1) + '/' + Math.min(wrongReviewState.maxCount, totalEstimate) + ')';
     artAuthor.textContent = '出自：' + (item.articleTitle || '');
     var typeLabel = item.type === 'blank' ? '填空' : item.type === 'match' ? '对接' : item.type === 'situational' ? '情境' : '配对';
     var questionText = (item.question || '').replace(/______/g, '＿＿').replace(/___/g, '＿＿');
-    var html = '<div style="margin-bottom:8px;font-size:11px;color:var(--muted-fg);font-family:\'Microsoft YaHei\',sans-serif">' + typeLabel + ' · 复习等级 ' + (item.reviewLevel || 0) + '/4</div>' +
+    var html = '<div style="margin-bottom:8px;font-size:11px;color:var(--muted-fg);font-family:\'Microsoft YaHei\',sans-serif">' + typeLabel + ' · 连续答对 ' + (item.consecutiveCorrect || 0) + '/5</div>' +
       '<div class="exercise-question">' + questionText + '</div>' +
       '<div style="margin:12px 0;font-family:\'Microsoft YaHei\',sans-serif;font-size:13px;color:var(--sub)">你的答案：</div>' +
       '<input class="exercise-blank wr-input" type="text" autocomplete="off" style="width:100%;min-width:200px;border:1px solid var(--border);border-radius:4px;padding:10px 12px" placeholder="输入完整答案">' +
@@ -3821,16 +3949,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleAnswer(skipped) {
       var userAns = skipped ? '' : input.value.trim();
       var correct = !skipped && normalizeAnswer(userAns) === normalizeAnswer(item.correctAnswer);
-      var result = Store.scheduleWrongReview(idx, correct);
+      var result = Store.scheduleWrongReview(uid, correct);
       var resultHtml = '';
       if (skipped) {
         resultHtml = '<div class="exercise-result wrong">下 已跳过，1 天后再次进入复习</div>';
       } else if (correct) {
         if (result.mastered) {
           wrongReviewState.masteredCount++;
-          resultHtml = '<div class="exercise-result correct">对 答对！复习等级已满，该错题已掌握并移出错题本 </div>';
+          resultHtml = '<div class="exercise-result correct">对 答对！连续答对 5 次，已掌握并移出错题本 </div>';
         } else {
-          resultHtml = '<div class="exercise-result correct">对 答对！下次复习：' + WR_INTERVAL_LABELS[item.reviewLevel] + '</div>';
+          resultHtml = '<div class="exercise-result correct">对 答对！下次复习：' + (result.nextIntervalLabel || '1 天后') + '</div>';
         }
         wrongReviewState.correctCount++;
       } else {
@@ -4686,7 +4814,25 @@ document.addEventListener('DOMContentLoaded', function() {
               if (is.blank) { es.blank.attempts += is.blank.attempts||0; es.blank.correct += is.blank.correct||0; }
               if (is.match) { es.match.attempts += is.match.attempts||0; es.match.correct += is.match.correct||0; }
               if (is.pair) { es.pair.attempts += is.pair.attempts||0; es.pair.correct += is.pair.correct||0; }
+              if (is.situational) { es.situational = es.situational || {attempts:0,correct:0}; es.situational.attempts += is.situational.attempts||0; es.situational.correct += is.situational.correct||0; }
               localStorage.setItem(key, JSON.stringify(es));
+            } else if (key === 'bsw_dailyStats') {
+              var existingDS = Store.getDailyStats();
+              var importedDS = data[key];
+              for (var dKey in importedDS) {
+                if (!existingDS[dKey]) {
+                  existingDS[dKey] = importedDS[dKey];
+                } else {
+                  existingDS[dKey].attempts = (existingDS[dKey].attempts||0) + (importedDS[dKey].attempts||0);
+                  existingDS[dKey].correct = (existingDS[dKey].correct||0) + (importedDS[dKey].correct||0);
+                  existingDS[dKey].studyTime = (existingDS[dKey].studyTime||0) + (importedDS[dKey].studyTime||0);
+                }
+              }
+              localStorage.setItem(key, JSON.stringify(existingDS));
+            } else if (key === 'bsw_streak') {
+              var es2 = Store.getStreak();
+              var is2 = data[key];
+              if (is2.days > (es2.days||0)) { localStorage.setItem(key, JSON.stringify(is2)); }
             } else {
               localStorage.setItem(key, JSON.stringify(data[key]));
             }
@@ -5342,6 +5488,92 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('fsMinus').setAttribute('aria-label', '缩小字体');
   document.getElementById('fsPlus').setAttribute('aria-label', '放大字体');
   contentArea.setAttribute('tabindex', '-1');
+
+  /* ===== 快捷键面板 + 全局键盘快捷键 ===== */
+  var shortcutBtn = document.getElementById('shortcutBtn');
+  var shortcutPanel = null;
+
+  // Build shortcut panel dynamically
+  if (shortcutBtn) {
+    shortcutPanel = document.createElement('div');
+    shortcutPanel.className = 'settings-panel hidden';
+    shortcutPanel.id = 'shortcutPanel';
+    shortcutPanel.innerHTML =
+      '<div class="settings-header"><h3>快捷键</h3>' +
+      '<button class="icon-btn" id="shortcutClose"></button></div>' +
+      '<div class="settings-body" style="font-family:\'Microsoft YaHei\',sans-serif">' +
+      '<div class="about-row"><span class="about-label"><kbd>←</kbd> / <kbd>→</kbd></span><span class="about-value">切换篇目</span></div>' +
+      '<div class="about-row"><span class="about-label"><kbd>Space</kbd></span><span class="about-value">播放/暂停音频</span></div>' +
+      '<div class="about-row"><span class="about-label"><kbd>/</kbd></span><span class="about-value">聚焦搜索框</span></div>' +
+      '<div class="about-row"><span class="about-label"><kbd>F</kbd></span><span class="about-value">闪卡模式</span></div>' +
+      '<div class="about-row"><span class="about-label"><kbd>T</kbd></span><span class="about-value">切换深色/浅色主题</span></div>' +
+      '<div class="about-row"><span class="about-label"><kbd>Esc</kbd></span><span class="about-value">关闭面板</span></div>' +
+      '</div>';
+    document.body.appendChild(shortcutPanel);
+
+    shortcutBtn.onclick = function() {
+      shortcutPanel.classList.toggle('hidden');
+    };
+    document.getElementById('shortcutClose').onclick = function() {
+      shortcutPanel.classList.add('hidden');
+    };
+  }
+
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Don't trigger when typing in input/textarea
+    var tag = e.target.tagName;
+    var isInput = tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable;
+
+    // Esc closes panels (works even in inputs)
+    if (e.key === 'Escape') {
+      if (shortcutPanel) shortcutPanel.classList.add('hidden');
+      var sp = document.getElementById('settingsPanel');
+      if (sp) sp.classList.add('hidden');
+      return;
+    }
+
+    if (isInput) {
+      // Only '/' works in inputs (to escape search)
+      if (e.key === 'Escape') {
+        e.target.blur();
+      }
+      return;
+    }
+
+    switch(e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        prevArticle();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        nextArticle();
+        break;
+      case ' ':
+        e.preventDefault();
+        if (playing) { pauseAudio(); } else { playAudio(); }
+        break;
+      case '/':
+        e.preventDefault();
+        searchIn.focus();
+        searchIn.select();
+        break;
+      case 'f':
+      case 'F':
+        e.preventDefault();
+        // Toggle flashcard mode
+        if (typeof toggleFlashcard === 'function') toggleFlashcard();
+        break;
+      case 't':
+      case 'T':
+        e.preventDefault();
+        var newTheme = Store.getTheme() === 'dark' ? 'light' : 'dark';
+        Store.setTheme(newTheme);
+        applyTheme();
+        break;
+    }
+  });
 
 });
 </script>

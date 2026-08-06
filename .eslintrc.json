@@ -1,0 +1,35 @@
+{
+  "env": {
+    "browser": true,
+    "es2015": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2015,
+    "sourceType": "script"
+  },
+  "globals": {
+    "D": "readonly",
+    "AUTHORS": "readonly",
+    "JUSHI": "readonly",
+    "CILEI": "readonly",
+    "SITUATIONAL_QUIZ": "readonly"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-undef": "error",
+    "no-redeclare": "error",
+    "no-cond-assign": "error",
+    "no-constant-condition": "error",
+    "no-debugger": "error",
+    "no-dupe-keys": "error",
+    "no-empty": "warn",
+    "no-extra-semi": "error",
+    "no-irregular-whitespace": "error",
+    "no-sparse-arrays": "error",
+    "no-unreachable": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+    "no-fallthrough": "warn",
+    "no-mixed-spaces-and-tabs": "error"
+  }
+}
