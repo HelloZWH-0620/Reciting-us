@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="resource/logomini.ico" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
-  <title>背书哇！</title>
+  <title>背书哇</title>
   <style>
     :root{
       --bg:#f3f3f3;--fg:#1a1a1a;--card:rgba(255,255,255,0.72);--pri:#0078d4;--pri-fg:#fff;
       --muted:rgba(230,230,230,0.7);--muted-fg:#6b6b6b;--border:rgba(214,214,214,0.6);
-      --orange:#e8871e;--sub:#767676;--hover:rgba(229,229,229,0.5);--active:rgba(204,204,204,0.6);
+      --orange:hsl(31, 81%, 51%);--sub:#767676;--hover:rgba(229,229,229,0.5);--active:rgba(204,204,204,0.6);
       --div:rgba(224,224,224,0.6);--warn:#f0c040;--side-bg:rgba(232,232,232,0.72);
       --content-bg:rgba(243,243,243,0.45);--player-bg:rgba(255,255,255,0.72);
       --track-bg:rgba(230,230,230,0.7);--overlay:rgba(243,243,243,0.65);
@@ -18,13 +18,27 @@
     }
     body.dark{
       --bg:#1e1e1e;--fg:#e8e8e8;--card:rgba(40,40,40,0.72);--pri:#4a9eff;--pri-fg:#fff;
-      --muted:rgba(80,80,80,0.7);--muted-fg:#9a9a9a;--border:rgba(90,90,90,0.6);
-      --orange:#f0a040;--sub:#9a9a9a;--hover:rgba(70,70,70,0.5);--active:rgba(100,100,100,0.6);
-      --div:rgba(90,90,90,0.6);--warn:#d8a830;--side-bg:rgba(30,30,30,0.78);
+      --muted:rgba(80,80,80,0.7);--muted-fg:#9a9a9a;--border:rgba(120,120,120,0.5);
+      --orange:#e8871e30;--sub:#9a9a9a;--hover:rgba(70,70,70,0.5);--active:rgba(100,100,100,0.6);
+      --div:rgba(90,90,90,0.6);--warn:#352d18;--side-bg:rgba(30,30,30,0.78);
       --content-bg:rgba(28,28,28,0.55);--player-bg:rgba(30,30,30,0.78);
       --track-bg:rgba(80,80,80,0.7);--overlay:rgba(20,20,20,0.7);
       --hl:#6b5a10;--hl-fg:#fff3a8;--shadow:rgba(0,0,0,0.3);
     }
+    .art-split:not(.no-split) + .art-appreciation {
+      /* 赏析在 artSplit 外部时：分栏模式固定为左列宽度，与原文底部对齐 */
+      width: 100%;
+      box-sizing: border-box;
+      margin-right: auto;
+      margin-top: 12px;
+      padding: 16px 20px;
+      background: var(--card);
+    }
+    .art-split.no-split + .art-appreciation {
+      /* 不分栏（仅原文）：全宽显示 */
+      width: 100%;
+    }
+    
     @font-face{font-family:'LXGW WenKai';src:url('resource/wordtype/Regular.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
     *{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
     html,body{height:100vh}
@@ -91,7 +105,8 @@
     .content::-webkit-scrollbar-thumb{background:#c1c1c1}
     body.dark .content::-webkit-scrollbar-thumb{background:#555}
 
-    .c-inner{padding:48px 24px 40px;display:flex;justify-content:center;max-width:900px;margin:0 auto}
+    .c-inner{padding:48px 24px 40px;display:flex;flex-direction:column;align-items:center;max-width:900px;margin:0 auto}
+    .c-inner > *{width:100%}
     .art-split{display:flex;gap:0;width:100%;transition:all .3s ease}
     .art-split.no-split{flex-direction:column}
     .art-split.no-split .art-translation{display:none}
@@ -105,17 +120,21 @@
     .art-split:not(.no-split) .art-divider{display:none}
     .art-split:not(.no-split) .art > .art-head,
     .art-split:not(.no-split) .art > .art-author,
-    .art-split:not(.no-split) .art > .art-body > p{grid-column:1}
+    .art-split:not(.no-split) .art > .art-body > *{grid-column:1}
     .art-split:not(.no-split) .art-translation > .art-head,
     .art-split:not(.no-split) .art-translation > .art-author,
-    .art-split:not(.no-split) .art-translation > .art-body > p{grid-column:2}
+    .art-split:not(.no-split) .art-translation > .art-body > *{grid-column:2}
+    /* 分栏模式下按行对照：压缩段落间距，避免一侧高、另一侧留白过大 */
+    .art-split:not(.no-split) .art-body > p{margin-bottom:0.3em}
+    .art-split:not(.no-split) .art-translation > .art-body > p{margin-bottom:0.3em;padding-left:0}
+    .art-split:not(.no-split) .art-translation > .art-body > p.notes-row{font-family:'Microsoft YaHei','Segoe UI',sans-serif;line-height:1.7;color:var(--fg)}
     @keyframes transSlide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
     .art-divider{width:1px;background:var(--border);flex-shrink:0;align-self:stretch;margin:0 0}
     .art-translation .art-title{font-size:26px;font-weight:700;color:var(--fg);text-align:center}
     .art-translation .art-body{font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;color:var(--fg);line-height:2}
     .art-translation .art-body p{margin-bottom:0.8em;padding-left:20px}
     .art-split:not(.no-split) .art-translation > .art-author{visibility:hidden;pointer-events:none}
-    .art-head-btns{position:fixed;top:16px;right:16px;display:flex;gap:6px;z-index:10}
+    .art-head-btns{position:fixed;top:16px;right:16px;display:flex;gap:6px;z-index:40}
     .head-btn{padding:4px 10px;border:none;background:var(--card);cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:12px;color:var(--muted-fg);border-radius:4px;transition:all .15s;white-space:nowrap}
     .head-btn:hover{background:var(--hover)}
     .head-btn.on{color:#4caf50;background:rgba(76,175,80,.08)}
@@ -178,6 +197,39 @@
     .study-content p{margin-bottom:14px;text-indent:2em}
     .study-content p:last-child{margin-bottom:0}
     .study-content-empty{padding:24px;text-align:center;color:var(--sub);font-size:13px}
+
+    /* ===== APPRECIATION 赏析文本框 ===== */
+    .art-appreciation{margin-top:24px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;font-size:15px;line-height:2;color:var(--fg);white-space:pre-wrap;display:none}
+    .art-appreciation-title{font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--sub);font-weight:600;margin-bottom:10px;letter-spacing:1px}
+
+    /* ===== MODE SELECTOR (翻译/字解/仅原文) ===== */
+    .mode-select-wrap{position:relative;display:inline-block}
+    .mode-select-btn{height:30px;padding:0 28px 0 12px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--fg);transition:background .12s,border-color .12s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%236b6b6b' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right 10px center}
+    .mode-select-btn:hover{background-color:var(--hover);border-color:var(--pri)}
+    .mode-select-btn.on{color:var(--pri);border-color:var(--pri)}
+    .mode-select-menu{position:absolute;top:calc(100% + 4px);left:0;min-width:140px;background:var(--card);border:1px solid var(--border);box-shadow:0 6px 24px var(--shadow);z-index:50;display:none;overflow:hidden}
+    .mode-select-menu.open{display:block;animation:fadeUp .15s ease-out}
+    .mode-select-item{display:block;width:100%;padding:10px 14px;border:none;background:transparent;text-align:left;cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--fg);transition:background .12s}
+    .mode-select-item:hover{background:var(--hover)}
+    .mode-select-item.active{color:var(--pri);font-weight:600;background:rgba(0,120,212,0.06)}
+    .mode-select-item .desc{display:block;font-size:11px;color:var(--sub);margin-top:2px;font-weight:400}
+    .mode-select-item.active .desc{color:var(--pri);opacity:0.8}
+
+    /* ===== NOTES 字解模式：左侧 pos 高亮 + 右侧 explain 列表 ===== */
+    .art-body .note-mark{background:linear-gradient(transparent 70%, rgba(232,135,30,0.35) 70%);border-bottom:2px solid var(--orange);padding-bottom:1px;cursor:help;font-weight:500}
+    .art-body .note-mark .nm-idx{display:inline-block;min-width:16px;height:16px;line-height:16px;text-align:center;font-size:10px;font-family:'Microsoft YaHei',sans-serif;background:var(--orange);color:#fff;border-radius:50%!important;margin-left:2px;padding:0 4px;vertical-align:super;font-weight:600}
+    .notes-list{padding:8px 0}
+    .notes-list-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px dashed var(--div)}
+    .notes-list-item:last-child{border-bottom:none}
+    .notes-list-idx{flex-shrink:0;width:22px;height:22px;line-height:22px;text-align:center;font-size:11px;font-family:'Microsoft YaHei',sans-serif;background:var(--orange);color:#fff;border-radius:50%!important;font-weight:600}
+    .notes-list-body{flex:1;min-width:0}
+    .notes-list-pos{font-size:14px;color:var(--fg);font-family:'LXGW WenKai','KaiTi',serif;margin-bottom:4px;line-height:1.6}
+    .notes-list-explain{font-size:13px;color:var(--sub);line-height:1.7;font-family:'Microsoft YaHei',sans-serif}
+    /* 字解模式：右侧按行对齐的字解条目 */
+    .notes-row{margin:0;padding:0;min-height:1.5em}
+    .notes-row-item{display:block;font-size:13px;line-height:1.7;color:var(--fg);font-family:'Microsoft YaHei','Segoe UI',sans-serif;padding:2px 0}
+    .notes-row-idx{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;font-size:10px;font-family:'Microsoft YaHei',sans-serif;background:var(--orange);color:#fff;border-radius:50%!important;margin-right:6px;vertical-align:middle}
+
     /* 在线查询（兜底 + 对照）*/
     .online-lookup{padding:8px 4px;text-align:center}
     .online-lookup-tip{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.7}
@@ -418,6 +470,18 @@
     @keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
 
+    /* ===== 右下角持久通知「辐条」 ===== */
+    .notice-rail{position:fixed;bottom:16px;right:16px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end;max-height:62vh;overflow-y:auto;pointer-events:none}
+    .notice-item{pointer-events:auto;display:flex;align-items:center;gap:10px;max-width:300px;padding:10px 8px 10px 14px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--pri);border-radius:8px;box-shadow:0 6px 24px var(--shadow);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--fg);animation:noticeIn .25s ease-out}
+    .notice-item.success{border-left-color:#4caf50;color:#4caf50}
+    .notice-item.info{border-left-color:var(--pri);color:var(--pri)}
+    .notice-item.warn{border-left-color:var(--orange);color:var(--orange)}
+    .notice-item .notice-close{flex-shrink:0;width:22px;height:22px;border:none;background:transparent;color:var(--sub);cursor:pointer;font-size:15px;line-height:1;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s}
+    .notice-item .notice-close:hover{background:var(--hover);color:var(--fg)}
+    .notice-clear-all{pointer-events:auto;align-self:flex-end;margin-top:2px;padding:4px 10px;border:1px solid var(--border);background:var(--card);color:var(--sub);cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:12px;border-radius:6px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    .notice-clear-all:hover{background:var(--hover);color:var(--fg)}
+    @keyframes noticeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
     /* ===== WORD MODE (百词斩风格) ===== */
     .mode-btn.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
     #viewWordGame{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:32px 3vw}
@@ -453,7 +517,7 @@
 
     /* ===== PRINT ===== */
     @media print{
-      .side,.player,.fs-ctrl,.hamburger,.side-overlay,.search-nav,.mode-indicator,.mode-bar,.search-wrap,.more-wrap,.toast-container,.shortcut-panel,.shortcut-overlay{display:none!important}
+      .side,.player,.fs-ctrl,.hamburger,.side-overlay,.search-nav,.mode-indicator,.mode-bar,.search-wrap,.more-wrap,.toast-container,.shortcut-panel,.shortcut-overlay,.notice-rail{display:none!important}
       .content{overflow:visible!important;background:white!important}
       .c-inner{max-width:100%!important;padding:0!important}
       .art-body{font-size:14px!important;color:#000!important}
@@ -468,12 +532,23 @@
 <body>
 <button class="hamburger" id="hamburger" title="菜单">菜单</button>
 <div class="side-overlay" id="sideOverlay"></div>
-<div class="wrap">
-  <aside class="side" id="side">
-    <div class="side-head">
-      <h1 id="greet"></h1>
-      <button class="mode-indicator" id="modeIndicator"><span class="mode-dot-bg"></span><span class="mode-indicator-text" id="modeIndicatorText">文</span></button>
+  <div class="art-head-btns">
+    <button class="head-btn" id="recitedBtn" title="标记已背诵">已背诵</button>
+    <div class="mode-select-wrap">
+      <button class="mode-select-btn" id="modeSelectBtn" type="button">仅原文</button>
+      <div class="mode-select-menu" id="modeSelectMenu">
+        <button class="mode-select-item active" data-mode="orig-only" type="button">仅原文<span class="desc">只显示原文</span></button>
+        <button class="mode-select-item" data-mode="translation" type="button">翻译<span class="desc">原文 + 译文对照</span></button>
+        <button class="mode-select-item" data-mode="notes" type="button">字解<span class="desc">原文 + 字词解释</span></button>
+      </div>
     </div>
+  </div>
+  <div class="wrap">
+    <aside class="side" id="side">
+      <div class="side-head">
+        <h1 id="greet"></h1>
+        <button class="mode-indicator" id="modeIndicator" title="切换模式（显示 / 背诵 / 练习 / 词语）"><span class="mode-dot-bg"></span><span class="mode-indicator-text" id="modeIndicatorText">文</span></button>
+      </div>
     <div class="mode-bar" id="modeBar">
       <button class="mode-btn active" id="modeBtn1" data-mode="art">篇目</button>
       <button class="mode-btn" id="modeBtn2" data-mode="author">作家</button>
@@ -500,10 +575,6 @@
         <button id="hlClose" title="清除">清除</button>
       </div>
       <div class="c-inner" id="cInner">
-        <div class="art-head-btns">
-          <button class="head-btn" id="recitedBtn" title="标记已背诵">已背诵</button>
-          <button class="head-btn" id="transBtn">显示译文</button>
-        </div>
         <div class="art-split" id="artSplit">
           <div class="art" id="artBox">
             <div class="art-head">
@@ -512,7 +583,9 @@
             <div class="art-author" id="artAuthor"></div>
             <div class="art-body" id="artBody"></div>
           </div>
+
           <div class="art-divider" id="artDivider"></div>
+
           <div class="art art-translation" id="artTransBox">
             <div class="art-head">
               <div class="art-title" id="artTransTitle">译文</div>
@@ -520,6 +593,12 @@
             <div class="art-author trans-author-placeholder">&#8203;</div>
             <div class="art-body" id="artTransBody"></div>
           </div>
+        </div>
+
+        <!-- ★ 赏析在 artSplit 外面、全文下方 -->
+        <div class="art-appreciation" id="artAppreciation">
+          <div class="art-appreciation-title">赏析</div>
+          <div id="artAppreciationBody"></div>
         </div>
       </div>
     </div>
@@ -530,11 +609,12 @@
     <div id="viewAbout" class="about view hidden">
       <div class="about-card">
         <h3>软件信息</h3>
-        <div class="about-row"><span class="about-label">软件名称</span><span class="about-value">背书哇！</span></div>
-        <div class="about-row"><span class="about-label">版本号</span><span class="about-value">0.1.2 开发中版本，不代表最终品质</span></div>
+        <div class="about-row"><span class="about-label">软件名称</span><span class="about-value">背书哇</span></div>
+        <div class="about-row"><span class="about-label">版本号</span><span class="about-value">0.2.0 开发中版本，不代表最终品质</span></div>
         <div class="about-row"><span class="about-label">作者</span><span class="about-value">@喔糖圆鼠</span></div>
-        <div class="about-row"><span class="about-label">共创作者</span><span class="about-value">@F15EX @落星尘</span></div>
+        <div class="about-row"><span class="about-label">共创作者</span><span class="about-value">@F15EX @落星尘 @Motziki</span></div>
         <div class="about-row"><span class="about-label">录音资源</span><span class="about-value">人民教育出版社（仅供个人学习参考）</span></div>
+        <div class="about-row"><span class="about-label">正文资源</span><span class="about-value">https://github.com/clover-yan/gaokao-poetry</span></div>
       </div>
       <div class="about-card">
         <h3>壁纸设置</h3>
@@ -560,6 +640,28 @@
           <span id="gfsValue" style="min-width:52px;text-align:center">四号 (16px)</span>
           <button class="back-btn" id="gfsPlus" style="margin:0;padding:2px 10px;font-size:16px">+</button>
         </span></div>
+      </div>
+      <div class="about-card">
+        <h3>AI 大模型设置</h3>
+        <div class="about-row" style="flex-direction:column;align-items:flex-start;gap:10px">
+          <div style="width:100%;display:flex;align-items:center;gap:8px">
+            <span class="about-label" style="min-width:90px;flex-shrink:0">API 地址</span>
+            <input type="text" id="aiApiUrl" placeholder="https://api.deepseek.com/v1/chat/completions" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
+          </div>
+          <div style="width:100%;display:flex;align-items:center;gap:8px">
+            <span class="about-label" style="min-width:90px;flex-shrink:0">API Key</span>
+            <input type="password" id="aiApiKey" placeholder="sk-xxxxxxxxxxxxxxxx" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
+          </div>
+          <div style="width:100%;display:flex;align-items:center;gap:8px">
+            <span class="about-label" style="min-width:90px;flex-shrink:0">模型名称</span>
+            <input type="text" id="aiModel" placeholder="deepseek-chat" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="back-btn" id="aiSaveBtn" style="margin:0">保存设置</button>
+            <button class="back-btn" id="aiTestBtn" style="margin:0">测试连接</button>
+          </div>
+          <div id="aiStatus" style="font-size:12px;color:var(--sub);margin-top:4px"></div>
+        </div>
       </div>
       <div class="about-card">
         <h3>数据管理</h3>
@@ -607,7 +709,6 @@
 <script>
 <!-- ===== 内联：data/articles.js ===== -->
 /* 数据来源：app.html 行 484-888 */
-/* 此文件由 app.html 拆分而来，非商业用途可自由编辑 */
 
   var D = [
     // ===== 文言文 =====
@@ -1817,8 +1918,101 @@ document.addEventListener('DOMContentLoaded', function() {
     getLoop: function(){ return this.get('audioloop', false); },
     setLoop: function(v){ this.set('audioloop', v); },
     getWallpaper: function(){ return this.get('wallpaper', {current:'bg.png', rotate:false, interval:30, index:0}); },
-    setWallpaper: function(v){ this.set('wallpaper', v); }
+    setWallpaper: function(v){ this.set('wallpaper', v); },
+    getAIConfig: function(){ return this.get('aiConfig', {apiUrl:'', apiKey:'', model:''}); },
+    setAIConfig: function(v){ this.set('aiConfig', v); }
   };
+
+  /* ===== USERDATA: 文件存储层（桌面端持久化） ===== */
+  var UserDataAPI = {
+    PREF_FILE: 'preferences.json',
+    AI_FILE: 'ai_config.json',
+    QUESTIONS_FILE: 'ai_questions.json',
+
+    _cache: null,
+
+    _url: function(name){ return '/api/userdata/file/' + encodeURIComponent(name); },
+
+    read: function(name){
+      return fetch(this._url(name)).then(function(r){ return r.json(); });
+    },
+
+    write: function(name, data){
+      return fetch(this._url(name), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({data: data})
+      }).then(function(r){ return r.json(); });
+    },
+
+    remove: function(name){
+      return fetch(this._url(name), {method: 'DELETE'}).then(function(r){ return r.json(); });
+    },
+
+    // Flush a specific Store key to its userdata file
+    syncKey: function(key, val){
+      var fileMap = {
+        'aiConfig': 'ai_config.json',
+        'theme': 'preferences.json',
+        'font': 'preferences.json',
+        'authorFont': 'preferences.json',
+        'wallpaper': 'preferences.json'
+      };
+      var fname = fileMap[key];
+      if (!fname) return Promise.resolve();
+
+      // Read existing, merge, write back
+      return this.read(fname).then(function(result){
+        var obj = (result && result.data) ? result.data : {};
+        if (typeof obj !== 'object') obj = {};
+        obj[key] = val;
+        return UserDataAPI.write(fname, obj);
+      }).catch(function(){
+        var obj = {};
+        obj[key] = val;
+        return UserDataAPI.write(fname, obj);
+      });
+    },
+
+    // Hydrate localStorage from userdata files on startup
+    hydrate: function(){
+      var self = this;
+      var keys = {
+        'ai_config.json': ['aiConfig'],
+        'preferences.json': ['theme', 'font', 'authorFont', 'wallpaper']
+      };
+      var promises = [];
+      Object.keys(keys).forEach(function(fname){
+        promises.push(self.read(fname).then(function(result){
+          if (!result || !result.data) return;
+          var data = result.data;
+          var mapped = keys[fname];
+          mapped.forEach(function(k){
+            if (data[k] !== undefined) {
+              localStorage.setItem('bsw_' + k, JSON.stringify(data[k]));
+            }
+          });
+        }).catch(function(){}));
+      });
+      return Promise.all(promises);
+    }
+  };
+
+  // Wrap Store.set to also sync to userdata (fire-and-forget)
+  var _origStoreSet = Store.set.bind(Store);
+  Store.set = function(key, val){
+    _origStoreSet(key, val);
+    UserDataAPI.syncKey(key, val);
+  };
+
+  // Load userdata on startup
+  UserDataAPI.hydrate().then(function(){
+    // Re-apply theme after hydration
+    try {
+      var theme = Store.getTheme();
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch(e){}
+  });
 
   /* ===== Toast 通知系统 ===== */
   function showToast(msg, type){
@@ -1834,6 +2028,59 @@ document.addEventListener('DOMContentLoaded', function() {
     toast.textContent = msg;
     container.appendChild(toast);
     setTimeout(function(){ toast.remove(); }, 3000);
+  }
+
+  /* ===== 右下角持久通知「辐条」 =====
+     用于「添加到背诵 / 加入错题本」等确认类提示：
+     常驻页面右下角，不自动消失，仅当用户点击「×」或「清除全部」时移除。 */
+  function pushNotice(msg, type){
+    var rail = document.getElementById('noticeRail');
+    if (!rail) {
+      rail = document.createElement('div');
+      rail.id = 'noticeRail';
+      rail.className = 'notice-rail';
+      rail.setAttribute('aria-live', 'polite');
+      document.body.appendChild(rail);
+      var clearAll = document.createElement('button');
+      clearAll.type = 'button';
+      clearAll.className = 'notice-clear-all';
+      clearAll.textContent = '清除全部';
+      clearAll.onclick = function(){
+        var items = rail.querySelectorAll('.notice-item');
+        for (var i = 0; i < items.length; i++) items[i].remove();
+        refreshClearAll();
+      };
+      rail._clearAll = clearAll;
+      rail.appendChild(clearAll);
+    }
+    var item = document.createElement('div');
+    item.className = 'notice-item' + (type ? ' ' + type : '');
+    var span = document.createElement('span');
+    span.className = 'notice-text';
+    span.textContent = msg;
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'notice-close';
+    close.title = '清除本消息';
+    close.setAttribute('aria-label', '清除本消息');
+    close.textContent = '×';
+    close.onclick = function(){ item.remove(); refreshClearAll(); };
+    item.appendChild(span);
+    item.appendChild(close);
+    // 新消息插在清除全部按钮之前（保证清除全部始终在底部）
+    if (rail._clearAll && rail._clearAll.parentNode === rail) {
+      rail.insertBefore(item, rail._clearAll);
+    } else {
+      rail.appendChild(item);
+    }
+    refreshClearAll();
+
+    function refreshClearAll(){
+      var r = document.getElementById('noticeRail');
+      if (!r) return;
+      var hasItems = r.querySelectorAll('.notice-item').length > 0;
+      if (r._clearAll) r._clearAll.style.display = hasItems ? '' : 'none';
+    }
   }
 
   function findArt(id){ for(var i=0;i<D.length;i++){ if(D[i].id===id) return D[i]; } return null; }
@@ -2236,22 +2483,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function renderWordNav() {
     var html = '<div class="sec-label"><span>18 个文言虚词</span></div>';
+    html += '<button class="nav-child" id="navAIGenAll" style="color:var(--pri);font-weight:600">✨ AI 针对全部虚词出题</button>';
     for (var i = 0; i < WORD_LIST.length; i++) {
-      html += '<button class="sbtn" data-word="' + WORD_LIST[i] + '">' + WORD_LIST[i] + '</button>';
+      html += '<button class="sbtn" data-word="' + WORD_LIST[i] + '" title="点击跳转内置题目 · 右键 AI 针对该虚词出题">' + WORD_LIST[i] + '</button>';
     }
     navEl.innerHTML = html;
-    bindBtns(navEl, 'data-word', function(btn) {
-      var w = btn.getAttribute('data-word');
-      var idx = -1;
-      for (var k = 0; k < wordQuestions.length; k++) {
-        if (wordQuestions[k].focusWord === w) { idx = k; break; }
-      }
-      if (idx >= 0) {
-        wordCurrentIdx = idx;
-        wordScore = 0;
-        renderWordQuestion();
-      }
-    });
+    var aiAllBtn = document.getElementById('navAIGenAll');
+    if (aiAllBtn) aiAllBtn.onclick = function() { startAIWordGame(null); };
+    var btns = navEl.querySelectorAll('.sbtn[data-word]');
+    for (var bi = 0; bi < btns.length; bi++) {
+      (function(btn) {
+        btn.onclick = function() {
+          var w = btn.getAttribute('data-word');
+          var idx = -1;
+          var qs = (window._origWordQuestions && window._origWordQuestions.length > 0) ? window._origWordQuestions : wordQuestions;
+          for (var k = 0; k < qs.length; k++) {
+            if (qs[k].focusWord === w) { idx = k; break; }
+          }
+          if (idx >= 0) {
+            // 恢复内置题库并跳转
+            if (window._origWordQuestions) wordQuestions = window._origWordQuestions.slice();
+            wordCurrentIdx = idx;
+            wordScore = 0;
+            hideAllViews();
+            viewWordGame.classList.remove('hidden');
+            viewMode = 'wordGame';
+            renderWordQuestion();
+          }
+        };
+        btn.oncontextmenu = function(e) {
+          e.preventDefault();
+          var w = btn.getAttribute('data-word');
+          startAIWordGame(w);
+        };
+      })(btns[bi]);
+    }
   }
 
   function renderArticleNav() {
@@ -2407,7 +2673,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function renderText(txt, art) {
     // 防御：txt 可能为 null/undefined
     if (txt === null || txt === undefined) txt = '';
-    var paras = String(txt).split('\n\n');
+    // 翻译/字解分栏模式下按行拆分，确保左右一一对照
+    var lineMode = (artMode === 'translation' || artMode === 'notes');
+    var paras = lineMode ? String(txt).split('\n') : String(txt).split('\n\n');
     var html = '';
     for (var i = 0; i < paras.length; i++) {
       var p = paras[i];
@@ -2419,8 +2687,14 @@ document.addEventListener('DOMContentLoaded', function() {
     artBody.innerHTML = html;
     artBody.style.fontSize = bodyFontSize + 'px';
     var tb = document.getElementById('artTransBody');
-    // 分屏译文渲染
-    renderTranslation(art);
+    // 分屏译文渲染（仅当当前模式为 translation）
+    if (artMode === 'translation') {
+      renderTranslation(art);
+    } else if (artMode === 'notes') {
+      renderNotesMode(art);
+    }
+    // 赏析
+    renderAppreciation(art);
     updateSearchNav();
   }
 
@@ -2436,12 +2710,21 @@ document.addEventListener('DOMContentLoaded', function() {
     transBox.style.display = '';
     document.getElementById('artDivider').style.display = '';
     transTitle.textContent = '译文';
-    var tParas = art.translation.split('\n').filter(function(s){ return s.trim(); });
+    // 按行拆分并保留空行占位，保证与原文行数对齐
+    var tLines = art.translation.split('\n');
     var html = '';
-    for (var i = 0; i < tParas.length; i++) {
-      html += '<p>' + escapeHtml(tParas[i]) + '</p>';
+    for (var i = 0; i < tLines.length; i++) {
+      html += '<p>' + escapeHtml(tLines[i]) + '</p>';
     }
     transBody.innerHTML = html;
+    // 补齐行数：较短一侧补空 <p>，避免一侧多出导致大面积留白
+    var leftBody = document.getElementById('artBody');
+    var leftCount = leftBody ? leftBody.children.length : 0;
+    var rightCount = transBody.children.length;
+    while (transBody.children.length < leftCount) transBody.appendChild(document.createElement('p'));
+    if (leftBody) {
+      while (leftBody.children.length < rightCount) leftBody.appendChild(document.createElement('p'));
+    }
     var transAuthor = transBox.querySelector('.art-author');
     var srcAuthor = document.getElementById('artAuthor');
     if (transAuthor && srcAuthor) {
@@ -2463,10 +2746,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rightHead) rightHead.style.gridRow = '1';
     if (leftAuthor) leftAuthor.style.gridRow = '2';
     if (rightAuthor) rightAuthor.style.gridRow = '2';
-    var leftPs = document.querySelectorAll('#artBody > p');
-    var rightPs = document.querySelectorAll('#artTransBody > p');
-    for (var i = 0; i < leftPs.length; i++) leftPs[i].style.gridRow = (i + 3);
-    for (var i = 0; i < rightPs.length; i++) rightPs[i].style.gridRow = (i + 3);
+    var leftKids = document.querySelectorAll('#artBody > *');
+    var rightKids = document.querySelectorAll('#artTransBody > *');
+    for (var i = 0; i < leftKids.length; i++) leftKids[i].style.gridRow = (i + 3);
+    for (var i = 0; i < rightKids.length; i++) rightKids[i].style.gridRow = (i + 3);
   }
 
   function updateSearchNav(){
@@ -2705,10 +2988,10 @@ document.addEventListener('DOMContentLoaded', function() {
     artTitle.textContent = '';
     artAuthor.textContent = '';
     artSplit.classList.add('no-split');
-    transBtn.classList.remove('on');
-    transBtn.textContent = '显示译文';
-    translationOn = false;
+    setArtMode('orig-only');
     artBody.innerHTML = '<div class="empty-state"><div class="icon"></div><div class="title">' + (title||'功能开发中') + '</div><div class="desc">' + (desc||'敬请期待') + '</div>' + (sub?'<div class="desc" style="margin-top:6px">'+sub+'</div>':'') + '</div>';
+    var ap = document.getElementById('artAppreciation');
+    if (ap) ap.style.display = 'none';
   }
 
   /* ===== WORD GAME ===== */
@@ -2857,11 +3140,20 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function renderWordGameIntro() {
-    viewWordGame.innerHTML = '<div class="word-game"><div class="word-game-start"><div class="title">文言虚词 · 百词斩</div><div class="desc">从 18 个常见虚词中出题，检测你对虚词用法的掌握。</div><button class="word-game-btn" id="wordStartBtn">开始</button></div></div>';
+    viewWordGame.innerHTML = '<div class="word-game"><div class="word-game-start"><div class="title">文言虚词 · 百词斩</div><div class="desc">从 18 个常见虚词中出题，检测你对虚词用法的掌握。</div><div class="word-game-actions"><button class="word-game-btn" id="wordStartBtn">内置题库开始</button><button class="word-game-btn secondary" id="aiGenBtn" title="需先在「更多」中配置 AI API">✨ AI 智能出题</button></div></div></div>';
     document.getElementById('wordStartBtn').onclick = startWordGame;
+    var aiGenBtn = document.getElementById('aiGenBtn');
+    if (aiGenBtn) aiGenBtn.onclick = function() { startAIWordGame(null); };
   }
 
   function startWordGame() {
+    // 如果之前使用过 AI 题库，现在要恢复内置原始题库
+    if (window._origWordQuestions && window._origWordQuestions.length > 0) {
+      var currentFirstId = wordQuestions[0] && wordQuestions[0].id ? String(wordQuestions[0].id) : '';
+      if (currentFirstId.indexOf('ai_') === 0) {
+        wordQuestions = window._origWordQuestions.slice();
+      }
+    }
     if (wordQuestions.length === 0) return;
     wordCurrentIdx = 0;
     wordScore = 0;
@@ -2872,16 +3164,21 @@ document.addEventListener('DOMContentLoaded', function() {
     var q = wordQuestions[wordCurrentIdx];
     wordAnswered = false;
     var html = '<div class="word-game">';
-    html += '<div class="word-game-progress">第 ' + (wordCurrentIdx + 1) + ' / ' + wordQuestions.length + ' 题</div>';
+    html += '<div class="word-game-progress">第 ' + (wordCurrentIdx + 1) + ' / ' + wordQuestions.length + ' 题' + (q.id && String(q.id).indexOf('ai_') === 0 ? ' · AI 出题' : '') + '</div>';
     html += '<div class="word-game-word">' + q.focusWord + '</div>';
-    html += '<div class="word-game-question">虚词“' + q.focusWord + '”常表示什么？</div>';
+    // AI 题目格式：包含 sentence 和 question 字段
+    if (q.sentence) {
+      html += '<div style="font-size:18px;color:var(--fg);margin-bottom:12px;padding:12px 16px;background:var(--bg);border-left:3px solid var(--pri);line-height:1.8;font-family:\'LXGW WenKai\',\'KaiTi\',serif;">"' + escapeHtml(q.sentence) + '"</div>';
+    }
+    var questionText = q.question || ('虚词“' + q.focusWord + '”常表示什么？');
+    html += '<div class="word-game-question">' + escapeHtml(questionText) + '</div>';
     html += '<div class="word-game-options">';
     for (var i = 0; i < q.options.length; i++) {
       html += '<button class="word-game-option" id="wordOpt' + i + '" data-idx="' + i + '">' + escapeHtml(q.options[i]) + '</button>';
     }
     html += '</div>';
     html += '<div class="word-game-feedback" id="wordFeedback"></div>';
-    html += '<div class="word-game-actions"><button class="word-game-btn" id="wordNextBtn" disabled>下一题</button></div>';
+    html += '<div class="word-game-actions"><button class="word-game-btn secondary" id="aiRegenBtn" title="AI 重新出题">✨ AI 换一批</button><button class="word-game-btn" id="wordNextBtn" disabled>下一题</button></div>';
     html += '</div>';
     viewWordGame.innerHTML = html;
     for (var j = 0; j < q.options.length; j++) {
@@ -2890,6 +3187,8 @@ document.addEventListener('DOMContentLoaded', function() {
       })(j);
     }
     document.getElementById('wordNextBtn').onclick = nextWordQuestion;
+    var aiRegenBtn = document.getElementById('aiRegenBtn');
+    if (aiRegenBtn) aiRegenBtn.onclick = function() { startAIWordGame(q.focusWord); };
   }
 
   function selectWordOption(idx) {
@@ -2920,9 +3219,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function renderWordResult() {
     var total = wordQuestions.length;
-    var html = '<div class="word-game"><div class="word-game-result"><div class="score">' + wordScore + '/' + total + '</div><div class="desc">测试完成，答对 ' + wordScore + ' 题，共 ' + total + ' 题</div><div class="word-game-actions"><button class="word-game-btn" id="wordRestartBtn">再测一次</button></div></div></div>';
+    var isAI = wordQuestions.length > 0 && wordQuestions[0].id && String(wordQuestions[0].id).indexOf('ai_') === 0;
+    var html = '<div class="word-game"><div class="word-game-result"><div class="score">' + wordScore + '/' + total + '</div><div class="desc">测试完成，答对 ' + wordScore + ' 题，共 ' + total + ' 题' + (isAI ? '（AI 出题）' : '') + '</div><div class="word-game-actions"><button class="word-game-btn" id="wordRestartBtn">' + (isAI ? '用内置题库再测' : '再测一次') + '</button><button class="word-game-btn secondary" id="aiGenAgainBtn">✨ AI 再出一套</button></div></div></div>';
     viewWordGame.innerHTML = html;
     document.getElementById('wordRestartBtn').onclick = startWordGame;
+    var aiGenAgainBtn = document.getElementById('aiGenAgainBtn');
+    if (aiGenAgainBtn) aiGenAgainBtn.onclick = function() { startAIWordGame(null); };
+  }
+
+  async function startAIWordGame(focusWord) {
+    var questions = await generateAIWordQuestions(focusWord);
+    if (!questions || questions.length === 0) return;
+    // 备份原始内置题库（仅备份一次）
+    if (!window._origWordQuestions) window._origWordQuestions = wordQuestions.slice();
+    wordQuestions = questions;
+    wordCurrentIdx = 0;
+    wordScore = 0;
+    hideAllViews();
+    viewWordGame.classList.remove('hidden');
+    viewMode = 'wordGame';
+    renderWordQuestion();
+    showToast('AI 已生成 ' + questions.length + ' 道题目，开始答题吧！', 'success');
+
+    // 自动保存到 userdata
+    try {
+      var saved = await UserDataAPI.read('ai_questions.json');
+      var bank = (saved && saved.data) ? saved.data : {};
+      bank._lastUpdated = new Date().toISOString();
+      bank._lastFocusWord = focusWord || '随机';
+      bank._lastQuestions = questions;
+      await UserDataAPI.write('ai_questions.json', bank);
+    } catch(e) {}
   }
 
   /* ===== EXERCISE STATE ===== */
@@ -3200,7 +3527,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.value = q.answer;
         var hintMark = hintUsed ? '（使用过提示）' : '';
         resultDiv.innerHTML = '<div class="exercise-result wrong">错 正确答案：' + q.answer + (hintUsed ? ' <span style="font-size:12px;color:var(--orange)">注意 使用过提示</span>' : '') + '</div>';
-        Store.addWrongBook({ type: 'blank', articleId: q.articleId, articleTitle: q.articleTitle, question: q.question, userAnswer: userAnswer || '（空）', correctAnswer: q.answer, hintUsed: hintUsed, timestamp: Date.now() }); showToast('已加入错题本', 'warn');
+        Store.addWrongBook({ type: 'blank', articleId: q.articleId, articleTitle: q.articleTitle, question: q.question, userAnswer: userAnswer || '（空）', correctAnswer: q.answer, hintUsed: hintUsed, timestamp: Date.now() }); pushNotice('已加入错题本', 'warn');
       } else {
         resultDiv.innerHTML = '<div class="exercise-result correct">对 正确！' + (hintUsed ? ' <span style="font-size:12px;color:var(--orange)">注意 使用过提示</span>' : '') + '</div>';
         if (hintUsed) {
@@ -3356,7 +3683,7 @@ document.addEventListener('DOMContentLoaded', function() {
           hintUsed: hintUsed,
           timestamp: Date.now()
         });
-        if (!allCorrect) showToast('已加入错题本', 'warn');
+        if (!allCorrect) pushNotice('已加入错题本', 'warn');
       }
       exerciseState.answers.push({
         question: q,
@@ -3481,11 +3808,11 @@ document.addEventListener('DOMContentLoaded', function() {
           if (q.options[i] === q.correctAnswer) b.classList.add('correct');
         });
         resultDiv.innerHTML = '<div class="exercise-result wrong">下 已跳过 · 正确答案已标绿</div>';
-        Store.addWrongBook({ type: 'match', articleId: q.articleId, articleTitle: q.articleTitle, question: q.upperSentence, userAnswer: '（已跳过）', correctAnswer: q.correctAnswer, skipped: true, timestamp: Date.now() }); showToast('已跳过，加入错题本', 'warn');
+        Store.addWrongBook({ type: 'match', articleId: q.articleId, articleTitle: q.articleTitle, question: q.upperSentence, userAnswer: '（已跳过）', correctAnswer: q.correctAnswer, skipped: true, timestamp: Date.now() }); pushNotice('已跳过，加入错题本', 'warn');
       } else if (correct) {
         resultDiv.innerHTML = '<div class="exercise-result correct">对 正确！</div>';
       } else {
-        Store.addWrongBook({ type: 'match', articleId: q.articleId, articleTitle: q.articleTitle, question: q.upperSentence, userAnswer: userAnswer, correctAnswer: q.correctAnswer, timestamp: Date.now() }); showToast('已加入错题本', 'warn');
+        Store.addWrongBook({ type: 'match', articleId: q.articleId, articleTitle: q.articleTitle, question: q.upperSentence, userAnswer: userAnswer, correctAnswer: q.correctAnswer, timestamp: Date.now() }); pushNotice('已加入错题本', 'warn');
       }
       exerciseState.answers.push({ question: q, userAnswer: userAnswer, correct: correct, skipped: skipped });
       Store.recordPractice('match', correct);
@@ -3638,7 +3965,7 @@ document.addEventListener('DOMContentLoaded', function() {
           '<div class="a">' + (correct ? '' : '<span class="ua">' + userAuthor + '</span>') + '<span class="ca">' + pairs[i].author + '</span>' + (correct ? ' 对' : '') + '</div>' +
           '</div>';
         if (!correct) {
-          Store.addWrongBook({ type: 'pair', articleId: pairs[i].articleId, question: pairs[i].title, userAnswer: userAuthor, correctAnswer: pairs[i].author, timestamp: Date.now() }); showToast('已加入错题本', 'warn');
+          Store.addWrongBook({ type: 'pair', articleId: pairs[i].articleId, question: pairs[i].title, userAnswer: userAuthor, correctAnswer: pairs[i].author, timestamp: Date.now() }); pushNotice('已加入错题本', 'warn');
         }
         Store.recordPractice('pair', correct);
       }
@@ -3748,7 +4075,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var todayWrongCount = Store.getTodayWrongReviews().length;
     var html = '';
     if (todayWrongCount > 0) {
-      html += '<div style="margin-bottom:16px;padding:16px;background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:1px solid var(--warn);border-radius:8px;font-family:\'Microsoft YaHei\',sans-serif">' +
+      html += '<div style="margin-bottom:16px;padding:16px;background:linear-gradient(135deg,rgba(255,152,0,.15),rgba(255,152,0,.05));border:1px solid var(--border);border-radius:8px;font-family:\'Microsoft YaHei\',sans-serif">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
         '<div><div style="font-size:15px;font-weight:600;color:var(--fg)"> 今日待复习错题 <span style="color:var(--warn)">' + todayWrongCount + '</span> 道</div>' +
         '<div style="font-size:12px;color:var(--sub);margin-top:4px">间隔复习：答对升级间隔，最高级掌握后自动清除</div></div>' +
@@ -4504,16 +4831,43 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   var saveAudioPos = throttle(function(){
-    if(cur && cur.audio && audioEl.duration){ Store.setAudio(cur.id, audioEl.currentTime); }
+    if(cur && resolveAudio(cur) && audioEl.duration){ Store.setAudio(cur.id, audioEl.currentTime); }
   }, 1500);
+
+  /* ===== 朗读音频自动匹配 ===== */
+  // 启动时拉取 /api/recitations 列表，构造 title(无扩展名) → filename 映射
+  var recitationMap = {};
+  function loadRecitations() {
+    return fetch('/api/recitations').then(function(r) { return r.json(); }).then(function(res) {
+      if (!res || !res.success || !res.files) return;
+      res.files.forEach(function(fn) {
+        // 文件名去掉扩展名作为 key
+        var key = fn.replace(/\.(mp3|wav|m4a)$/i, '').trim();
+        recitationMap[key] = 'resource/recitations/' + encodeURIComponent(fn);
+      });
+    }).catch(function() {});
+  }
+  loadRecitations();
+
+  // 给定文章，返回可播放的音频 URL（无则 null）
+  function resolveAudio(art) {
+    if (!art) return null;
+    // 1. 显式指定的 audio 字段优先
+    if (art.audio) return art.audio;
+    // 2. 按 title 匹配 recitations
+    var t = (art.title || '').trim();
+    if (t && recitationMap[t]) return recitationMap[t];
+    return null;
+  }
 
   function loadAudio() {
     audioEl.pause();
     playing = false;
     btnPP.innerHTML = '播';
-    if (cur.audio) {
+    var audioUrl = resolveAudio(cur);
+    if (audioUrl) {
       setAudioDisabled(false);
-      audioEl.src = cur.audio;
+      audioEl.src = audioUrl;
       audioEl.load();
       audioEl.playbackRate = Store.getSpeed();
       audioEl.loop = Store.getLoop();
@@ -4537,7 +4891,7 @@ document.addEventListener('DOMContentLoaded', function() {
       audioEl.onerror = null;
       setAudioDisabled(true);
     }
-    pTitle.textContent = cur.title + ' - ' + cur.author + (cur.audio ? '' : '（暂无音频）');
+    pTitle.textContent = cur.title + ' - ' + cur.author + (audioUrl ? '' : '（暂无音频）');
     tTotal.textContent = '0:00';
     tCur.textContent = '0:00';
     pFill.style.width = '0%';
@@ -4644,6 +4998,162 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // 存储用量
     updateStorageUsage();
+    // AI 设置初始化和绑定
+    var aiCfg = Store.getAIConfig();
+    var aiUrlInput = document.getElementById('aiApiUrl');
+    var aiKeyInput = document.getElementById('aiApiKey');
+    var aiModelInput = document.getElementById('aiModel');
+    var aiStatusEl = document.getElementById('aiStatus');
+    if (aiUrlInput) aiUrlInput.value = aiCfg.apiUrl || '';
+    if (aiKeyInput) aiKeyInput.value = aiCfg.apiKey || '';
+    if (aiModelInput) aiModelInput.value = aiCfg.model || '';
+    var aiSaveBtn = document.getElementById('aiSaveBtn');
+    var aiTestBtn = document.getElementById('aiTestBtn');
+    if (aiSaveBtn) {
+      aiSaveBtn.onclick = function() {
+        var cfg = {
+          apiUrl: aiUrlInput ? aiUrlInput.value.trim() : '',
+          apiKey: aiKeyInput ? aiKeyInput.value.trim() : '',
+          model: aiModelInput ? aiModelInput.value.trim() : ''
+        };
+        Store.setAIConfig(cfg);
+        showToast('AI 设置已保存', 'success');
+      };
+    }
+    if (aiTestBtn) {
+      aiTestBtn.onclick = async function() {
+        var cfg = Store.getAIConfig();
+        if (!cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+          showToast('请先填写完整的 AI 配置并保存', 'warn');
+          return;
+        }
+        if (aiStatusEl) aiStatusEl.textContent = '正在测试连接...';
+        try {
+          var result = await callAI(cfg, '你好，请回复一个字：好', 5000);
+          if (result && result.success) {
+            if (aiStatusEl) aiStatusEl.style.color = '#4caf50';
+            if (aiStatusEl) aiStatusEl.textContent = '✓ 连接成功！模型回复：' + (result.content || '');
+            showToast('AI 连接测试成功', 'success');
+          } else {
+            throw new Error(result.error || '未知错误');
+          }
+        } catch (e) {
+          if (aiStatusEl) aiStatusEl.style.color = '#f44336';
+          if (aiStatusEl) aiStatusEl.textContent = '✗ 连接失败：' + e.message;
+          showToast('AI 连接测试失败：' + e.message, 'error');
+        }
+      };
+    }
+  }
+
+  /* ===== AI 调用核心函数 ===== */
+  async function callAI(cfg, prompt, timeoutMs) {
+    if (!cfg || !cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+      return { success: false, error: 'AI 配置不完整，请在「更多」中设置' };
+    }
+    timeoutMs = timeoutMs || 30000;
+    var controller = new AbortController();
+    var timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+    try {
+      var body = {
+        model: cfg.model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        stream: false
+      };
+      var resp = await fetch(cfg.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + cfg.apiKey
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+      if (!resp.ok) {
+        var errText = await resp.text().catch(function(){ return ''; });
+        return { success: false, error: 'HTTP ' + resp.status + ' ' + (errText || resp.statusText) };
+      }
+      var data = await resp.json();
+      var content = '';
+      if (data && data.choices && data.choices[0]) {
+        if (typeof data.choices[0].message === 'string') content = data.choices[0].message;
+        else if (data.choices[0].message && data.choices[0].message.content) content = data.choices[0].message.content;
+        else if (data.choices[0].text) content = data.choices[0].text;
+      }
+      return { success: true, content: content.trim(), raw: data };
+    } catch (e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') return { success: false, error: '请求超时（' + (timeoutMs/1000) + '秒）' };
+      return { success: false, error: e.message || '网络错误' };
+    }
+  }
+
+  /* ===== AI 生成虚词题目 ===== */
+  var aiGenerating = false;
+  async function generateAIWordQuestions(focusWord) {
+    var cfg = Store.getAIConfig();
+    if (!cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+      showToast('请先在「更多」中配置 AI API 信息', 'warn');
+      return null;
+    }
+    if (aiGenerating) { showToast('AI 正在出题中，请稍候...', 'info'); return null; }
+    aiGenerating = true;
+    showToast('AI 正在为您出题，请稍候...', 'info');
+    var wordListText = WORD_LIST.join('、');
+    var targetWord = focusWord || '随机';
+    var prompt = '你是一位资深的高中语文老师。请为文言虚词练习生成5道四选一选择题。' +
+      (targetWord && targetWord !== '随机' ? '重点围绕虚词「' + targetWord + '」，也可涉及其他常见虚词。' : '从以下18个文言虚词中选择出题：' + wordListText + '。') +
+      '\n\n要求：\n' +
+      '1. 每道题给出一个包含该虚词的文言例句（尽量从经典课文中选，或仿经典造句）\n' +
+      '2. 提问句中该虚词的意义或用法\n' +
+      '3. 提供4个选项，只有1个正确\n' +
+      '4. 每题附带简短解析\n\n' +
+      '请严格输出JSON数组格式，不要额外文字，格式如下：\n' +
+      '[\n' +
+      '  {\n' +
+      '    "focusWord": "而",\n' +
+      '    "sentence": "青，取之于蓝，而青于蓝",\n' +
+      '    "question": "句中\"而\"的用法是？",\n' +
+      '    "options": ["表并列", "表转折", "表承接", "表修饰"],\n' +
+      '    "answer": 1,\n' +
+      '    "explanation": "此处\"而\"表转折，意为\"却\"。全句译为：靛青从蓝草中提取，却比蓝草颜色更深。"\n' +
+      '  }\n' +
+      ']\n\n' +
+      '注意：answer字段为正确选项的索引（0-based），请确保每题只有一个正确答案。';
+    try {
+      var result = await callAI(cfg, prompt, 60000);
+      aiGenerating = false;
+      if (!result.success) { showToast('AI 出题失败：' + result.error, 'error'); return null; }
+      // 尝试提取 JSON
+      var text = result.content;
+      var jsonStart = text.indexOf('[');
+      var jsonEnd = text.lastIndexOf(']');
+      if (jsonStart < 0 || jsonEnd < 0) { throw new Error('AI 返回格式不正确，无法解析题目'); }
+      var jsonStr = text.substring(jsonStart, jsonEnd + 1);
+      var questions = JSON.parse(jsonStr);
+      if (!Array.isArray(questions) || questions.length === 0) throw new Error('AI 未生成有效题目');
+      // 规范化字段
+      questions = questions.map(function(q, i) {
+        return {
+          id: 'ai_' + Date.now() + '_' + i,
+          type: 1,
+          focusWord: q.focusWord || (q.options ? '虚词' : ''),
+          sentence: q.sentence || '',
+          question: q.question || '请选择正确答案',
+          options: q.options || [],
+          answer: typeof q.answer === 'number' ? q.answer : 0,
+          explanation: q.explanation || '暂无解析'
+        };
+      }).filter(function(q) { return q.options.length >= 2 && typeof q.answer === 'number'; });
+      if (questions.length === 0) throw new Error('生成的题目格式不符合要求');
+      return questions;
+    } catch (e) {
+      aiGenerating = false;
+      showToast('AI 出题失败：' + e.message, 'error');
+      return null;
+    }
   }
 
   /* ===== 数据导出/导入/重置 ===== */
@@ -4773,7 +5283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var art = findArt(id);
     if (!art) return;
     // 保存当前音频进度再切换
-    if (cur && cur.audio && cur.id !== id && audioEl.duration) Store.setAudio(cur.id, audioEl.currentTime);
+    if (cur && resolveAudio(cur) && cur.id !== id && audioEl.duration) Store.setAudio(cur.id, audioEl.currentTime);
     cur = art;
     TTS.stop();
     showArticleView();
@@ -4861,6 +5371,8 @@ document.addEventListener('DOMContentLoaded', function() {
       artBody.style.lineHeight = '2';
       var tb = document.getElementById('artTransBody');
       if (tb) { tb.style.fontSize = bodyFontSize + 'px'; tb.style.lineHeight = '2'; }
+      var ap = document.getElementById('artAppreciationBody');
+      if (ap) ap.style.fontSize = Math.max(13, bodyFontSize - 2) + 'px';
     }
   }
   document.getElementById('fsMinus').onclick = function() {
@@ -4883,12 +5395,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     applyCurrentFontSize();
   };
-  // 显示译文按钮
-  var transBtn = document.getElementById('transBtn');
+  // 显示模式选择器（翻译/字解/仅原文）
   var recitedBtn = document.getElementById('recitedBtn');
-  var translationOn = false;
   var artSplit = document.getElementById('artSplit');
+  var modeSelectBtn = document.getElementById('modeSelectBtn');
+  var modeSelectMenu = document.getElementById('modeSelectMenu');
+  var modeSelectItems = modeSelectMenu.querySelectorAll('.mode-select-item');
+  var artMode = 'orig-only';
   artSplit.classList.add('no-split');
+
+  // 关闭菜单（点击外部）
+  document.addEventListener('click', function(e) {
+    if (!modeSelectMenu.classList.contains('open')) return;
+    if (!e.target.closest('.mode-select-wrap')) modeSelectMenu.classList.remove('open');
+  });
+  modeSelectBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    modeSelectMenu.classList.toggle('open');
+  });
+
+  function setArtMode(mode) {
+    artMode = mode;
+    modeSelectBtn.textContent = mode === 'orig-only' ? '仅原文'
+      : (mode === 'translation' ? '翻译' : '字解');
+    modeSelectBtn.classList.toggle('on', mode !== 'orig-only');
+    modeSelectItems.forEach(function(it) {
+      it.classList.toggle('active', it.dataset.mode === mode);
+    });
+    modeSelectMenu.classList.remove('open');
+
+    if (mode === 'orig-only') {
+      artSplit.classList.add('no-split');
+      // 还原原文（清除 notes 高亮）
+      if (cur) renderText(cur.text, cur);
+    } else if (mode === 'translation') {
+      artSplit.classList.remove('no-split');
+      if (cur) {
+        renderText(cur.text, cur);
+        renderTranslation(cur);
+      }
+    } else if (mode === 'notes') {
+      artSplit.classList.remove('no-split');
+      if (cur) renderNotesMode(cur);
+    }
+  }
+
+  modeSelectItems.forEach(function(it) {
+    it.addEventListener('click', function() {
+      setArtMode(it.dataset.mode);
+    });
+  });
 
   recitedBtn.onclick = function(){
     if(!cur) return;
@@ -4898,26 +5454,143 @@ document.addEventListener('DOMContentLoaded', function() {
     // 立即更新当前目录按钮状态，避免重新渲染延迟
     var navBtn = navEl.querySelector('.sbtn[data-id="' + cur.id + '"]');
     if (navBtn) navBtn.classList.toggle('recited', added);
-    showToast(added ? '已标记为已背诵' : '已取消已背诵', added ? 'success' : 'info');
+    pushNotice(added ? '已标记为已背诵' : '已取消已背诵', added ? 'success' : 'info');
   };
 
-  transBtn.onclick = function() {
-    translationOn = !translationOn;
-    transBtn.classList.toggle('on', translationOn);
-    transBtn.textContent = translationOn ? '隐藏译文' : '显示译文';
-    artSplit.classList.toggle('no-split', !translationOn);
-    if (translationOn && cur) {
-      renderTranslation(cur);
+  /* ===== NOTES 字解模式渲染 ===== */
+  function renderNotesMode(art) {
+    if (!art || !art.notes || !art.notes.length) {
+      // 没有 notes，回退到翻译模式
+      showToast('本文暂无字解数据，已切换为翻译', 'info');
+      setArtMode('translation');
+      return;
     }
-  };
+    // 1. 先渲染左侧原文（按行，高亮 pos）
+    renderTextWithNotes(art);
+
+    var transBox = document.getElementById('artTransBox');
+    var transBody = document.getElementById('artTransBody');
+    var transTitle = document.getElementById('artTransTitle');
+    transBox.style.display = '';
+    document.getElementById('artDivider').style.display = '';
+    transTitle.textContent = '字解（共 ' + art.notes.length + ' 条）';
+
+    // 2. 按原文行拆分右侧字解，每行只显示该行包含的字解，与左侧逐行对齐
+    var lines = String(art.text || '').split('\n');
+    var html = '';
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var parts = [];
+      for (var j = 0; j < art.notes.length; j++) {
+        var n = art.notes[j];
+        var pos = n.pos || n.phrase || '';
+        if (pos && line.indexOf(pos) !== -1) {
+          parts.push('<span class="notes-row-item"><span class="notes-row-idx">' + (j + 1) + '</span>' + escapeHtml(n.explain || '') + '</span>');
+        }
+      }
+      if (parts.length === 0) {
+        html += '<p class="notes-row empty"></p>';
+      } else {
+        html += '<p class="notes-row">' + parts.join('<br>') + '</p>';
+      }
+    }
+    transBody.innerHTML = html;
+
+    // 补齐行数：较短一侧补空 <p>
+    var leftBody = document.getElementById('artBody');
+    var leftCount = leftBody ? leftBody.children.length : 0;
+    var rightCount = transBody.children.length;
+    while (transBody.children.length < leftCount) transBody.appendChild(document.createElement('p'));
+    if (leftBody) {
+      while (leftBody.children.length < rightCount) leftBody.appendChild(document.createElement('p'));
+    }
+
+    var transAuthor = transBox.querySelector('.art-author');
+    var srcAuthor = document.getElementById('artAuthor');
+    if (transAuthor && srcAuthor) transAuthor.innerHTML = srcAuthor.innerHTML;
+    transBody.style.fontSize = '';
+    transBody.style.lineHeight = '';
+
+    alignSplitRows();
+  }
+
+  function renderTextWithNotes(art) {
+    if (!art) return;
+    var txt = art.text || '';
+    // 字解模式按行拆分，便于右侧字解按行对齐
+    var paras = String(txt).split('\n');
+    var html = '';
+    // 按 pos 长度倒序，避免短串先替换导致长串匹配不到
+    var notes = (art.notes || []).slice().map(function(n, i) {
+      return { pos: n.pos || n.phrase || '', idx: i };
+    }).filter(function(n) { return n.pos; })
+      .sort(function(a, b) { return b.pos.length - a.pos.length; });
+
+    for (var i = 0; i < paras.length; i++) {
+      var p = paras[i];
+      if (hlKw) p = highlight(p, hlKw);
+      p = p.replace(/\n/g, '<br>');
+      // 在段落内逐句标记 pos（按句号、问号、感叹号、分号切分）
+      p = markNotesInText(p, notes);
+      html += '<p>' + p + '</p>';
+    }
+    artBody.innerHTML = html;
+    artBody.style.fontSize = bodyFontSize + 'px';
+  }
+
+  function markNotesInText(text, notes) {
+    // text 已含 <br>，不能再被切；但我们只在纯文本节点上做替换
+    // 简化：用 token 替换法，先保护 <br>
+    var placeholders = [];
+    var work = text.replace(/<br\s*\/?>/g, function(m) {
+      placeholders.push(m);
+      return '\u0001BR' + (placeholders.length - 1) + '\u0001';
+    });
+
+    // 找出每个 pos 出现的位置并打标签
+    // 因为有多个 pos，逐个扫描替换；同一 pos 多次出现只标第一次
+    var used = {};
+    notes.forEach(function(n) {
+      if (used[n.pos]) return;
+      var safePos = n.pos.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var re = new RegExp(safePos, '');
+      if (re.test(work)) {
+        var idx = n.idx + 1;
+        var markStr = '<span class="note-mark" data-idx="' + idx + '">' + n.pos + '<span class="nm-idx">' + idx + '</span></span>';
+        work = work.replace(re, markStr.replace(/\$/g, '$$$$'));
+        used[n.pos] = true;
+      }
+    });
+
+    // 还原 <br>
+    work = work.replace(/\u0001BR(\d+)\u0001/g, function(m, n) {
+      return placeholders[parseInt(n, 10)];
+    });
+    return work;
+  }
+
+  /* ===== APPRECIATION 渲染 ===== */
+  function renderAppreciation(art) {
+    var ap = document.getElementById('artAppreciation');
+    var body = document.getElementById('artAppreciationBody');
+    if (!ap || !body) return;
+    if (art && art.appreciation) {
+      body.textContent = art.appreciation;
+      // 字号比正文小 2px
+      body.style.fontSize = Math.max(13, bodyFontSize - 2) + 'px';
+      ap.style.display = 'block';
+    } else {
+      ap.style.display = 'none';
+    }
+  }
 
   /* ===== PLAYER ===== */
-  btnRW.onclick = function() { if(cur && cur.audio) audioEl.currentTime = Math.max(0, audioEl.currentTime - 5); };
-  btnFF.onclick = function() { if(cur && cur.audio) audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 5); };
+  btnRW.onclick = function() { if(cur && resolveAudio(cur)) audioEl.currentTime = Math.max(0, audioEl.currentTime - 5); };
+  btnFF.onclick = function() { if(cur && resolveAudio(cur)) audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 5); };
   btnPrev.onclick = prevArticle;
   btnNext.onclick = nextArticle;
   btnPP.onclick = function() {
-    if (!cur || !cur.audio) return;
+    if (!cur || !resolveAudio(cur)) return;
     if (audioEl.error) return;
     if (playing) {
       playing = false; btnPP.innerHTML = '播'; audioEl.pause();
@@ -4929,7 +5602,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
   pTrack.onclick = function(e) {
-    if (!cur || !cur.audio) return;
+    if (!cur || !resolveAudio(cur)) return;
     var rect = pTrack.getBoundingClientRect();
     var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     if (audioEl.duration) audioEl.currentTime = pct * audioEl.duration;
@@ -4938,7 +5611,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var SPEEDS = [0.75, 1, 1.25, 1.5];
   function updateSpeedBtn(){ speedBtn.textContent = Store.getSpeed() + 'x'; }
   speedBtn.onclick = function() {
-    if (!cur || !cur.audio) return;
+    if (!cur || !resolveAudio(cur)) return;
     var s = Store.getSpeed();
     var idx = SPEEDS.indexOf(s);
     var next = SPEEDS[(idx + 1) % SPEEDS.length];
@@ -4948,7 +5621,7 @@ document.addEventListener('DOMContentLoaded', function() {
   };
   function updateLoopBtn(){ loopBtn.classList.toggle('loop-on', Store.getLoop()); }
   loopBtn.onclick = function() {
-    if (!cur || !cur.audio) return;
+    if (!cur || !resolveAudio(cur)) return;
     var v = !Store.getLoop();
     Store.setLoop(v);
     audioEl.loop = v;
@@ -5344,6 +6017,132 @@ document.addEventListener('DOMContentLoaded', function() {
   contentArea.setAttribute('tabindex', '-1');
 
 });
+
+/* ===== OOBE 首次启动引导 ===== */
+(function OOBE(){
+  var OOBE_FILE = 'preferences.json';
+  var OOBE_FLAG_KEY = 'oobeCompleted';
+  var IMAGES = [
+    'resource/OOBE/page1.png',
+    'resource/OOBE/page2.png',
+    'resource/OOBE/page3.png'
+  ];
+  var TITLES = ['欢迎使用'];
+
+  var state = { idx: 0 };
+
+  function markCompleted(){
+    // 写 userdata 文件
+    UserDataAPI.read(OOBE_FILE).then(function(res){
+      var obj = (res && res.data && typeof res.data === 'object') ? res.data : {};
+      obj[OOBE_FLAG_KEY] = true;
+      obj.oobeCompletedAt = new Date().toISOString();
+      return UserDataAPI.write(OOBE_FILE, obj);
+    }).then(function(){
+      // 同步写 localStorage 防止下次再触发
+      localStorage.setItem('bsw_oobeCompleted', '1');
+    }).catch(function(){});
+  }
+
+  function buildDots(total, activeIdx){
+    var html = '';
+    for(var i=0;i<total;i++){
+      html += '<div class="oobe-dot ' + (i===activeIdx?'active':'') + '"></div>';
+    }
+    return html;
+  }
+
+  function update(overlay){
+    var total = IMAGES.length;
+    overlay.querySelector('.oobe-img').src = IMAGES[state.idx];
+    overlay.querySelector('.oobe-img').alt = TITLES[state.idx] || '';
+    var prev = overlay.querySelector('.oobe-prev');
+    var next = overlay.querySelector('.oobe-next');
+    var skip = overlay.querySelector('.oobe-skip');
+    prev.disabled = state.idx === 0;
+    if (state.idx === total - 1) {
+      next.textContent = '开始使用';
+    } else {
+      next.textContent = '下一步 »';
+    }
+    overlay.querySelector('.oobe-pages').innerHTML = buildDots(total, state.idx);
+  }
+
+  function close(overlay){
+    overlay.remove();
+    markCompleted();
+  }
+
+  function show(){
+    // 预加载图片
+    var total = IMAGES.length;
+    var overlay = document.createElement('div');
+    overlay.className = 'oobe-overlay';
+    overlay.innerHTML =
+      '<div class="oobe-box">' +
+        '<span class="oobe-skip">跳过引导 ×</span>' +
+        '<img class="oobe-img" alt="">' +
+        '<div class="oobe-pages"></div>' +
+        '<div class="oobe-nav">' +
+          '<div class="oobe-nav-left">' +
+            '<button class="oobe-btn oobe-btn-ghost oobe-prev">« 上一步</button>' +
+          '</div>' +
+          '<div class="oobe-nav-right">' +
+            '<button class="oobe-btn oobe-btn-primary oobe-next">下一步 »</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    update(overlay);
+
+    // 事件
+    overlay.querySelector('.oobe-prev').addEventListener('click', function(){
+      if (state.idx > 0) { state.idx--; update(overlay); }
+    });
+    overlay.querySelector('.oobe-next').addEventListener('click', function(){
+      if (state.idx < total - 1) {
+        state.idx++; update(overlay);
+      } else {
+        close(overlay);
+      }
+    });
+    overlay.querySelector('.oobe-skip').addEventListener('click', function(){
+      close(overlay);
+    });
+    // ESC 跳过
+    overlay.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') close(overlay);
+      if (e.key === 'ArrowRight') { if(state.idx<total-1){state.idx++;update(overlay);} else{close(overlay);} }
+      if (e.key === 'ArrowLeft' && state.idx > 0) { state.idx--; update(overlay); }
+    });
+    overlay.tabIndex = 0;
+    overlay.focus();
+  }
+
+  function shouldShow(){
+    // 1. localStorage 快速检查
+    if (localStorage.getItem('bsw_oobeCompleted') === '1') return Promise.resolve(false);
+    // 2. userdata 文件检查
+    return UserDataAPI.read(OOBE_FILE).then(function(res){
+      if (res && res.data && res.data && res.data[OOBE_FLAG_KEY]) {
+        localStorage.setItem('bsw_oobeCompleted', '1');
+        return false;
+      }
+      return true;
+    }).catch(function(){ return true; });
+  }
+
+  // 在 UserDataAPI.hydrate 之后检查
+  var origHydrate = UserDataAPI.hydrate.bind(UserDataAPI);
+  UserDataAPI.hydrate = function(){
+    return origHydrate().then(function(r){
+      return shouldShow().then(function(need){
+        if (need) setTimeout(show, 600);
+        return r;
+      });
+    });
+  };
+})();
 </script>
 </body>
 </html>
