@@ -108,7 +108,8 @@ try {
                 Send-JsonResponse $response @{success=$true; files=@($files)}
             }
             elseif ($path -eq '/api/upload-wallpaper' -and $method -eq 'POST') {
-                $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+                # 显式使用 UTF-8 读取：浏览器发来的 POST 体是 UTF-8，若省略 charset，$request.ContentEncoding 会回退到系统默认编码（中文 Windows 为 GBK），导致中文 JSON 乱码无法解析
+                $reader = New-Object System.IO.StreamReader($request.InputStream, [System.Text.Encoding]::UTF8)
                 $json = $reader.ReadToEnd()
                 $reader.Dispose()
                 $payload = $json | ConvertFrom-Json
@@ -153,6 +154,77 @@ try {
                 }
                 Remove-Item $targetPath -Force
                 Send-JsonResponse $response @{success=$true}
+            }
+            elseif ($path -eq '/api/ai-proxy' -and $method -eq 'POST') {
+                # 浏览器同源代理：由本地服务器转发到外部 AI API，规避 CORS 拦截
+                # 显式使用 UTF-8 读取：浏览器发来的 POST 体是 UTF-8，若省略 charset，$request.ContentEncoding 会回退到系统默认编码（中文 Windows 为 GBK），导致中文 JSON 乱码无法解析
+                $reader = New-Object System.IO.StreamReader($request.InputStream, [System.Text.Encoding]::UTF8)
+                $json = $reader.ReadToEnd()
+                $reader.Dispose()
+                try {
+                    $payload = $json | ConvertFrom-Json
+                } catch {
+                    Send-ErrorResponse $response '请求体不是合法 JSON' 400
+                    continue
+                }
+                $targetUrl = $payload.url
+                if (-not $targetUrl) {
+                    Send-ErrorResponse $response '缺少目标 URL' 400
+                    continue
+                }
+                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
+                $fwd = @{
+                    model = $payload.model
+                    messages = $payload.messages
+                    temperature = if ($null -ne $payload.temperature) { $payload.temperature } else { 0.7 }
+                    stream = $false
+                }
+                if ($payload.extra -and $payload.extra.PSObject.Properties.Count) {
+                    foreach ($k in $payload.extra.PSObject.Properties.Name) { $fwd[$k] = $payload.extra.$k }
+                }
+                $fwdJson = $fwd | ConvertTo-Json -Depth 20 -Compress
+                try {
+                    $uri = [System.Uri]::new($targetUrl)
+                    $req = [System.Net.HttpWebRequest]::Create($uri)
+                    $req.Method = 'POST'
+                    $req.ContentType = 'application/json'
+                    $req.Timeout = 120000
+                    $req.Headers.Add('Authorization', 'Bearer ' + $payload.apiKey)
+                    $enc = [System.Text.Encoding]::UTF8
+                    $bytes = $enc.GetBytes($fwdJson)
+                    $req.ContentLength = $bytes.Length
+                    $out = $req.GetRequestStream()
+                    $out.Write($bytes, 0, $bytes.Length)
+                    $out.Close()
+                    $upResp = $req.GetResponse()
+                    $upStream = $upResp.GetResponseStream()
+                    $upReader = New-Object System.IO.StreamReader($upStream, $enc)
+                    $upText = $upReader.ReadToEnd()
+                    $upReader.Close(); $upStream.Close(); $upResp.Close()
+                    $outBytes = $enc.GetBytes($upText)
+                    $response.StatusCode = 200
+                    $response.ContentType = 'application/json; charset=utf-8'
+                    $response.ContentLength64 = $outBytes.Length
+                    $response.OutputStream.Write($outBytes, 0, $outBytes.Length)
+                    $response.OutputStream.Close()
+                } catch [System.Net.WebException] {
+                    $we = $_
+                    $status = 'HTTP ' + [int]$we.Exception.Response.StatusCode
+                    $errBody = ''
+                    try {
+                        $es = $we.Exception.Response.GetResponseStream()
+                        $er = New-Object System.IO.StreamReader($es, [System.Text.Encoding]::UTF8)
+                        $errBody = $er.ReadToEnd(); $er.Close(); $es.Close()
+                    } catch {}
+                    Send-JsonResponse $response @{success=$false; error=($status + ' ' + $errBody)} 502
+                    continue
+                } catch {
+                    $msg = $_.Exception.Message
+                    if ($_.Exception.InnerException) { $msg = $msg + ' | ' + $_.Exception.InnerException.Message }
+                    Send-JsonResponse $response @{success=$false; error=$msg} 502
+                    continue
+                }
+                continue
             }
             else {
                 # 静态文件服务

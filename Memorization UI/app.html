@@ -83,12 +83,13 @@
     .nav-parent:hover{background:var(--hover)}
     .nav-parent:active{background:var(--active)}
     .nav-parent.sel{background:var(--active);border-left-color:var(--pri)}
-    .nav-parent.guide{color:var(--sub);cursor:pointer;font-size:13px}
+    .nav-parent.guide{cursor:pointer}
     .nav-arrow{margin-left:auto;font-size:11px;color:var(--muted-fg);transition:transform .2s;flex-shrink:0;padding-left:8px}
     .nav-arrow.open{transform:rotate(90deg)}
     .nav-children{display:none}
     .nav-children.open{display:block}
     .nav-child{min-height:40px;border:none;background:0 0;cursor:pointer;font-family:inherit;font-size:13px;color:var(--sub);text-align:left;padding:6px 16px 6px 40px;border-left:3px solid transparent;display:flex;align-items:center;width:100%;transition:background .1s,border-color .1s}
+    .nav-children .nav-child{font-size:14px;color:var(--fg)}
     .nav-child:hover{background:var(--hover)}
     .nav-child:active{background:var(--active)}
     .nav-child.sel{background:var(--active);border-left-color:var(--pri);color:var(--fg)}
@@ -112,7 +113,7 @@
     .art-split.no-split .art-translation{display:none}
     .art-split.no-split .art-divider{display:none}
     .art-split.no-split .art{width:100%}
-    .art-split:not(.no-split){display:grid;grid-template-columns:1fr 1fr;position:relative;transition:none}
+    .art-split:not(.no-split){display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row dense;position:relative;transition:none}
     .art-split:not(.no-split)::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);pointer-events:none}
     .art-split:not(.no-split) .art,
     .art-split:not(.no-split) .art-translation,
@@ -140,6 +141,7 @@
     .head-btn.on{color:#4caf50;background:rgba(76,175,80,.08)}
     .sbtn.recited{background:linear-gradient(90deg,transparent 0%,transparent 45%,rgba(76,175,80,.35) 100%);color:var(--fg)}
     .sbtn.recited.sel{background:linear-gradient(90deg,var(--active) 0%,var(--active) 45%,rgba(76,175,80,.45) 100%)}
+    .sbtn.dynasty-sel{background:linear-gradient(90deg,transparent 0%,transparent 45%,rgba(232,135,30,.35) 100%);border-left-color:var(--orange);color:var(--fg);font-weight:600}
     .art{width:100%}
     .art-head{display:flex;align-items:center;justify-content:center;margin-bottom:8px}
     .art-title{font-size:26px;font-weight:700;color:var(--fg);text-align:center}
@@ -610,7 +612,7 @@
       <div class="about-card">
         <h3>软件信息</h3>
         <div class="about-row"><span class="about-label">软件名称</span><span class="about-value">背书哇</span></div>
-        <div class="about-row"><span class="about-label">版本号</span><span class="about-value">0.2.0 开发中版本，不代表最终品质</span></div>
+        <div class="about-row"><span class="about-label">版本号</span><span class="about-value">0.2.2 开发中版本，不代表最终品质</span></div>
         <div class="about-row"><span class="about-label">作者</span><span class="about-value">@喔糖圆鼠</span></div>
         <div class="about-row"><span class="about-label">共创作者</span><span class="about-value">@F15EX @落星尘 @Motziki</span></div>
         <div class="about-row"><span class="about-label">录音资源</span><span class="about-value">人民教育出版社（仅供个人学习参考）</span></div>
@@ -646,7 +648,7 @@
         <div class="about-row" style="flex-direction:column;align-items:flex-start;gap:10px">
           <div style="width:100%;display:flex;align-items:center;gap:8px">
             <span class="about-label" style="min-width:90px;flex-shrink:0">API 地址</span>
-            <input type="text" id="aiApiUrl" placeholder="https://api.deepseek.com/v1/chat/completions" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
+            <input type="text" id="aiApiUrl" placeholder="https://api.deepseek.com/chat/completions" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
           </div>
           <div style="width:100%;display:flex;align-items:center;gap:8px">
             <span class="about-label" style="min-width:90px;flex-shrink:0">API Key</span>
@@ -654,13 +656,21 @@
           </div>
           <div style="width:100%;display:flex;align-items:center;gap:8px">
             <span class="about-label" style="min-width:90px;flex-shrink:0">模型名称</span>
-            <input type="text" id="aiModel" placeholder="deepseek-chat" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
+            <input type="text" id="aiModel" placeholder="deepseek-v4-flash" style="flex:1;height:32px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 10px;font-family:inherit;font-size:13px;outline:none" class="ai-input">
           </div>
           <div style="display:flex;gap:8px;margin-top:4px">
             <button class="back-btn" id="aiSaveBtn" style="margin:0">保存设置</button>
             <button class="back-btn" id="aiTestBtn" style="margin:0">测试连接</button>
           </div>
           <div id="aiStatus" style="font-size:12px;color:var(--sub);margin-top:4px"></div>
+          <div style="width:100%;margin-top:8px">
+            <div style="font-size:13px;color:var(--sub);margin-bottom:6px">情境默写出题偏好</div>
+            <div style="display:flex;gap:8px" id="quizTypeGroup">
+              <button class="back-btn quiz-type-btn" data-quiz-type="mock" style="margin:0">模拟题</button>
+              <button class="back-btn quiz-type-btn" data-quiz-type="real" style="margin:0">高考真题</button>
+              <button class="back-btn quiz-type-btn" data-quiz-type="any" style="margin:0">不限</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="about-card">
@@ -688,19 +698,17 @@
 </div>
 
 <footer class="player" id="player">
-  <button class="p-btn" id="btnPrev" title="上一篇 (←)">上</button>
   <button class="p-btn" id="btnRW" title="后退5秒">-5</button>
   <button class="p-btn play" id="btnPP" title="播放/暂停 (Space)">播</button>
   <button class="p-btn" id="btnFF" title="前进5秒">+5</button>
-  <button class="p-btn" id="btnNext" title="下一篇 (→)">下</button>
+  <button class="p-btn" id="speedBtn" title="倍速">1x</button>
+  <button class="p-btn" id="loopBtn" title="单曲循环">循环</button>
   <span class="p-title" id="pTitle"></span>
   <div class="p-area">
     <span class="p-time" style="margin-right:8px" id="tCur">0:00</span>
     <div class="p-track" id="pTrack"><div class="p-fill" id="pFill"></div></div>
     <span class="p-time" style="margin-left:8px" id="tTotal">0:00</span>
   </div>
-  <button class="p-btn" id="speedBtn" title="倍速">1x</button>
-    <button class="p-btn" id="loopBtn" title="单曲循环">循环</button>
 </footer>
 
 <!-- 数据层外部化（阶段 P0-1）：6 个独立数据文件 -->
@@ -1672,208 +1680,8 @@ if (typeof D !== 'undefined' && Array.isArray(D)) {
 /* 数据来源：app.html 行 1009-1210 */
 /* 此文件由 app.html 拆分而来，非商业用途可自由编辑 */
 
-  var SITUATIONAL_QUIZ = [
-    { id:'sq001', articleId:'xiaoyaoyou', articleTitle:'逍遥游（节选）',
-      scenario:'庄子在《逍遥游》中用"______，______"两句描写大鹏起飞时翅膀拍击水面、振翅盘旋直上九万里的壮观景象。',
-      answers:['水击三千里','抟扶摇而上者九万里'],
-      explanation:'出自《逍遥游》首段，"水击三千里"写鹏鸟起飞时翅膀拍击水面，"抟扶摇而上者九万里"写其盘旋直上九万里高空。' },
-    { id:'sq002', articleId:'xiaoyaoyou', articleTitle:'逍遥游（节选）',
-      scenario:'《逍遥游》中"______，______"两句以朝菌和蟪蛄为例，说明"小年不及大年"的道理。',
-      answers:['朝菌不知晦朔','蟪蛄不知春秋'],
-      explanation:'朝菌活不过一天故不知晦朔，蟪蛄春生夏死故不知春秋，比喻生命短暂者见识有限。' },
-    { id:'sq003', articleId:'chushibiao', articleTitle:'出师表',
-      scenario:'诸葛亮在《出师表》中用"______，______"两句劝谏后主不宜妄自菲薄，以免阻塞忠谏之路。',
-      answers:['不宜妄自菲薄','引喻失义'],
-      explanation:'原文为"不宜妄自菲薄，引喻失义，以塞忠谏之路也"，劝谏后主不要看轻自己、说话不合义理。' },
-    { id:'sq004', articleId:'chushibiao', articleTitle:'出师表',
-      scenario:'诸葛亮在《出师表》中用"______，______"两句表达自己临危受命、追随先帝驱驰的心境。',
-      answers:['受任于败军之际','奉命于危难之间'],
-      explanation:'追忆先帝兵败之际委以重任，表达感激与忠诚，为千古传诵的名句。' },
-    { id:'sq005', articleId:'yueyanglou', articleTitle:'岳阳楼记',
-      scenario:'范仲淹在《岳阳楼记》中用"______，______"两句描写洞庭湖吞吐长江、气势磅礴的景象。',
-      answers:['衔远山','吞长江'],
-      explanation:'以"衔""吞"二字赋予洞庭湖以生命，写其包容远山、吞吐长江的宏大气势。' },
-    { id:'sq006', articleId:'yueyanglou', articleTitle:'岳阳楼记',
-      scenario:'《岳阳楼记》中"______，______"两句表达作者不以物喜、不以己悲的旷达胸襟，是千古传诵的名句。',
-      answers:['不以物喜','不以己悲'],
-      explanation:'互文手法，意为不因外物好坏和自己得失而或喜或悲，体现古仁人旷达的胸襟。' },
-    { id:'sq007', articleId:'yueyanglou', articleTitle:'岳阳楼记',
-      scenario:'范仲淹在《岳阳楼记》中用"______，______"两句表达了自己"先忧后乐"的政治抱负。',
-      answers:['先天下之忧而忧','后天下之乐而乐'],
-      explanation:'此句为全文主旨，体现作者以天下为己任的崇高抱负，千古传诵。' },
-    { id:'sq008', articleId:'zuiwengting', articleTitle:'醉翁亭记',
-      scenario:'欧阳修在《醉翁亭记》中用"______，______"两句点明全文主旨，表达寄情山水的乐趣。',
-      answers:['醉翁之意不在酒','在乎山水之间也'],
-      explanation:'此句为全文核心，"醉翁之意不在酒"后成为成语，比喻本意不在此而在彼。' },
-    { id:'sq009', articleId:'zuiwengting', articleTitle:'醉翁亭记',
-      scenario:'《醉翁亭记》中"______，______"两句描写山间朝暮之景，形成鲜明对比。',
-      answers:['日出而林霏开','云归而岩穴暝'],
-      explanation:'"林霏开"写早晨雾散，"岩穴暝"写傍晚云聚，一开一暝写出朝暮变化。' },
-    { id:'sq010', articleId:'songdongyangmashengxu', articleTitle:'送东阳马生序',
-      scenario:'宋濂在《送东阳马生序》中用"______，______"两句表达自己以中有足乐者、不慕富贵的求学态度。',
-      answers:['以中有足乐者','不知口体之奉不若人也'],
-      explanation:'表达作者以学习为乐、不追求物质享受的高尚情操，是全文主旨句。' },
-    { id:'sq011', articleId:'taohuayuanji', articleTitle:'桃花源记',
-      scenario:'陶渊明在《桃花源记》中用"______，______"两句描写桃花源中老人和孩子怡然自乐的生活。',
-      answers:['黄发垂髫','并怡然自乐'],
-      explanation:'"黄发"指老人，"垂髫"指儿童，借代手法写桃花源中老幼安居乐业的和谐景象。' },
-    { id:'sq012', articleId:'taohuayuanji', articleTitle:'桃花源记',
-      scenario:'《桃花源记》中"______，______"两句写桃花源人因避战乱而隐居绝境，从此与外界隔绝。',
-      answers:['率妻子邑人来此绝境','不复出焉'],
-      explanation:'交代桃花源来历，"绝境"指与世隔绝之地，非今日"绝路"之意。' },
-    { id:'sq013', articleId:'loushiming', articleTitle:'陋室铭',
-      scenario:'刘禹锡在《陋室铭》中用"______，______"两句类比，表明陋室因主人品德高尚而不陋。',
-      answers:['南阳诸葛庐','西蜀子云亭'],
-      explanation:'以诸葛亮隐居的南阳草庐和扬雄著书的西蜀亭子作类比，暗示陋室主人的高洁。' },
-    { id:'sq014', articleId:'loushiming', articleTitle:'陋室铭',
-      scenario:'《陋室铭》中"______，______"两句写陋室环境清幽、主人交往高雅。',
-      answers:['苔痕上阶绿','草色入帘青'],
-      explanation:'"上""入"二字化静为动，写出台阶生苔、草色映帘的清幽环境。' },
-    { id:'sq015', articleId:'ailianshuo', articleTitle:'爱莲说',
-      scenario:'周敦颐在《爱莲说》中用"______，______"两句写莲从污泥中长出却不被污染，象征君子洁身自好。',
-      answers:['出淤泥而不染','濯清涟而不妖'],
-      explanation:'此句为千古名句，以莲喻君子，"不染""不妖"写其洁身自好、不媚俗的高洁品格。' },
-    { id:'sq016', articleId:'ailianshuo', articleTitle:'爱莲说',
-      scenario:'周敦颐在《爱莲说》中用"______，______"两句定义莲为花中君子。',
-      answers:['莲','花之君子者也'],
-      explanation:'以莲喻君子，点明全文主旨，托物言志手法的典型运用。' },
-    { id:'sq017', articleId:'sanxia', articleTitle:'三峡',
-      scenario:'郦道元在《三峡》中用"______，______"两句描写三峡两岸山势高峻、遮天蔽日。',
-      answers:['重岩叠嶂','隐天蔽日'],
-      explanation:'"重""叠""隐""蔽"四字写出山势之高峻、连绵，渲染三峡险峻气势。' },
-    { id:'sq018', articleId:'sanxia', articleTitle:'三峡',
-      scenario:'郦道元在《三峡》中引用渔歌"______，______"渲染三峡秋天凄凉萧瑟的氛围。',
-      answers:['巴东三峡巫峡长','猿鸣三声泪沾裳'],
-      explanation:'引用渔歌作结，以猿啼添悲，渲染三峡秋景的凄凉萧瑟，情景交融。' },
-    { id:'sq019', articleId:'mashuo', articleTitle:'马说',
-      scenario:'韩愈在《马说》中用"______，______，______"三句排比，写食马者不知千里马的愚蠢行为。',
-      answers:['策之不以其道','食之不能尽其材','鸣之而不能通其意'],
-      explanation:'三句排比写食马者不识千里马：鞭策不当、喂养不足、不识其鸣，层层递进。' },
-    { id:'sq020', articleId:'xiaoshitanji', articleTitle:'小石潭记',
-      scenario:'柳宗元在《小石潭记》中用"______，______"两句描写小石潭四周幽静凄清、令人寒意顿生的氛围。',
-      answers:['凄神寒骨','悄怆幽邃'],
-      explanation:'写作者坐潭上所感，"凄""寒""悄怆"写其幽静凄清，透露作者贬谪后的孤寂心境。' },
-    { id:'sq021', articleId:'caogulunzhan', articleTitle:'曹刿论战',
-      scenario:'《曹刿论战》中曹刿用"______，______，______"三句论述作战要把握士气的时机。',
-      answers:['一鼓作气','再而衰','三而竭'],
-      explanation:'此句为千古名句，论述击鼓振气的规律：第一次振作，第二次衰退，第三次耗尽。' },
-    { id:'sq022', articleId:'caogulunzhan', articleTitle:'曹刿论战',
-      scenario:'《曹刿论战》中曹刿认为取信于民的关键是"______，______，______"。',
-      answers:['小大之狱','虽不能察','必以情'],
-      explanation:'曹刿认为国君能诚心处理诉讼案件即"忠之属也"，可以一战，体现民本思想。' },
-    { id:'sq023', articleId:'zoujifengqiwangnajian', articleTitle:'邹忌讽齐王纳谏',
-      scenario:'《邹忌讽齐王纳谏》中齐王下令"______"受上赏，"______"受中赏，"______"受下赏。',
-      answers:['群臣吏民能面刺寡人之过者','上书谏寡人者','能谤讥于市朝闻寡人之耳者'],
-      explanation:'齐王纳谏分三等：当面批评、上书进谏、市朝议论，体现广开言路的胸襟。' },
-    { id:'sq024', articleId:'jichengtiansiyeyou', articleTitle:'记承天寺夜游',
-      scenario:'苏轼在《记承天寺夜游》中用"______，______"两句描写月光下庭院如积水空明、竹柏影如水草交横的奇景。',
-      answers:['庭下如积水空明','水中藻荇交横'],
-      explanation:'以"积水空明"喻月光澄澈，"藻荇交横"喻竹柏倒影，化无形月光为有形意境。' },
-    { id:'sq025', articleId:'huxintingkanxue', articleTitle:'湖心亭看雪',
-      scenario:'张岱在《湖心亭看雪》中用"______，______，______"三句以白描手法描写湖上雪景中长堤、亭、舟的渺小轮廓。',
-      answers:['惟长堤一痕','湖心亭一点','与余舟一芥'],
-      explanation:'"一痕""一点""一芥"用量词极写景物之小，衬托西湖雪后天地一白的空阔。' },
-    { id:'sq026', articleId:'yuzhuyuanshushu', articleTitle:'与朱元思书',
-      scenario:'吴均在《与朱元思书》中用"______，______"两句总括富春江山水之美。',
-      answers:['奇山异水','天下独绝'],
-      explanation:'此句为全文总起，"奇""异""独绝"三词高度概括富春江山水的独特之美。' },
-    { id:'sq027', articleId:'yuzhuyuanshushu', articleTitle:'与朱元思书',
-      scenario:'《与朱元思书》中"______，______"两句表达作者厌倦世俗、归隐山林的志向。',
-      answers:['鸢飞戾天者','望峰息心'],
-      explanation:'以"鸢飞戾天"喻追逐名利者，"望峰息心"写其见山峰而平息功名之心，托物言志。' },
-    { id:'sq028', articleId:'shengyuhuananyule', articleTitle:'生于忧患，死于安乐',
-      scenario:'孟子在《生于忧患，死于安乐》中认为天将降大任于斯人，必先"______，______，______"。',
-      answers:['苦其心志','劳其筋骨','饿其体肤'],
-      explanation:'此句为千古名句，列举天降大任前的种种磨炼，说明忧患使人成才的道理。' },
-    { id:'sq029', articleId:'shengyuhuananyule', articleTitle:'生于忧患，死于安乐',
-      scenario:'《生于忧患，死于安乐》中"______，______"两句点明国家灭亡的内外原因。',
-      answers:['入则无法家拂士','出则无敌国外患者'],
-      explanation:'"法家拂士"指守法度的大臣和辅佐君王的贤士，"敌国外患"指外部威胁，两者缺一国恒亡。' },
-    { id:'sq030', articleId:'yuwosuoyuye', articleTitle:'鱼我所欲也',
-      scenario:'孟子在《鱼我所欲也》中用"______，______"两句点明在生与义不可兼得时应如何抉择。',
-      answers:['二者不可得兼','舍生而取义者也'],
-      explanation:'此句为全文中心论点，以鱼和熊掌设喻，阐述舍生取义的道德准则。' },
-    { id:'sq031', articleId:'daxiezhongshushu', articleTitle:'答谢中书书',
-      scenario:'陶弘景在《答谢中书书》中用"______，______"两句描写两岸石壁色彩斑斓、交相辉映的景象。',
-      answers:['两岸石壁','五色交辉'],
-      explanation:'写石壁五色交辉，色彩绚烂，体现山川之美，为南朝山水小品名句。' },
-    { id:'sq032', articleId:'daxiezhongshushu', articleTitle:'答谢中书书',
-      scenario:'《答谢中书书》中"______，______"两句以动衬静，描写清晨雾散猿鸟鸣叫的生机。',
-      answers:['晓雾将歇','猿鸟乱鸣'],
-      explanation:'"晓雾将歇"写清晨雾散，"猿鸟乱鸣"以动衬静，写出山川清晨的勃勃生机。' },
-    { id:'sq033', articleId:'quanxue', articleTitle:'劝学',
-      scenario:'荀子在《劝学》中用"______，______"两句比喻学习需要不断积累。',
-      answers:['不积跬步','无以至千里'],
-      explanation:'以"跬步"积累至"千里"为喻，说明学习必须循序渐进、日积月累。' },
-    { id:'sq034', articleId:'quanxue', articleTitle:'劝学',
-      scenario:'《劝学》中"______，______"两句强调学习要坚持不懈、不能半途而废。',
-      answers:['锲而不舍','金石可镂'],
-      explanation:'以雕刻为喻，"锲而不舍"强调坚持，"金石可镂"说明只要坚持就能成功。' },
-    { id:'sq035', articleId:'shishuo', articleTitle:'师说',
-      scenario:'韩愈在《师说》中用"______，______"两句定义老师的职责。',
-      answers:['师者','所以传道受业解惑也'],
-      explanation:'此句为全文核心定义，"传道""受业""解惑"三方面概括教师的职责。' },
-    { id:'sq036', articleId:'shishuo', articleTitle:'师说',
-      scenario:'韩愈在《师说》中用"______，______"两句阐述择师的标准。',
-      answers:['道之所存','师之所存也'],
-      explanation:'意为"道存在的地方，就是老师存在的地方"，强调择师以"道"为标准，不论身份。' },
-    { id:'sq037', articleId:'chibi', articleTitle:'赤壁赋',
-      scenario:'苏轼在《赤壁赋》中用"______，______"两句描写箫声哀怨缠绵、凄切动人。',
-      answers:['如怨如慕','如泣如诉'],
-      explanation:'四个比喻写箫声的哀怨凄切，"怨、慕、泣、诉"四字各具情态，化无形为有形。' },
-    { id:'sq038', articleId:'chibi', articleTitle:'赤壁赋',
-      scenario:'《赤壁赋》中"______，______"两句表达作者对人生短暂、个体渺小的感慨。',
-      answers:['寄蜉蝣于天地','渺沧海之一粟'],
-      explanation:'以"蜉蝣""一粟"设喻，极言人生短暂渺小，为下文旷达之论作铺垫。' },
-    { id:'sq039', articleId:'chibi', articleTitle:'赤壁赋',
-      scenario:'苏轼在《赤壁赋》中用"______，______"两句表达万物与我皆无尽、无需羡慕的旷达之思。',
-      answers:['自其不变者而观之','则物与我皆无尽也'],
-      explanation:'从"不变"的角度看，万物与人一样永恒无尽，体现苏轼旷达的宇宙观。' },
-    { id:'sq040', articleId:'jianshizuzhi', articleTitle:'谏太宗十思疏',
-      scenario:'魏征在《谏太宗十思疏》中用"______，______"两句强调治国者必须积德义、居安思危。',
-      answers:['思国之安者','必积其德义'],
-      explanation:'此句为全文中心论点，强调治国安邦必须积累道德信义，是魏征劝谏的核心。' },
-    { id:'sq041', articleId:'efanggongfu', articleTitle:'阿房宫赋',
-      scenario:'杜牧在《阿房宫赋》中用"______，______"两句描写宫女们梳妆打扮的盛况。',
-      answers:['绿云扰扰','梳晓鬟也'],
-      explanation:'"绿云"喻女子黑发，"扰扰"写其纷乱，极言宫女众多、生活奢靡。' },
-    { id:'sq042', articleId:'efanggongfu', articleTitle:'阿房宫赋',
-      scenario:'杜牧在《阿房宫赋》中用"______，______"两句警示后人勿重蹈秦朝灭亡的覆辙。',
-      answers:['后人哀之而不鉴之','亦使后人而复哀后人也'],
-      explanation:'此句为全文主旨句，借古讽今，警示统治者若不吸取秦亡教训，终将重蹈覆辙。' },
-    { id:'sq043', articleId:'wudaishilingguan', articleTitle:'五代史伶官传序',
-      scenario:'欧阳修在《五代史伶官传序》中用"______，______"两句总结盛衰之理在于人事。',
-      answers:['忧劳可以兴国','逸豫可以亡身'],
-      explanation:'此句为全文中心论点，对仗工整，说明忧患勤劳可使国家兴盛，贪图安乐可使自身灭亡。' },
-    { id:'sq044', articleId:'lisao', articleTitle:'离骚（节选）',
-      scenario:'屈原在《离骚》中用"______，______"两句表达自己追求美好理想虽九死犹不悔的执着。',
-      answers:['亦余心之所善兮','虽九死其犹未悔'],
-      explanation:'此句为千古名句，表达屈原为追求美好理想至死不渝的执着精神，是屈原人格的写照。' },
-    { id:'sq045', articleId:'lisao', articleTitle:'离骚（节选）',
-      scenario:'《离骚》中"______，______"两句表达诗人感慨时光易逝、时不我待。',
-      answers:['日月忽其不淹兮','春与秋其代序'],
-      explanation:'"忽""不淹"写时光飞逝不停留，"春与秋代序"写四季更替，表达时不我待的紧迫感。' },
-    { id:'sq046', articleId:'pipaxing', articleTitle:'琵琶行（并序）',
-      scenario:'白居易在《琵琶行》中用"______，______"两句描写琵琶声暂歇后突然迸发的激越之声。',
-      answers:['银瓶乍破水浆迸','铁骑突出刀枪鸣'],
-      explanation:'以"银瓶乍破""铁骑突出"设喻，写琵琶声由暂歇到激越的突然转变，化声音为画面。' },
-    { id:'sq047', articleId:'pipaxing', articleTitle:'琵琶行（并序）',
-      scenario:'《琵琶行》中"______，______"两句表达诗人与琵琶女同病相怜、天涯沦落的感慨。',
-      answers:['同是天涯沦落人','相逢何必曾相识'],
-      explanation:'此句为千古名句，道出诗人与琵琶女共同的沦落之悲，引起广泛共鸣。' },
-    { id:'sq048', articleId:'jinse', articleTitle:'锦瑟',
-      scenario:'李商隐在《锦瑟》中用"______，______"两句化用庄周梦蝶和望帝啼鹃的典故。',
-      answers:['庄生晓梦迷蝴蝶','望帝春心托杜鹃'],
-      explanation:'上句用庄周梦蝶典写人生如梦的迷惘，下句用望帝化鹃典写至死不渝的痴情。' },
-    { id:'sq049', articleId:'niannujiao', articleTitle:'念奴娇·赤壁怀古',
-      scenario:'苏轼在《念奴娇·赤壁怀古》中用"______，______，______"三句描写周瑜英姿勃发、指挥若定的形象。',
-      answers:['羽扇纶巾','谈笑间','樯橹灰飞烟灭'],
-      explanation:'"羽扇纶巾"写周瑜儒雅装束，"谈笑间"写其从容不迫，"樯橹灰飞烟灭"写其功业。' },
-    { id:'sq050', articleId:'niannujiao', articleTitle:'念奴娇·赤壁怀古',
-      scenario:'《念奴娇·赤壁怀古》中"______，______"两句以江水东流寄托人生如梦的感慨。',
-      answers:['人生如梦','一尊还酹江月'],
-      explanation:'此句为全词结语，表达作者感慨人生如梦、借酒浇愁的旷达情怀，余韵悠长。' }
-  ];
+  /* 情境默写自带题库已移除，全部改用 AI 出题 */
+  var SITUATIONAL_QUIZ = [];
 
 </script>
 
@@ -1919,7 +1727,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setLoop: function(v){ this.set('audioloop', v); },
     getWallpaper: function(){ return this.get('wallpaper', {current:'bg.png', rotate:false, interval:30, index:0}); },
     setWallpaper: function(v){ this.set('wallpaper', v); },
-    getAIConfig: function(){ return this.get('aiConfig', {apiUrl:'', apiKey:'', model:''}); },
+    getAIConfig: function(){ return this.get('aiConfig', {apiUrl:'', apiKey:'', model:'', quizType:'any'}); },
     setAIConfig: function(v){ this.set('aiConfig', v); }
   };
 
@@ -1940,7 +1748,7 @@ document.addEventListener('DOMContentLoaded', function() {
     write: function(name, data){
       return fetch(this._url(name), {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
         body: JSON.stringify({data: data})
       }).then(function(r){ return r.json(); });
     },
@@ -2129,8 +1937,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var hlCount = document.getElementById('hlCount');
   var contentArea = document.getElementById('contentArea');
   var btnPP = document.getElementById('btnPP');
-  var btnPrev = document.getElementById('btnPrev');
-  var btnNext = document.getElementById('btnNext');
   var btnRW = document.getElementById('btnRW');
   var btnFF = document.getElementById('btnFF');
   var speedBtn = document.getElementById('speedBtn');
@@ -2259,7 +2065,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var dataUrl = e.target.result;
       fetch('/api/upload-wallpaper', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify({ filename: file.name, data: dataUrl })
       })
       .then(function(r){ return r.json(); })
@@ -2559,7 +2365,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     for (var d = 0; d < dynasties.length; d++) {
-      var sel = (currentDynasty === dynasties[d]) ? ' sel' : '';
+      var sel = (currentDynasty === dynasties[d]) ? ' dynasty-sel' : '';
       html += '<button class="sbtn' + sel + '" data-dynasty="' + dynasties[d] + '">' + dynasties[d] + '</button>';
     }
     navEl.innerHTML = html;
@@ -2670,6 +2476,70 @@ document.addEventListener('DOMContentLoaded', function() {
       .replace(/'/g, '&#39;');
   }
 
+  /* 轻量 Markdown 渲染（用于 AI 回答） */
+  function renderMarkdown(text) {
+    if (!text) return '';
+    var lines = escapeHtml(String(text)).split('\n');
+    var html = '';
+    var inList = false;
+    var inQuote = false;
+    var inCode = false;
+    var codeBuf = '';
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      // 代码块 ```
+      if (line.trim().indexOf('```') === 0) {
+        if (inCode) {
+          html += '<pre style="background:var(--bg);padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;line-height:1.5;margin:8px 0;border:1px solid var(--border)"><code>' + escapeHtml(codeBuf) + '</code></pre>';
+          codeBuf = ''; inCode = false;
+        } else {
+          if (inList) { html += '</ul>'; inList = false; }
+          if (inQuote) { html += '</blockquote>'; inQuote = false; }
+          inCode = true;
+        }
+        continue;
+      }
+      if (inCode) { codeBuf += line + '\n'; continue; }
+      // 标题
+      var hMatch = line.match(/^(#{1,4})\s+(.+)$/);
+      if (hMatch) {
+        if (inList) { html += '</ul>'; inList = false; }
+        if (inQuote) { html += '</blockquote>'; inQuote = false; }
+        var level = hMatch[1].length;
+        var sizes = [20, 18, 16, 15];
+        html += '<h' + level + ' style="font-size:' + sizes[level-1] + 'px;margin:12px 0 6px;font-weight:600;color:var(--fg)">' + hMatch[2] + '</h' + level + '>';
+        continue;
+      }
+      // 引用 >
+      var qMatch = line.match(/^&gt;\s?(.*)$/);
+      if (qMatch) {
+        if (inList) { html += '</ul>'; inList = false; }
+        if (!inQuote) { html += '<blockquote style="border-left:3px solid var(--orange);padding-left:12px;margin:8px 0;color:var(--sub);font-size:14px">'; inQuote = true; }
+        html += qMatch[1] + '<br>';
+        continue;
+      }
+      if (inQuote) { html += '</blockquote>'; inQuote = false; }
+      // 无序列表 - / *
+      var lMatch = line.match(/^[\-\*]\s+(.+)$/);
+      if (lMatch) {
+        if (!inList) { html += '<ul style="padding-left:20px;margin:4px 0">'; inList = true; }
+        html += '<li>' + lMatch[1] + '</li>';
+        continue;
+      }
+      if (inList) { html += '</ul>'; inList = false; }
+      // 普通行
+      html += line + '<br>';
+    }
+    if (inList) html += '</ul>';
+    if (inQuote) html += '</blockquote>';
+    if (inCode) html += '<pre style="background:var(--bg);padding:12px;border-radius:4px;overflow-x:auto;font-size:13px;line-height:1.5;margin:8px 0;border:1px solid var(--border)"><code>' + escapeHtml(codeBuf) + '</code></pre>';
+    // 行内格式：加粗、行内代码、斜体
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/`(.+?)`/g, '<code style="background:var(--bg);padding:2px 5px;border-radius:3px;font-size:0.9em">$1</code>');
+    html = html.replace(/(^|[^*])\*([^*]+?)\*(?!\*)/g, '$1<em>$2</em>');
+    return html;
+  }
+
   function renderText(txt, art) {
     // 防御：txt 可能为 null/undefined
     if (txt === null || txt === undefined) txt = '';
@@ -2717,13 +2587,19 @@ document.addEventListener('DOMContentLoaded', function() {
       html += '<p>' + escapeHtml(tLines[i]) + '</p>';
     }
     transBody.innerHTML = html;
-    // 补齐行数：较短一侧补空 <p>，避免一侧多出导致大面积留白
-    var leftBody = document.getElementById('artBody');
-    var leftCount = leftBody ? leftBody.children.length : 0;
-    var rightCount = transBody.children.length;
-    while (transBody.children.length < leftCount) transBody.appendChild(document.createElement('p'));
-    if (leftBody) {
-      while (leftBody.children.length < rightCount) leftBody.appendChild(document.createElement('p'));
+    // 检测译文中是否含"上阕/下阕"等词牌分阕标记
+    // 若有，则译文是按"上阕：... 下阕：..."两段组织的，与左侧逐句原文无法逐行对齐
+    // 此时跳过补空 <p> 与强制 gridRow 对齐，让两侧各自自然排列
+    var hasCipaiMark = /上\s*[阕阙]|下\s*[阕阙]/.test(art.translation);
+    if (!hasCipaiMark) {
+      // 补齐行数：较短一侧补空 <p>，避免一侧多出导致大面积留白
+      var leftBody = document.getElementById('artBody');
+      var leftCount = leftBody ? leftBody.children.length : 0;
+      var rightCount = transBody.children.length;
+      while (transBody.children.length < leftCount) transBody.appendChild(document.createElement('p'));
+      if (leftBody) {
+        while (leftBody.children.length < rightCount) leftBody.appendChild(document.createElement('p'));
+      }
     }
     var transAuthor = transBox.querySelector('.art-author');
     var srcAuthor = document.getElementById('artAuthor');
@@ -2732,7 +2608,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     transBody.style.fontSize = bodyFontSize + 'px';
     transBody.style.lineHeight = '2';
-    alignSplitRows();
+    if (hasCipaiMark) {
+      // 词牌译文：清除强制 gridRow，让左右两列自然排列
+      clearSplitRows();
+    } else {
+      alignSplitRows();
+    }
   }
 
   function alignSplitRows() {
@@ -2750,6 +2631,24 @@ document.addEventListener('DOMContentLoaded', function() {
     var rightKids = document.querySelectorAll('#artTransBody > *');
     for (var i = 0; i < leftKids.length; i++) leftKids[i].style.gridRow = (i + 3);
     for (var i = 0; i < rightKids.length; i++) rightKids[i].style.gridRow = (i + 3);
+  }
+
+  // 清除分栏模式下的强制 gridRow（用于词牌译文等不应逐行对齐的场景）
+  function clearSplitRows() {
+    var split = document.getElementById('artSplit');
+    if (!split || split.classList.contains('no-split')) return;
+    var leftHead = document.querySelector('#artBox > .art-head');
+    var leftAuthor = document.querySelector('#artBox > .art-author');
+    var rightHead = document.querySelector('#artTransBox > .art-head');
+    var rightAuthor = document.querySelector('#artTransBox > .art-author');
+    if (leftHead) leftHead.style.gridRow = '';
+    if (rightHead) rightHead.style.gridRow = '';
+    if (leftAuthor) leftAuthor.style.gridRow = '';
+    if (rightAuthor) rightAuthor.style.gridRow = '';
+    var leftKids = document.querySelectorAll('#artBody > *');
+    var rightKids = document.querySelectorAll('#artTransBody > *');
+    for (var i = 0; i < leftKids.length; i++) leftKids[i].style.gridRow = '';
+    for (var i = 0; i < rightKids.length; i++) rightKids[i].style.gridRow = '';
   }
 
   function updateSearchNav(){
@@ -2934,6 +2833,74 @@ document.addEventListener('DOMContentLoaded', function() {
       ]}
     ];
     renderExampleNav(structure, 'jushi');
+    // 追加「AI 检查句子语法」入口
+    var aiBtn = document.createElement('button');
+    aiBtn.className = 'nav-parent';
+    aiBtn.innerHTML = '<span>✨ AI 检查句子语法</span>';
+    aiBtn.style.color = 'var(--pri)';
+    aiBtn.style.fontWeight = '600';
+    aiBtn.style.borderTop = '1px solid var(--border)';
+    aiBtn.style.marginTop = '4px';
+    aiBtn.onclick = function() {
+      clearNavSel();
+      aiBtn.classList.add('sel');
+      showAIGrammarCheck();
+    };
+    navEl.appendChild(aiBtn);
+  }
+
+  /* ===== AI 检查句子语法 ===== */
+  function showAIGrammarCheck() {
+    hideAllViews();
+    viewExample.classList.remove('hidden');
+    viewExample.classList.remove('view'); void viewExample.offsetWidth; viewExample.classList.add('view');
+    var html = '<div class="example-title">✨ AI 检查句子语法</div>';
+    html += '<div style="max-width:680px;margin:0 auto;padding:0 16px">';
+    html += '<div style="margin-bottom:12px;color:var(--sub);font-size:13px;font-family:\'Microsoft YaHei\',sans-serif;line-height:1.6">输入一句文言文，AI 将判断其句式类型（判断句 / 被动句 / 倒装句 / 省略句等）并给出语法解析。</div>';
+    html += '<div style="display:flex;gap:8px;margin-bottom:16px">';
+    html += '<input type="text" id="aiGrammarInput" placeholder="例如：廉颇者，赵之良将也。" style="flex:1;height:38px;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:0 12px;font-family:inherit;font-size:14px;outline:none;border-radius:4px">';
+    html += '<button class="exercise-submit" id="aiGrammarBtn" style="margin:0;white-space:nowrap">检查</button>';
+    html += '</div>';
+    html += '<div id="aiGrammarResult"></div>';
+    html += '</div>';
+    viewExample.innerHTML = html;
+
+    var input = document.getElementById('aiGrammarInput');
+    var btn = document.getElementById('aiGrammarBtn');
+    var resultDiv = document.getElementById('aiGrammarResult');
+
+    input.focus();
+    input.onkeydown = function(e) { if (e.key === 'Enter') btn.click(); };
+
+    btn.onclick = async function() {
+      var sentence = input.value.trim();
+      if (!sentence) { showToast('请输入要检查的句子', 'warn'); return; }
+      var cfg = Store.getAIConfig();
+      if (!cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+        showToast('请先在「更多」中配置 AI API 信息', 'warn');
+        return;
+      }
+      resultDiv.innerHTML = '<div style="padding:24px;text-align:center;color:var(--sub);font-size:14px">AI 正在分析中，请稍候…</div>';
+      btn.disabled = true;
+
+      var prompt = '你是一位资深的高中语文老师，擅长文言文语法分析。请对以下文言文句子进行语法判断和解析。\n\n' +
+        '句子：' + sentence + '\n\n' +
+        '请从以下方面分析：\n' +
+        '1. 判断该句属于哪种文言特殊句式（判断句 / 被动句 / 倒装句 / 省略句 / 正常句式等）；如果是倒装句，请说明具体类型（宾语前置 / 状语后置 / 定语后置 / 主谓倒装）\n' +
+        '2. 解释判断依据（语法标志词、句式特点等）\n' +
+        '3. 如有倒装或省略，请还原正常语序\n' +
+        '4. 给出该句的现代汉语翻译\n\n' +
+        '请用简洁清晰的中文回答。';
+
+      var result = await callAI(cfg, prompt, 30000);
+      btn.disabled = false;
+      if (!result.success) {
+        resultDiv.innerHTML = '<div class="exercise-result wrong">分析失败：' + escapeHtml(result.error) + '</div>';
+        return;
+      }
+      var content = renderMarkdown(result.content);
+      resultDiv.innerHTML = '<div style="padding:16px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--pri);font-size:14px;line-height:1.8;color:var(--fg);font-family:\'Microsoft YaHei\',sans-serif;border-radius:4px">' + content + '</div>';
+    };
   }
 
   function renderCileiNav() {
@@ -3204,7 +3171,7 @@ document.addEventListener('DOMContentLoaded', function() {
       else if (i === idx) btn.classList.add('wrong');
     }
     var fb = document.getElementById('wordFeedback');
-    fb.textContent = q.explanation;
+    fb.innerHTML = renderMarkdown(q.explanation);
     fb.classList.add('show');
     var nextBtn = document.getElementById('wordNextBtn');
     nextBtn.disabled = false;
@@ -3356,7 +3323,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var html = '<div class="sec-label"><span>练习类型</span></div>';
     html += '<button class="nav-child' + (exerciseState.type==='blank'?' sel':'') + '" data-ex-type="blank"> 填空默写</button>';
     html += '<button class="nav-child' + (exerciseState.type==='match'?' sel':'') + '" data-ex-type="match">⇄ 上下句对接</button>';
-    html += '<button class="nav-child' + (exerciseState.type==='situational'?' sel':'') + '" data-ex-type="situational"> 情境默写</button>';
+    html += '<button class="nav-child' + (exerciseState.type==='situational'?' sel':'') + '" data-ex-type="situational">✨ 情境默写</button>';
     navEl.innerHTML = html;
     navEl.querySelectorAll('[data-ex-type]').forEach(function(btn){
       btn.onclick = function(){
@@ -3574,26 +3541,25 @@ document.addEventListener('DOMContentLoaded', function() {
     return result;
   }
 
-  function generateSituationalQuestions(articleId) {
-    var pool = SITUATIONAL_QUIZ.slice();
-    if (articleId && articleId !== 'random') {
-      pool = pool.filter(function(q){ return q.articleId === articleId; });
-    }
-    for (var i = pool.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
-    }
-    return pool.slice(0, 10);
-  }
+  /* generateSituationalQuestions 已移除，全部改用 generateAISituationalQuestions */
 
-  function startSituationalExercise() {
-    exerciseState.questions = generateSituationalQuestions(exerciseState.articleId);
-    exerciseState.currentIdx = 0;
-    exerciseState.answers = [];
-    if (exerciseState.questions.length === 0) {
-      showPlaceholder('无法生成题目', '情境默写题库为空', '请稍后再试');
+  async function startSituationalExercise() {
+    // 显示加载提示
+    hideAllViews();
+    viewArt.classList.remove('hidden');
+    artTitle.textContent = '情境默写';
+    artAuthor.textContent = 'AI 出题中…';
+    artBody.innerHTML = '<div class="exercise-question" style="text-align:center;padding:48px 20px;color:var(--sub);font-size:15px;line-height:2">✨ AI 正在为您生成情境默写题目，请稍候…<br><span style="font-size:12px;color:var(--sub)">如长时间无响应，请检查「更多」中的 AI 配置</span></div>';
+
+    // 情境默写全部改用 AI 出题
+    var questions = await generateAISituationalQuestions(exerciseState.articleId);
+    if (!questions || questions.length === 0) {
+      showPlaceholder('无法生成题目', 'AI 情境默写生成失败', '请检查 AI 配置或稍后再试');
       return;
     }
+    exerciseState.questions = questions;
+    exerciseState.currentIdx = 0;
+    exerciseState.answers = [];
     renderSituationalQuestion();
   }
 
@@ -3605,7 +3571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     artTitle.textContent = '情境默写 (' + (exerciseState.currentIdx + 1) + '/' + exerciseState.questions.length + ')';
     artAuthor.textContent = '出自：' + q.articleTitle;
     var scenarioHtml = q.scenario.replace(/______/g, '<input class="exercise-blank sq-blank" type="text" autocomplete="off">');
-    var html = '<div class="exercise-question">' + scenarioHtml + '</div>' +
+    var html = '<div class="exercise-question" style="font-size:18px">' + scenarioHtml + '</div>' +
       '<button class="exercise-submit" id="sqSubmit">提交</button>' +
       '<button class="exercise-btn" id="sqHint"> 提示</button>' +
       '<div id="sqResult"></div>';
@@ -3665,7 +3631,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resultHtml = '<div class="exercise-result correct">对 全部正确！' + (hintUsed ? ' <span style="font-size:12px;color:var(--orange)">注意 使用过提示</span>' : '') + '</div>';
       } else {
         resultHtml = '<div class="exercise-result wrong">错 正确 ' + correctCount + '/' + inputs.length + ' 空</div>';
-        resultHtml += '<div style="margin-top:8px;padding:10px;background:var(--bg);border-left:3px solid var(--pri);font-size:13px;color:var(--sub);font-family:\'Microsoft YaHei\',sans-serif"><strong> 解析：</strong>' + q.explanation + '</div>';
+        resultHtml += '<div style="margin-top:8px;padding:10px;background:var(--bg);border-left:3px solid var(--pri);font-size:13px;color:var(--sub);font-family:\'Microsoft YaHei\',sans-serif"><strong> 解析：</strong>' + renderMarkdown(q.explanation) + '</div>';
       }
       resultDiv.innerHTML = resultHtml;
       submitBtn.style.display = 'none';
@@ -4823,8 +4789,6 @@ document.addEventListener('DOMContentLoaded', function() {
     btnRW.classList.toggle('disabled', dis);
     btnPP.classList.toggle('disabled', dis);
     btnFF.classList.toggle('disabled', dis);
-    btnPrev.classList.toggle('disabled', dis);
-    btnNext.classList.toggle('disabled', dis);
     pTrack.classList.toggle('disabled', dis);
     speedBtn.classList.toggle('disabled', dis);
     loopBtn.classList.toggle('disabled', dis);
@@ -5011,15 +4975,41 @@ document.addEventListener('DOMContentLoaded', function() {
     var aiTestBtn = document.getElementById('aiTestBtn');
     if (aiSaveBtn) {
       aiSaveBtn.onclick = function() {
+        var oldCfg = Store.getAIConfig();
         var cfg = {
-          apiUrl: aiUrlInput ? aiUrlInput.value.trim() : '',
+          apiUrl: normalizeApiUrl(aiUrlInput ? aiUrlInput.value.trim() : ''),
           apiKey: aiKeyInput ? aiKeyInput.value.trim() : '',
-          model: aiModelInput ? aiModelInput.value.trim() : ''
+          model: aiModelInput ? aiModelInput.value.trim() : '',
+          quizType: oldCfg.quizType || 'any'
         };
         Store.setAIConfig(cfg);
-        showToast('AI 设置已保存', 'success');
+        if (aiUrlInput) aiUrlInput.value = cfg.apiUrl;
+        showToast('AI 设置已保存（已自动补全 API 路径）', 'success');
       };
     }
+    // 情境默写出题偏好按钮
+    var quizTypeBtns = document.querySelectorAll('.quiz-type-btn');
+    function updateQuizTypeBtns() {
+      var cfg = Store.getAIConfig();
+      var current = cfg.quizType || 'any';
+      quizTypeBtns.forEach(function(btn) {
+        var active = btn.getAttribute('data-quiz-type') === current;
+        btn.style.background = active ? 'var(--pri)' : 'var(--card)';
+        btn.style.color = active ? 'var(--pri-fg)' : 'var(--fg)';
+        btn.style.borderColor = active ? 'var(--pri)' : 'var(--border)';
+      });
+    }
+    updateQuizTypeBtns();
+    quizTypeBtns.forEach(function(btn) {
+      btn.onclick = function() {
+        var cfg = Store.getAIConfig();
+        cfg.quizType = btn.getAttribute('data-quiz-type');
+        Store.setAIConfig(cfg);
+        updateQuizTypeBtns();
+        var labels = { mock: '模拟题', real: '高考真题', any: '不限' };
+        showToast('出题偏好已设为：' + labels[cfg.quizType], 'success');
+      };
+    });
     if (aiTestBtn) {
       aiTestBtn.onclick = async function() {
         var cfg = Store.getAIConfig();
@@ -5029,7 +5019,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (aiStatusEl) aiStatusEl.textContent = '正在测试连接...';
         try {
-          var result = await callAI(cfg, '你好，请回复一个字：好', 5000);
+          var result = await callAI(cfg, '你好，请回复一个字：好', 8000);
           if (result && result.success) {
             if (aiStatusEl) aiStatusEl.style.color = '#4caf50';
             if (aiStatusEl) aiStatusEl.textContent = '✓ 连接成功！模型回复：' + (result.content || '');
@@ -5046,47 +5036,103 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  /* ===== AI 调用核心函数 ===== */
+  /* ===== AI 调用核心函数 =====
+     页面由本地服务器(http://localhost:8000)提供，浏览器直接请求外部 API 常被 CORS 拦截。
+     因此优先走同源代理 /api/ai-proxy（由 setuptools/server.ps1 转发），代理失败再回退直连。 */
+  function getProxyBase() {
+    try {
+      if (location.protocol === 'http:' && /localhost|127\.0\.0\.1/.test(location.hostname)) return location.origin;
+    } catch (e) {}
+    return 'http://localhost:8000';
+  }
+
+  // 自动补全接口路径。
+  // 注意：DeepSeek 的接口是 https://api.deepseek.com/chat/completions（没有 /v1 段）；
+  // OpenAI 等则是 https://xx/v1/chat/completions。对 DeepSeek 要剔除多余的 /v1，否则会被上游 404。
+  function normalizeApiUrl(url) {
+    url = (url || '').trim();
+    if (!url) return url;
+    if (/chat\/completions/i.test(url)) {
+      // 已含完整路径：仅当是 DeepSeek 时剔除误加的 /v1 段
+      if (/api\.deepseek\.com/i.test(url)) return url.replace(/\/v1\/chat\/completions/i, '/chat/completions');
+      return url;
+    }
+    if (/\/v1\/?$/i.test(url)) return url.replace(/\/+$/, '') + '/chat/completions';
+    return url.replace(/\/+$/, '') + '/chat/completions';
+  }
+
   async function callAI(cfg, prompt, timeoutMs) {
     if (!cfg || !cfg.apiUrl || !cfg.apiKey || !cfg.model) {
       return { success: false, error: 'AI 配置不完整，请在「更多」中设置' };
     }
+    var apiUrl = normalizeApiUrl(cfg.apiUrl);
     timeoutMs = timeoutMs || 30000;
     var controller = new AbortController();
-    var timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+    var messages = [{ role: 'user', content: prompt }];
+    var proxyBase = getProxyBase();
+
+    // 1. 优先走同源代理：无 CORS，且能拿到真实 upstream 错误
+    var proxyTimer = setTimeout(function() { controller.abort(); }, timeoutMs);
     try {
-      var body = {
-        model: cfg.model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        stream: false
-      };
-      var resp = await fetch(cfg.apiUrl, {
+      var proxyResp = await fetch(proxyBase + '/api/ai-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + cfg.apiKey
-        },
-        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({ url: apiUrl, apiKey: cfg.apiKey, model: cfg.model, messages: messages, temperature: 0.7, stream: false }),
         signal: controller.signal
       });
-      clearTimeout(timer);
-      if (!resp.ok) {
-        var errText = await resp.text().catch(function(){ return ''; });
-        return { success: false, error: 'HTTP ' + resp.status + ' ' + (errText || resp.statusText) };
+      clearTimeout(proxyTimer);
+      if (!proxyResp.ok) {
+        var errText = await proxyResp.text().catch(function(){ return ''; });
+        try { var ej = JSON.parse(errText); if (ej && ej.error) errText = ej.error; } catch (e2) {}
+        // 代理路由本身没生效（旧版 server.ps1 未重启）：静态处理返回空 body 的 404
+        if (proxyResp.status === 404 && !errText) {
+          return { success: false, error: '本地 AI 代理路由未生效（server.ps1 返回 404）。请关闭并重新运行 start.bat / setup.bat 重启本地服务器，新的 /api/ai-proxy 才会加载。' };
+        }
+        var hint = '';
+        if (/HTTP 404/i.test(errText || '')) hint = '（多半是接口地址或模型名不对：DeepSeek 正确地址为 https://api.deepseek.com/chat/completions，模型名 deepseek-v4-flash）';
+        return { success: false, error: '代理错误 HTTP ' + proxyResp.status + ' ' + (errText || proxyResp.statusText) + hint };
       }
-      var data = await resp.json();
+      var text = await proxyResp.text();
+      var data;
+      try { data = JSON.parse(text); } catch (e2) { return { success: false, error: '代理返回无法解析：' + text.slice(0, 200) }; }
+      // 代理层错误结构 {success:false, error}
+      if (data && data.success === false && data.error) { return { success: false, error: data.error }; }
       var content = '';
       if (data && data.choices && data.choices[0]) {
         if (typeof data.choices[0].message === 'string') content = data.choices[0].message;
         else if (data.choices[0].message && data.choices[0].message.content) content = data.choices[0].message.content;
         else if (data.choices[0].text) content = data.choices[0].text;
       }
-      return { success: true, content: content.trim(), raw: data };
+      if (!content) return { success: false, error: 'API 返回为空或格式无法解析' };
+      return { success: true, content: String(content).trim(), raw: data };
     } catch (e) {
-      clearTimeout(timer);
-      if (e.name === 'AbortError') return { success: false, error: '请求超时（' + (timeoutMs/1000) + '秒）' };
-      return { success: false, error: e.message || '网络错误' };
+      clearTimeout(proxyTimer);
+      if (e.name === 'AbortError') {
+        return { success: false, error: '请求超时（' + (timeoutMs/1000) + '秒）' };
+      }
+      // 2. 代理本身连不上（服务器未重启 / 未启动 / 直接 file:// 打开），兜底直连一次
+      try {
+        var directResp = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8', 'Authorization': 'Bearer ' + cfg.apiKey },
+          body: JSON.stringify({ model: cfg.model, messages: messages, temperature: 0.7, stream: false })
+        });
+        if (!directResp.ok) {
+          var dt = await directResp.text().catch(function(){ return ''; });
+          return { success: false, error: '直连 HTTP ' + directResp.status + ' ' + (dt || directResp.statusText) };
+        }
+        var dtext = await directResp.text();
+        var ddata = JSON.parse(dtext);
+        var dc = '';
+        if (ddata && ddata.choices && ddata.choices[0]) {
+          if (typeof ddata.choices[0].message === 'string') dc = ddata.choices[0].message;
+          else if (ddata.choices[0].message && ddata.choices[0].message.content) dc = ddata.choices[0].message.content;
+          else if (ddata.choices[0].text) dc = ddata.choices[0].text;
+        }
+        return { success: true, content: String(dc).trim(), raw: ddata };
+      } catch (e2) {
+        return { success: false, error: '代理不可用，且直连也被浏览器拦截（CORS）。请确认已用 start.bat 启动本地服务器并重启 server.ps1。' };
+      }
     }
   }
 
@@ -5152,6 +5198,100 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {
       aiGenerating = false;
       showToast('AI 出题失败：' + e.message, 'error');
+      return null;
+    }
+  }
+
+  /* ===== AI 生成情境默写题目 ===== */
+  var aiSituationalGenerating = false;
+  async function generateAISituationalQuestions(articleId) {
+    var cfg = Store.getAIConfig();
+    if (!cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+      showToast('请先在「更多」中配置 AI API 信息', 'warn');
+      return null;
+    }
+    if (aiSituationalGenerating) { showToast('AI 正在出题中，请稍候…', 'info'); return null; }
+    aiSituationalGenerating = true;
+    showToast('AI 正在为情境默写出题，请稍候…', 'info');
+
+    // 构造篇目信息提示
+    var targetArt = null;
+    var articleHint = '';
+    if (articleId && articleId !== 'random') {
+      targetArt = findArt(articleId);
+      if (targetArt) {
+        articleHint = '请围绕篇目《' + targetArt.title + '》（作者：' + (targetArt.author || '佚名') + '）出题。\n' +
+          '原文参考：\n' + (targetArt.text || '').substring(0, 600) + '\n\n';
+      }
+    } else {
+      // 随机：抽 5 篇做样本供 AI 选择
+      var idxs = [];
+      while (idxs.length < Math.min(5, D.length)) {
+        var r = Math.floor(Math.random() * D.length);
+        if (idxs.indexOf(r) < 0) idxs.push(r);
+      }
+      var sample = [];
+      for (var i = 0; i < idxs.length; i++) {
+        var a = D[idxs[i]];
+        sample.push('《' + a.title + '》（' + (a.author || '佚名') + '）：' + (a.text || '').substring(0, 180).replace(/\n+/g, ' '));
+      }
+      articleHint = '请从以下篇目中任选若干出题（也可同篇多题）：\n' + sample.join('\n') + '\n\n';
+    }
+
+    var prompt = '你是一位资深的高中语文老师，正在为学生准备"情境默写"练习题。' +
+      articleHint +
+      (cfg.quizType === 'mock' ? '出题要求：模拟题风格，情境设置贴近模拟考试，难度适中，考查对原文的准确记忆和理解。\n\n'
+        : cfg.quizType === 'real' ? '出题要求：高考真题风格，情境设置参照历年高考真题的命题方式，注重综合考查，难度较高。\n\n'
+        : '') +
+      '请生成 5 道情境默写题。\n\n' +
+      '要求：\n' +
+      '1. 每道题用一个具体情境句引导（如"作者在某场景下用______句表达…"），挖空处必须用 6 个下划线 "______" 表示\n' +
+      '2. 每道题可挖 1～3 个空，每个空对应原文中一句完整的诗句或文句\n' +
+      '3. 答案必须与原文文字完全一致（不含标点）\n' +
+      '4. 每题附简短解析\n' +
+      '5. 不得编造原文中不存在的句子\n\n' +
+      '请严格输出 JSON 数组格式，不要输出任何额外文字，格式如下：\n' +
+      '[\n' +
+      '  {\n' +
+      '    "articleId": "chushibiao",\n' +
+      '    "articleTitle": "出师表",\n' +
+      '    "scenario": "诸葛亮在《出师表》中用\\"______，______\\"两句劝谏后主不宜妄自菲薄，以免阻塞忠谏之路。",\n' +
+      '    "answers": ["不宜妄自菲薄", "引喻失义"],\n' +
+      '    "explanation": "原文为\\"不宜妄自菲薄，引喻失义，以塞忠谏之路也\\"。"\n' +
+      '  }\n' +
+      ']\n\n' +
+      '注意：scenario 中的占位符必须用 6 个下划线 "______"；answers 数组长度必须与占位符数量完全一致。';
+
+    try {
+      var result = await callAI(cfg, prompt, 60000);
+      aiSituationalGenerating = false;
+      if (!result.success) { showToast('AI 出题失败：' + result.error, 'error'); return null; }
+      var text = result.content || '';
+      var jsonStart = text.indexOf('[');
+      var jsonEnd = text.lastIndexOf(']');
+      if (jsonStart < 0 || jsonEnd < 0) { throw new Error('AI 返回格式不正确，无法解析题目'); }
+      var jsonStr = text.substring(jsonStart, jsonEnd + 1);
+      var questions = JSON.parse(jsonStr);
+      if (!Array.isArray(questions) || questions.length === 0) throw new Error('AI 未生成有效题目');
+      // 规范化字段 + 校验占位符与答案数量匹配
+      questions = questions.map(function(q, i) {
+        return {
+          id: 'ai_sq_' + Date.now() + '_' + i,
+          articleId: q.articleId || (targetArt ? targetArt.id : 'random'),
+          articleTitle: q.articleTitle || (targetArt ? targetArt.title : '随机篇目'),
+          scenario: String(q.scenario || ''),
+          answers: Array.isArray(q.answers) ? q.answers.map(function(a){ return String(a); }) : [],
+          explanation: q.explanation || '暂无解析'
+        };
+      }).filter(function(q) {
+        var blanks = (q.scenario.match(/_{6}/g) || []).length;
+        return blanks > 0 && blanks === q.answers.length;
+      });
+      if (questions.length === 0) throw new Error('生成的题目占位符与答案数量不匹配');
+      return questions;
+    } catch (e) {
+      aiSituationalGenerating = false;
+      showToast('AI 出题失败：' + (e.message || '未知错误'), 'error');
       return null;
     }
   }
@@ -5292,7 +5432,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var authorBtn = document.createElement('button');
     authorBtn.className = 'author-tag-btn';
     authorBtn.type = 'button';
-    authorBtn.textContent = cur.author + '  ·  ' + getArticleDifficulty(cur);
+    var diff = getArticleDifficulty(cur);
+    authorBtn.textContent = diff ? cur.author + '  ·  ' + diff : cur.author;
     authorBtn.onclick = function(e){ e.stopPropagation(); if(cur && cur.authorId) showAuthorDetail(cur.authorId); };
     artAuthor.appendChild(authorBtn);
     // 高亮关键词：仅在 学-篇目 且搜索框有值时
@@ -5587,8 +5728,6 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ===== PLAYER ===== */
   btnRW.onclick = function() { if(cur && resolveAudio(cur)) audioEl.currentTime = Math.max(0, audioEl.currentTime - 5); };
   btnFF.onclick = function() { if(cur && resolveAudio(cur)) audioEl.currentTime = Math.min(audioEl.duration || 0, audioEl.currentTime + 5); };
-  btnPrev.onclick = prevArticle;
-  btnNext.onclick = nextArticle;
   btnPP.onclick = function() {
     if (!cur || !resolveAudio(cur)) return;
     if (audioEl.error) return;
@@ -6010,8 +6149,6 @@ document.addEventListener('DOMContentLoaded', function() {
   themeBtn.setAttribute('aria-label', '切换主题');
   searchIn.setAttribute('aria-label', '搜索篇目');
   btnPP.setAttribute('aria-label', '播放/暂停');
-  btnPrev.setAttribute('aria-label', '上一篇');
-  btnNext.setAttribute('aria-label', '下一篇');
   document.getElementById('fsMinus').setAttribute('aria-label', '缩小字体');
   document.getElementById('fsPlus').setAttribute('aria-label', '放大字体');
   contentArea.setAttribute('tabindex', '-1');
