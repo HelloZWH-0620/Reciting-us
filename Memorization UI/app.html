@@ -3977,6 +3977,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var feihuaTimer = null;
   var feihuaRoundToken = 0;
   var feihuaCorpus = [];
+  var feihuaNormCorpus = [];
   function clearFeihuaTimer() {
     if (feihuaTimer) { clearInterval(feihuaTimer); feihuaTimer = null; }
   }
@@ -3997,14 +3998,15 @@ document.addEventListener('DOMContentLoaded', function() {
     return verses;
   }
 
-  // 统计字频，挑选在 >=2 句中出现过的字作为飞花令关键字
+  // 统计字频（按句去重），挑选在 >=2 句中出现过的字作为飞花令关键字
   function pickFeihuaChar(corpus) {
     var freq = {};
     for (var i = 0; i < corpus.length; i++) {
       var v = corpus[i].verse;
+      var seen = {};
       for (var c = 0; c < v.length; c++) {
         var ch = v[c];
-        if (/[\u4e00-\u9fff]/.test(ch)) freq[ch] = (freq[ch] || 0) + 1;
+        if (/[\u4e00-\u9fff]/.test(ch) && !seen[ch]) { seen[ch] = true; freq[ch] = (freq[ch] || 0) + 1; }
       }
     }
     var candidates = [];
@@ -4026,6 +4028,14 @@ document.addEventListener('DOMContentLoaded', function() {
     return s.replace(/[\s，。、；：""''！？·\-（）()]/g, '');
   }
 
+  // 判断输入（已归一化）是否为已收录篇目中的真实诗句片段，防止无意义输入蒙混过关
+  function isFeihuaRealVerse(normInput) {
+    for (var i = 0; i < feihuaNormCorpus.length; i++) {
+      if (feihuaNormCorpus[i].indexOf(normInput) >= 0) return true;
+    }
+    return false;
+  }
+
   var feihuaRun = { attempts: 0, hits: 0, streak: 0, best: 0 };
 
   function startFeihuaExercise() {
@@ -4039,6 +4049,8 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     feihuaCorpus = corpus;
+    feihuaNormCorpus = [];
+    for (var ni = 0; ni < corpus.length; ni++) feihuaNormCorpus.push(normalizeLight(corpus[ni].verse));
     feihuaRun = { attempts: 0, hits: 0, streak: 0, best: Store.getFeihuaBest(), roundBest: 0 };
     renderFeihuaRound();
   }
@@ -4106,7 +4118,7 @@ document.addEventListener('DOMContentLoaded', function() {
       resultDiv.appendChild(endNow);
     }
 
-    function finish(correct, isTimeout) {
+    function finish(correct, isTimeout, wrongMsg) {
       if (answered) return;
       answered = true;
       clearFeihuaTimer();
@@ -4127,7 +4139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         feihuaRun.streak = 0;
         streakEl.textContent = '0';
         Store.recordPractice('feihua', false);
-        resultDiv.innerHTML = '<div class="exercise-result wrong">' + (isTimeout ? '时间到！' : '未包含「' + char + '」') + ' 连击清零</div>';
+        resultDiv.innerHTML = '<div class="exercise-result wrong">' + (isTimeout ? '时间到！' : (wrongMsg || '未包含「' + char + '」')) + ' 连击清零</div>';
       }
       showExamples();
       appendControls();
@@ -4135,8 +4147,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     submitBtn.onclick = function() {
       var val = normalizeLight(input.value);
-      var correct = val.length >= 4 && val.indexOf(char) >= 0;
-      finish(correct, false);
+      var hasChar = val.indexOf(char) >= 0;
+      var lenOk = val.length >= 4;
+      var isReal = isFeihuaRealVerse(val);
+      var correct = hasChar && lenOk && isReal;
+      var wrongMsg;
+      if (!hasChar) wrongMsg = '未包含「' + char + '」';
+      else if (!lenOk) wrongMsg = '诗句过短（至少 4 字）';
+      else if (!isReal) wrongMsg = '未收录该诗句';
+      finish(correct, false, wrongMsg);
     };
     input.onkeydown = function(e) {
       if (e.key === 'Enter' && !answered) submitBtn.click();
