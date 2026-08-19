@@ -3360,7 +3360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hlKw = '';
         searchNav.classList.add('hidden');
         renderSidebar();
-        var typeLabel = exerciseState.type === 'blank' ? '填空默写' : exerciseState.type === 'match' ? '上下句对接' : '情境默写';
+        var typeLabel = exerciseState.type === 'blank' ? '填空默写' : exerciseState.type === 'match' ? '上下句对接' : exerciseState.type === 'situational' ? '情境默写' : '飞花令';
         showPlaceholder('选择篇目开始' + typeLabel, typeLabel, '从左侧选择一篇课文');
       };
     });
@@ -4039,7 +4039,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     feihuaCorpus = corpus;
-    feihuaRun = { attempts: 0, hits: 0, streak: 0, best: Store.getFeihuaBest() };
+    feihuaRun = { attempts: 0, hits: 0, streak: 0, best: Store.getFeihuaBest(), roundBest: 0 };
     renderFeihuaRound();
   }
 
@@ -4113,10 +4113,12 @@ document.addEventListener('DOMContentLoaded', function() {
       feihuaRun.attempts++;
       submitBtn.style.display = 'none';
       skipBtn.style.display = 'none';
+      endBtn.style.display = 'none';
       input.disabled = true;
       if (correct) {
         feihuaRun.hits++;
         feihuaRun.streak++;
+        if (feihuaRun.streak > feihuaRun.roundBest) feihuaRun.roundBest = feihuaRun.streak;
         if (feihuaRun.streak > feihuaRun.best) { feihuaRun.best = feihuaRun.streak; Store.setFeihuaBest(feihuaRun.best); }
         streakEl.textContent = feihuaRun.streak;
         Store.recordPractice('feihua', true);
@@ -4143,10 +4145,13 @@ document.addEventListener('DOMContentLoaded', function() {
       if (answered) return;
       answered = true;
       clearFeihuaTimer();
+      feihuaRun.attempts++;
       feihuaRun.streak = 0;
       streakEl.textContent = '0';
+      Store.recordPractice('feihua', false);
       submitBtn.style.display = 'none';
       skipBtn.style.display = 'none';
+      endBtn.style.display = 'none';
       input.disabled = true;
       resultDiv.innerHTML = '<div class="exercise-result wrong">已认输，连击清零</div>';
       showExamples();
@@ -4175,7 +4180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     artTitle.textContent = '飞花令 · 本局成绩';
     artAuthor.textContent = '命中 ' + feihuaRun.hits + '/' + feihuaRun.attempts + ' · 正确率 ' + runPct + '%';
     var html = '<div class="feihua-summary">' +
-      '<div class="big">' + feihuaRun.best + '</div>' +
+      '<div class="big">' + feihuaRun.roundBest + '</div>' +
       '<div class="row">本局最高连击</div>' +
       '<div style="height:14px"></div>' +
       '<div class="exercise-summary" style="text-align:left;max-width:420px;margin:0 auto">' +
