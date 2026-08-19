@@ -8,10 +8,11 @@ using System.Text;
 public class PSWebServer {
     public static void Start(string rootDir, int port) {
         HttpListener listener = new HttpListener();
-        listener.Prefixes.Add("http://0.0.0.0:" + port + "/");
+        listener.Prefixes.Add("http://localhost:" + port + "/");
         listener.Start();
         Console.WriteLine("Listening on port " + port);
         while (true) {
+          try {
             HttpListenerContext ctx = listener.GetContext();
             HttpListenerRequest req = ctx.Request;
             HttpListenerResponse resp = ctx.Response;
@@ -31,6 +32,9 @@ public class PSWebServer {
                     case ".png": ct = "image/png"; break;
                     case ".jpg": case ".jpeg": ct = "image/jpeg"; break;
                     case ".mp3": ct = "audio/mpeg"; break;
+                    case ".aac": ct = "audio/aac"; break;
+                    case ".m4a": ct = "audio/mp4"; break;
+                    case ".wav": ct = "audio/wav"; break;
                     case ".ttf": ct = "font/ttf"; break;
                     case ".ico": ct = "image/x-icon"; break;
                 }
@@ -46,8 +50,11 @@ public class PSWebServer {
                 resp.OutputStream.Write(buf, 0, buf.Length);
             }
             resp.OutputStream.Close();
+          } catch (Exception ex) {
+            Console.WriteLine("Request error: " + ex.Message);
+          }
         }
     }
 }
 "@
-[PSWebServer]::Start("d:\Github\Reciting-us\Memorization UI", 8765)
+[PSWebServer]::Start("C:\Users\18948\Documents\GitHub\Reciting-us\Memorization UI", 8765)
