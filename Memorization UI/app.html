@@ -412,6 +412,25 @@
     .exercise-nav button{padding:8px 16px;border:none;background:var(--card);cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--fg)}
     .exercise-nav button:hover{background:var(--hover)}
     .exercise-nav button.active{background:var(--pri);color:var(--pri-fg)}
+    /* feihua (飞花令) */
+    .feihua-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:8px 0 4px}
+    .feihua-char-box{display:flex;flex-direction:column;align-items:center;margin:6px 0 2px}
+    .feihua-char{font-size:64px;font-weight:700;color:var(--pri);line-height:1;font-family:'KaiTi','STKaiti','楷体',serif;text-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .feihua-char-label{font-size:13px;color:var(--sub);font-family:'Microsoft YaHei',sans-serif;margin-top:6px}
+    .feihua-timer{width:100%;max-width:420px;height:8px;background:var(--track-bg);border-radius:4px;overflow:hidden}
+    .feihua-timer-bar{height:100%;width:100%;background:linear-gradient(90deg,#4caf50,#ff9800,#e74c3c);transition:width 1s linear}
+    .feihua-meta{display:flex;gap:18px;font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--sub)}
+    .feihua-meta b{color:var(--fg);font-size:16px}
+    .feihua-input{width:100%;max-width:520px;height:46px;border:2px solid var(--pri);background:var(--card);color:var(--fg);font-family:'KaiTi','STKaiti','楷体',serif;font-size:20px;padding:0 14px;outline:none;text-align:center}
+    .feihua-input:focus{border-color:var(--orange)}
+    .feihua-input:disabled{opacity:.7}
+    .feihua-examples{width:100%;max-width:560px;margin-top:6px;font-family:'Microsoft YaHei',sans-serif}
+    .feihua-examples .fe-title{font-size:12px;color:var(--sub);margin-bottom:6px}
+    .feihua-examples .fe-item{padding:8px 12px;margin-bottom:6px;background:var(--card);border:1px solid var(--border);font-family:'KaiTi','STKaiti','楷体',serif;font-size:16px;color:var(--fg);line-height:1.8}
+    .feihua-examples .fe-item .fe-from{font-family:'Microsoft YaHei',sans-serif;font-size:11px;color:var(--sub);margin-left:6px}
+    .feihua-summary{text-align:center;font-family:'Microsoft YaHei',sans-serif}
+    .feihua-summary .big{font-size:40px;font-weight:700;color:var(--pri);margin:8px 0}
+    .feihua-summary .row{font-size:14px;color:var(--sub);margin:4px 0}
     .wrongbook-item{padding:12px 16px;margin-bottom:8px;background:var(--card);border:1px solid var(--border);font-family:'Microsoft YaHei',sans-serif}
     .wrongbook-item .question{font-size:15px;color:var(--fg);margin-bottom:4px}
     .wrongbook-item .answer{font-size:13px;color:var(--sub)}
@@ -2183,6 +2202,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (authorTtsBtn) {
       authorTtsBtn.style.display = (viewMode === 'authorDetail') ? 'flex' : 'none';
     }
+    if (typeof clearFeihuaTimer === 'function') clearFeihuaTimer();
   }
 
   function showWordGame() {
@@ -2258,7 +2278,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (systemMode === 'practice') {
       showPlaceholder('点击左侧分类查看实例', '句式与词类活用', '从收录课文中精选典型例句');
     } else if (systemMode === 'exercise') {
-      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写');
+      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写 · 飞花令');
     } else {
       showWordGame();
     }
@@ -3270,10 +3290,11 @@ document.addEventListener('DOMContentLoaded', function() {
     return { mastered: false };
   };
   Store.getStats = function() {
-    return this.get('practiceStats', { totalAttempts:0, totalCorrect:0, blank:{attempts:0,correct:0}, match:{attempts:0,correct:0}, pair:{attempts:0,correct:0}, situational:{attempts:0,correct:0} });
+    return this.get('practiceStats', { totalAttempts:0, totalCorrect:0, blank:{attempts:0,correct:0}, match:{attempts:0,correct:0}, pair:{attempts:0,correct:0}, situational:{attempts:0,correct:0}, feihua:{attempts:0,correct:0} });
   };
   Store.recordPractice = function(type, correct) {
     var s = this.getStats();
+    if (!s[type]) s[type] = { attempts: 0, correct: 0 };
     s.totalAttempts++;
     if (correct) s.totalCorrect++;
     if (s[type]) { s[type].attempts++; if (correct) s[type].correct++; }
@@ -3282,6 +3303,9 @@ document.addEventListener('DOMContentLoaded', function() {
     this.recordDaily(dk, 'attempts', 1);
     if (correct) this.recordDaily(dk, 'correct', 1);
   };
+  // 飞花令最佳连击持久化
+  Store.getFeihuaBest = function() { return this.get('feihuaBest', 0); };
+  Store.setFeihuaBest = function(v) { if (v > this.getFeihuaBest()) this.set('feihuaBest', v); };
 
   /* ===== 按日学习统计（阶段4 可视化数据源） ===== */
   Store.getDailyStats = function() { return this.get('dailyStats', {}); };
@@ -3323,6 +3347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     html += '<button class="nav-child' + (exerciseState.type==='blank'?' sel':'') + '" data-ex-type="blank"> 填空默写</button>';
     html += '<button class="nav-child' + (exerciseState.type==='match'?' sel':'') + '" data-ex-type="match">⇄ 上下句对接</button>';
     html += '<button class="nav-child' + (exerciseState.type==='situational'?' sel':'') + '" data-ex-type="situational">✨ 情境默写</button>';
+    html += '<button class="nav-child' + (exerciseState.type==='feihua'?' sel':'') + '" data-ex-type="feihua"> 飞花令</button>';
     navEl.innerHTML = html;
     navEl.querySelectorAll('[data-ex-type]').forEach(function(btn){
       btn.onclick = function(){
@@ -3335,7 +3360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hlKw = '';
         searchNav.classList.add('hidden');
         renderSidebar();
-        var typeLabel = exerciseState.type === 'blank' ? '填空默写' : exerciseState.type === 'match' ? '上下句对接' : '情境默写';
+        var typeLabel = exerciseState.type === 'blank' ? '填空默写' : exerciseState.type === 'match' ? '上下句对接' : exerciseState.type === 'situational' ? '情境默写' : '飞花令';
         showPlaceholder('选择篇目开始' + typeLabel, typeLabel, '从左侧选择一篇课文');
       };
     });
@@ -3346,6 +3371,7 @@ document.addEventListener('DOMContentLoaded', function() {
     else if (exerciseState.type === 'match') startMatchExercise();
     else if (exerciseState.type === 'pair') startPairExercise();
     else if (exerciseState.type === 'situational') startSituationalExercise();
+    else if (exerciseState.type === 'feihua') startFeihuaExercise();
     renderSidebar();
   }
 
@@ -3369,7 +3395,7 @@ document.addEventListener('DOMContentLoaded', function() {
       hlKw = '';
       searchNav.classList.add('hidden');
       renderSidebar();
-      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写');
+      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写 · 飞花令');
     };
     navEl.querySelectorAll('[data-ex-art]').forEach(function(btn){
       btn.onclick = function(){
@@ -3379,6 +3405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (exerciseState.type === 'blank') startBlankExercise();
         else if (exerciseState.type === 'match') startMatchExercise();
         else if (exerciseState.type === 'situational') startSituationalExercise();
+        else if (exerciseState.type === 'feihua') startFeihuaExercise();
         renderSidebar();
       };
     });
@@ -3946,6 +3973,258 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   }
 
+  /* ========== 飞花令 ========== */
+  var feihuaTimer = null;
+  var feihuaRoundToken = 0;
+  var feihuaCorpus = [];
+  var feihuaNormCorpus = [];
+  function clearFeihuaTimer() {
+    if (feihuaTimer) { clearInterval(feihuaTimer); feihuaTimer = null; }
+  }
+
+  // 从篇目文本抽取诗句（按句末标点切分），作为飞花令字库与示例来源
+  function buildFeihuaCorpus(articleId) {
+    var pool = articleId ? [findArt(articleId)] : D;
+    var verses = [];
+    for (var i = 0; i < pool.length; i++) {
+      var art = pool[i];
+      if (!art || !art.text) continue;
+      var sentences = art.text.match(/[^。！？\n]+[。！？\n]?/g) || [];
+      for (var s = 0; s < sentences.length; s++) {
+        var v = sentences[s].trim();
+        if (v.length >= 5) verses.push({ verse: v, title: art.title, articleId: art.id });
+      }
+    }
+    return verses;
+  }
+
+  // 统计字频（按句去重），挑选在 >=2 句中出现过的字作为飞花令关键字
+  function pickFeihuaChar(corpus) {
+    var freq = {};
+    for (var i = 0; i < corpus.length; i++) {
+      var v = corpus[i].verse;
+      var seen = {};
+      for (var c = 0; c < v.length; c++) {
+        var ch = v[c];
+        if (/[\u4e00-\u9fff]/.test(ch) && !seen[ch]) { seen[ch] = true; freq[ch] = (freq[ch] || 0) + 1; }
+      }
+    }
+    var candidates = [];
+    for (var k in freq) { if (freq[k] >= 2) candidates.push(k); }
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function feihuaExamplesFor(char, corpus, limit) {
+    var res = [];
+    for (var i = 0; i < corpus.length && res.length < (limit || 3); i++) {
+      if (corpus[i].verse.indexOf(char) >= 0) res.push(corpus[i]);
+    }
+    return res;
+  }
+
+  function normalizeLight(s) {
+    if (!s) return '';
+    return s.replace(/[\s，。、；：""''！？·\-（）()]/g, '');
+  }
+
+  // 判断输入（已归一化）是否为已收录篇目中的真实诗句片段，防止无意义输入蒙混过关
+  function isFeihuaRealVerse(normInput) {
+    for (var i = 0; i < feihuaNormCorpus.length; i++) {
+      if (feihuaNormCorpus[i].indexOf(normInput) >= 0) return true;
+    }
+    return false;
+  }
+
+  var feihuaRun = { attempts: 0, hits: 0, streak: 0, best: 0 };
+
+  function startFeihuaExercise() {
+    clearFeihuaTimer();
+    exerciseState.questions = [];
+    exerciseState.answers = [];
+    exerciseState.currentIdx = 0;
+    var corpus = buildFeihuaCorpus(exerciseState.articleId);
+    if (corpus.length < 3) {
+      showPlaceholder('无法开始飞花令', '该篇目诗句不足以出题', '请选择其他篇目或「随机出题」');
+      return;
+    }
+    feihuaCorpus = corpus;
+    feihuaNormCorpus = [];
+    for (var ni = 0; ni < corpus.length; ni++) feihuaNormCorpus.push(normalizeLight(corpus[ni].verse));
+    feihuaRun = { attempts: 0, hits: 0, streak: 0, best: Store.getFeihuaBest(), roundBest: 0 };
+    renderFeihuaRound();
+  }
+
+  function renderFeihuaRound() {
+    clearFeihuaTimer();
+    var char = pickFeihuaChar(feihuaCorpus);
+    if (!char) { showPlaceholder('无法开始飞花令', '未找到合适的字', '请返回重试'); return; }
+    var myToken = ++feihuaRoundToken;
+    var timeLeft = 45;
+    var answered = false;
+    var examples = feihuaExamplesFor(char, feihuaCorpus, 3);
+
+    hideAllViews();
+    viewArt.classList.remove('hidden');
+    artTitle.textContent = '飞花令';
+    artAuthor.textContent = '限时说出含「' + char + '」的诗句';
+    var html = '<div class="feihua-wrap">' +
+      '<div class="feihua-timer"><div class="feihua-timer-bar" id="feihuaBar"></div></div>' +
+      '<div class="feihua-meta"><span>剩余 <b id="feihuaTime">' + timeLeft + '</b> 秒</span><span>本局连击 <b id="feihuaStreak">' + feihuaRun.streak + '</b></span><span>最佳 <b>' + feihuaRun.best + '</b></span></div>' +
+      '<div class="feihua-char-box"><div class="feihua-char" id="feihuaChar">' + char + '</div><div class="feihua-char-label">请说出一句包含此字的古诗文</div></div>' +
+      '<input class="feihua-input" id="feihuaInput" type="text" autocomplete="off" placeholder="在此输入诗句…">' +
+      '<button class="exercise-submit" id="feihuaSubmit">提交</button>' +
+      '<button class="exercise-btn" id="feihuaSkip"> 换一字（认输）</button>' +
+      '<button class="exercise-btn" id="feihuaEnd"> 结束本局</button>' +
+      '<div id="feihuaResult"></div>' +
+      '<div class="feihua-examples" id="feihuaExamples" style="display:none"><div class="fe-title">示例（含「' + char + '」）：</div></div>' +
+      '</div>';
+    artBody.innerHTML = html;
+
+    var input = document.getElementById('feihuaInput');
+    var submitBtn = document.getElementById('feihuaSubmit');
+    var skipBtn = document.getElementById('feihuaSkip');
+    var endBtn = document.getElementById('feihuaEnd');
+    var resultDiv = document.getElementById('feihuaResult');
+    var examplesBox = document.getElementById('feihuaExamples');
+    var timeEl = document.getElementById('feihuaTime');
+    var barEl = document.getElementById('feihuaBar');
+    var streakEl = document.getElementById('feihuaStreak');
+
+    function showExamples() {
+      if (examplesBox.style.display !== 'none') return;
+      examplesBox.style.display = 'block';
+      for (var i = 0; i < examples.length; i++) {
+        var d = document.createElement('div');
+        d.className = 'fe-item';
+        d.innerHTML = examples[i].verse + '<span class="fe-from">— ' + examples[i].title + '</span>';
+        examplesBox.appendChild(d);
+      }
+    }
+
+    function appendControls() {
+      var cont = document.createElement('button');
+      cont.className = 'exercise-btn';
+      cont.textContent = ' 下一字 →';
+      cont.style.marginTop = '12px';
+      cont.onclick = function() { if (myToken !== feihuaRoundToken) return; renderFeihuaRound(); };
+      var endNow = document.createElement('button');
+      endNow.className = 'exercise-submit';
+      endNow.textContent = ' 结束本局';
+      endNow.style.marginTop = '12px';
+      endNow.style.marginLeft = '8px';
+      endNow.onclick = function() { if (myToken !== feihuaRoundToken) return; showFeihuaSummary(); };
+      resultDiv.appendChild(cont);
+      resultDiv.appendChild(endNow);
+    }
+
+    function finish(correct, isTimeout, wrongMsg) {
+      if (answered) return;
+      answered = true;
+      clearFeihuaTimer();
+      feihuaRun.attempts++;
+      submitBtn.style.display = 'none';
+      skipBtn.style.display = 'none';
+      endBtn.style.display = 'none';
+      input.disabled = true;
+      if (correct) {
+        feihuaRun.hits++;
+        feihuaRun.streak++;
+        if (feihuaRun.streak > feihuaRun.roundBest) feihuaRun.roundBest = feihuaRun.streak;
+        if (feihuaRun.streak > feihuaRun.best) { feihuaRun.best = feihuaRun.streak; Store.setFeihuaBest(feihuaRun.best); }
+        streakEl.textContent = feihuaRun.streak;
+        Store.recordPractice('feihua', true);
+        resultDiv.innerHTML = '<div class="exercise-result correct">对！连击 +1（' + feihuaRun.streak + '）</div>';
+      } else {
+        feihuaRun.streak = 0;
+        streakEl.textContent = '0';
+        Store.recordPractice('feihua', false);
+        resultDiv.innerHTML = '<div class="exercise-result wrong">' + (isTimeout ? '时间到！' : (wrongMsg || '未包含「' + char + '」')) + ' 连击清零</div>';
+      }
+      showExamples();
+      appendControls();
+    }
+
+    submitBtn.onclick = function() {
+      var val = normalizeLight(input.value);
+      var hasChar = val.indexOf(char) >= 0;
+      var lenOk = val.length >= 4;
+      var isReal = isFeihuaRealVerse(val);
+      var correct = hasChar && lenOk && isReal;
+      var wrongMsg;
+      if (!hasChar) wrongMsg = '未包含「' + char + '」';
+      else if (!lenOk) wrongMsg = '诗句过短（至少 4 字）';
+      else if (!isReal) wrongMsg = '未收录该诗句';
+      finish(correct, false, wrongMsg);
+    };
+    input.onkeydown = function(e) {
+      if (e.key === 'Enter' && !answered) submitBtn.click();
+    };
+    skipBtn.onclick = function() {
+      if (answered) return;
+      answered = true;
+      clearFeihuaTimer();
+      feihuaRun.attempts++;
+      feihuaRun.streak = 0;
+      streakEl.textContent = '0';
+      Store.recordPractice('feihua', false);
+      submitBtn.style.display = 'none';
+      skipBtn.style.display = 'none';
+      endBtn.style.display = 'none';
+      input.disabled = true;
+      resultDiv.innerHTML = '<div class="exercise-result wrong">已认输，连击清零</div>';
+      showExamples();
+      appendControls();
+    };
+    endBtn.onclick = function() { if (myToken !== feihuaRoundToken) return; clearFeihuaTimer(); showFeihuaSummary(); };
+
+    // 倒计时（限时说出）
+    feihuaTimer = setInterval(function() {
+      if (myToken !== feihuaRoundToken) { clearFeihuaTimer(); return; }
+      if (!document.getElementById('feihuaInput')) { clearFeihuaTimer(); return; }
+      timeLeft--;
+      if (timeEl) timeEl.textContent = timeLeft;
+      if (barEl) barEl.style.width = (timeLeft / 45 * 100) + '%';
+      if (timeLeft <= 0) { clearFeihuaTimer(); finish(false, true); }
+    }, 1000);
+
+    setTimeout(function() { if (input && !answered) input.focus(); }, 100);
+  }
+
+  function showFeihuaSummary() {
+    clearFeihuaTimer();
+    hideAllViews();
+    viewArt.classList.remove('hidden');
+    var runPct = feihuaRun.attempts > 0 ? Math.round(feihuaRun.hits / feihuaRun.attempts * 100) : 0;
+    artTitle.textContent = '飞花令 · 本局成绩';
+    artAuthor.textContent = '命中 ' + feihuaRun.hits + '/' + feihuaRun.attempts + ' · 正确率 ' + runPct + '%';
+    var html = '<div class="feihua-summary">' +
+      '<div class="big">' + feihuaRun.roundBest + '</div>' +
+      '<div class="row">本局最高连击</div>' +
+      '<div style="height:14px"></div>' +
+      '<div class="exercise-summary" style="text-align:left;max-width:420px;margin:0 auto">' +
+        '<div class="summary-row"><div class="q">总作答</div><div class="a">' + feihuaRun.attempts + ' 次</div></div>' +
+        '<div class="summary-row correct"><div class="q">命中</div><div class="a">' + feihuaRun.hits + ' 次</div></div>' +
+        '<div class="summary-row"><div class="q">本局正确率</div><div class="a">' + runPct + '%</div></div>' +
+        '<div class="summary-row"><div class="q">历史最佳连击</div><div class="a">' + Store.getFeihuaBest() + ' 连</div></div>' +
+      '</div>' +
+      '<div style="margin-top:18px">' +
+      '<button class="exercise-submit" id="feihuaAgain"> 再来一局</button>' +
+      '<button class="exercise-btn" id="feihuaBack" style="margin-left:8px">← 返回练习类型</button>' +
+      '</div></div>';
+    artBody.innerHTML = html;
+    document.getElementById('feihuaAgain').onclick = function() { startFeihuaExercise(); };
+    document.getElementById('feihuaBack').onclick = function() {
+      sidebarTab = 'exType';
+      searchIn.value = '';
+      searchIn.classList.add('hidden');
+      hlKw = '';
+      searchNav.classList.add('hidden');
+      renderSidebar();
+      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写 · 飞花令');
+    };
+  }
+
   /* ========== 练习成绩单 ========== */
   function showExerciseSummary(type) {
     hideAllViews();
@@ -4012,7 +4291,7 @@ document.addEventListener('DOMContentLoaded', function() {
       sidebarTab = 'exType';
       searchIn.classList.add('hidden');
       renderSidebar();
-      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写');
+      showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写 · 飞花令');
     };
     artBody.scrollTop = 0;
     Store.updateStreak();
@@ -4033,7 +4312,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modeBtn1.classList.add('hidden'); modeBtn2.classList.add('hidden');
         searchIn.placeholder = ''; searchIn.classList.add('hidden'); sidebarTab = 'exType';
         renderSidebar();
-        showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写');
+        showPlaceholder('选择练习类型开始', '互动练习', '填空默写 · 上下句对接 · 情境默写 · 飞花令');
       };
       return;
     }
@@ -4562,6 +4841,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var matchPct = s.match.attempts > 0 ? Math.round(s.match.correct / s.match.attempts * 100) : 0;
     var pairPct = s.pair.attempts > 0 ? Math.round(s.pair.correct / s.pair.attempts * 100) : 0;
     var situationalPct = s.situational && s.situational.attempts > 0 ? Math.round(s.situational.correct / s.situational.attempts * 100) : 0;
+    var feihuaPct = s.feihua && s.feihua.attempts > 0 ? Math.round(s.feihua.correct / s.feihua.attempts * 100) : 0;
     var streak = Store.getStreak();
     var studyTime = Store.getStudyTime();
     var html = '<div class="stats-grid">' +
@@ -4576,6 +4856,7 @@ document.addEventListener('DOMContentLoaded', function() {
       '<div class="about-row"><span class="about-label">上下句对接</span><span class="about-value">' + s.match.attempts + ' 题，正确率 ' + matchPct + '%</span></div>' +
       '<div class="about-row"><span class="about-label">作者配对</span><span class="about-value">' + s.pair.attempts + ' 题，正确率 ' + pairPct + '%</span></div>' +
       '<div class="about-row"><span class="about-label">情境默写</span><span class="about-value">' + (s.situational ? s.situational.attempts : 0) + ' 题，正确率 ' + situationalPct + '%</span></div>' +
+      '<div class="about-row"><span class="about-label">飞花令</span><span class="about-value">' + (s.feihua ? s.feihua.attempts : 0) + ' 题，正确率 ' + feihuaPct + '%</span></div>' +
       '</div>';
     // 图表区
     html += '<div style="margin-top:20px;font-family:\'Microsoft YaHei\',sans-serif">' +
@@ -4627,7 +4908,8 @@ document.addEventListener('DOMContentLoaded', function() {
       { label: '填空', value: s.blank.attempts, color: CHART_COLORS.primary },
       { label: '对接', value: s.match.attempts, color: CHART_COLORS.success },
       { label: '配对', value: s.pair.attempts, color: CHART_COLORS.warn },
-      { label: '情境', value: (s.situational ? s.situational.attempts : 0), color: CHART_COLORS.purple }
+      { label: '情境', value: (s.situational ? s.situational.attempts : 0), color: CHART_COLORS.purple },
+      { label: '飞花', value: (s.feihua ? s.feihua.attempts : 0), color: CHART_COLORS.cyan }
     ];
     var hasBarData = false;
     for (var b = 0; b < barData.length; b++) { if (barData[b].value > 0) hasBarData = true; }
