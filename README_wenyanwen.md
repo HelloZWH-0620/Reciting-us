@@ -1,3 +1,5 @@
+[简体中文](README.md) | [English](README_en.md) | 文言文
+
 # 背书哇！
 
 > 助黉门学子诵习文言诗词之利器也
