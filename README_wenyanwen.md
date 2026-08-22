@@ -268,7 +268,12 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 之限�
 
 ## 参与之法
 
-欢迎诸君贡献！可经以下途径参与：
+荐诸君入吾等 QQ 群组：[950739151](https://qun.qq.com/universal-share/share?ac=1&authKey=xb2zqLolbPjWo5ukfQNE4FIXNikYa25bAZdOdhJ9tPwDnyeiGq7FtGe4xflFlxdl&busi_data=eyJncm91cENvZGUiOiI5NTA3MzkxNTEiLCJ0b2tlbiI6IjNsQm1WVlBtdVFPdk5qc1BmT0JHSTZ3cXlIV2wyMnFtdE1nNHhhdXlSWDNkRmFGdjF5MEx3TkFJK09pSGVHajUiLCJ1aW4iOiIyODA5ODc0NjI1In0%3D&data=bsTmftVzmLq9iWmvpCXoInjn7UgcuOhndlMPrXR_DH3JQlDsBTLG-mHm0OcCIdqgqBK-fljO_-w80hYzsr4Ahg&svctype=4&tempid=h5_group_info) 以共襄协作之益。
+
+凡欲为此应用增设新能或加以改良者，皆欢迎提交 [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls)。
+
+
+略列可供参考之方向如下：
 
 1. **补充课文数据** — 于 `config/articles.json` 或 `config/poem.json` 中添加新的课文内容
 2. **添加练习题目** — 于 `config/game.json` 中添加新的练习题
