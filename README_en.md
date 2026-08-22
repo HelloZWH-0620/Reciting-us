@@ -4,8 +4,8 @@
 
 > A local web app designed to help Chinese high school students memorize and study classical Chinese prose and poems.
 
-[![Latest Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?style=flat-square&color=%233fb950&label=Latest)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
-[![Pre-Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&style=flat-square&label=Test)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
+[![Latest Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?label=Latest)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
+[![Pre-Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=Test)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
