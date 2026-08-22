@@ -48,20 +48,30 @@ $mimeMap = @{
 }
 
 function Send-JsonResponse($response, $obj, $statusCode = 200) {
-    $body = ($obj | ConvertTo-Json -Compress -Depth 10)
-    $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
-    $response.StatusCode = $statusCode
-    $response.ContentType = 'application/json; charset=utf-8'
-    $response.ContentLength64 = $bytes.Length
-    $response.OutputStream.Write($bytes, 0, $bytes.Length)
-    $response.OutputStream.Close()
+    try {
+        $body = ($obj | ConvertTo-Json -Compress -Depth 10)
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
+        $response.StatusCode = $statusCode
+        $response.ContentType = 'application/json; charset=utf-8'
+        $response.ContentLength64 = $bytes.Length
+        $response.OutputStream.Write($bytes, 0, $bytes.Length)
+    } catch {
+        # 客户端提前断开时，响应写入失败不应终止服务器
+    } finally {
+        try { $response.Close() } catch {}
+    }
 }
 
 function Send-BytesResponse($response, $bytes, $contentType) {
-    $response.ContentType = $contentType
-    $response.ContentLength64 = $bytes.Length
-    $response.OutputStream.Write($bytes, 0, $bytes.Length)
-    $response.OutputStream.Close()
+    try {
+        $response.ContentType = $contentType
+        $response.ContentLength64 = $bytes.Length
+        $response.OutputStream.Write($bytes, 0, $bytes.Length)
+    } catch {
+        # 客户端提前断开时，响应写入失败不应终止服务器
+    } finally {
+        try { $response.Close() } catch {}
+    }
 }
 
 function Send-ErrorResponse($response, $message, $statusCode = 500) {
@@ -83,24 +93,32 @@ Write-Host "壁纸目录: $wallpaperDir"
 
 try {
     while ($listener.IsListening) {
-        $context = $listener.GetContext()
-        $request = $context.Request
-        $response = $context.Response
-        $path = $request.Url.LocalPath
-        $method = $request.HttpMethod
-
-        # CORS 头
-        $response.Headers.Add('Access-Control-Allow-Origin', '*')
-        $response.Headers.Add('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
-        $response.Headers.Add('Access-Control-Allow-Headers', 'Content-Type')
-
-        if ($method -eq 'OPTIONS') {
-            $response.StatusCode = 204
-            $response.Close()
-            continue
-        }
-
         try {
+            $context = $listener.GetContext()
+        } catch {
+            if ($listener.IsListening) {
+                Write-Warning "接收请求失败：$($_.Exception.Message)"
+                continue
+            }
+            break
+        }
+        try {
+            $request = $context.Request
+            $response = $context.Response
+            $path = $request.Url.LocalPath
+            $method = $request.HttpMethod
+
+            # CORS 头
+            $response.Headers.Add('Access-Control-Allow-Origin', '*')
+            $response.Headers.Add('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
+            $response.Headers.Add('Access-Control-Allow-Headers', 'Content-Type')
+
+            if ($method -eq 'OPTIONS') {
+                $response.StatusCode = 204
+                $response.Close()
+                continue
+            }
+
             if ($path -eq '/api/wallpapers' -and $method -eq 'GET') {
                 $files = Get-ChildItem -Path $wallpaperDir -File -ErrorAction SilentlyContinue |
                     Where-Object { $allowedExt -contains $_.Extension.ToLower() } |
@@ -172,7 +190,11 @@ try {
                     Send-ErrorResponse $response '缺少目标 URL' 400
                     continue
                 }
-                [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
+                $securityProtocol = [System.Net.SecurityProtocolType]::Tls12
+                if ([System.Enum]::GetNames([System.Net.SecurityProtocolType]) -contains 'Tls13') {
+                    $securityProtocol = $securityProtocol -bor ([System.Net.SecurityProtocolType][System.Enum]::Parse([System.Net.SecurityProtocolType], 'Tls13'))
+                }
+                [System.Net.ServicePointManager]::SecurityProtocol = $securityProtocol
                 $fwd = @{
                     model = $payload.model
                     messages = $payload.messages
@@ -209,9 +231,14 @@ try {
                     $response.OutputStream.Close()
                 } catch [System.Net.WebException] {
                     $we = $_
-                    $status = 'HTTP ' + [int]$we.Exception.Response.StatusCode
+                    $statusCode = 502
+                    if ($we.Exception.Response) {
+                        $statusCode = [int]$we.Exception.Response.StatusCode
+                    }
+                    $status = 'HTTP ' + $statusCode
                     $errBody = ''
                     try {
+                        if (-not $we.Exception.Response) { throw '上游未返回 HTTP 响应' }
                         $es = $we.Exception.Response.GetResponseStream()
                         $er = New-Object System.IO.StreamReader($es, [System.Text.Encoding]::UTF8)
                         $errBody = $er.ReadToEnd(); $er.Close(); $es.Close()
@@ -258,10 +285,10 @@ try {
             }
         }
         catch {
-            Send-ErrorResponse $response $_.Exception.Message
+            try { Send-ErrorResponse $response $_.Exception.Message } catch {}
         }
     }
 } finally {
-    $listener.Stop()
-    $listener.Close()
+    try { $listener.Stop() } catch {}
+    try { $listener.Close() } catch {}
 }

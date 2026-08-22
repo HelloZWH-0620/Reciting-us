@@ -117,6 +117,9 @@ The application includes a built-in data visualization module with the following
 
 ## Project Structure
 
+> [!IMPORTANT]
+> The project is still under testing, and its structure may change periodically. The structure shown here does not represent the final structure.
+
 ```
 Reciting-us/
 ├── README.md                          # Project explanation document
