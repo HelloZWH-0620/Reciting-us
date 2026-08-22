@@ -4,10 +4,10 @@
 
 > 一款帮助中国高中生背诵和学习文言文与古诗词的辅助工具
 
-**当前版本：0.2.2（开发中）**
-
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![正式版 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?style=flat-square&color=%233fb950&label=正式版)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
+[![测试版 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&style=flat-square&label=测试版)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
+![平台](https://img.shields.io/badge/platform-Windows-blue)
+![许可证](https://img.shields.io/badge/license-MIT-green)
 
 ---
 

@@ -4,8 +4,8 @@
 
 > 助黉门学子诵习文言诗词之利器也
 
-**今版：〇·二·二（方在营缮，未竟全功）**
-
+[![正式之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?style=flat-square&color=%233fb950&label=正式版)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
+[![测试之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&style=flat-square&label=测试版)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
