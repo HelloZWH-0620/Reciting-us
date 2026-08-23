@@ -1,4 +1,4 @@
-﻿# 背书哇！本地 PowerShell 服务器
+# 背书哇！本地 PowerShell 服务器
 # 运行：powershell -NoProfile -ExecutionPolicy Bypass -File setup\server.ps1 [端口]
 # 说明：为网页提供静态文件服务，并处理壁纸上传/列表/删除。
 
@@ -25,7 +25,13 @@ if (-not (Test-Path $wallpaperDir)) {
     New-Item -ItemType Directory -Path $wallpaperDir -Force | Out-Null
 }
 
+$audioDir = Join-Path $root 'resource\audio'
+if (-not (Test-Path $audioDir)) {
+    New-Item -ItemType Directory -Path $audioDir -Force | Out-Null
+}
+
 $allowedExt = @('.png','.jpg','.jpeg','.gif','.webp','.bmp')
+$audioExt = @('.mp3','.wav','.m4a','.aac')
 
 $mimeMap = @{
     '.html' = 'text/html'
@@ -45,6 +51,10 @@ $mimeMap = @{
     '.woff2'= 'font/woff2'
     '.ttf'  = 'font/ttf'
     '.eot'  = 'application/vnd.ms-fontobject'
+    '.mp3'  = 'audio/mpeg'
+    '.wav'  = 'audio/wav'
+    '.m4a'  = 'audio/mp4'
+    '.aac'  = 'audio/aac'
 }
 
 function Send-JsonResponse($response, $obj, $statusCode = 200) {
@@ -104,6 +114,12 @@ try {
             if ($path -eq '/api/wallpapers' -and $method -eq 'GET') {
                 $files = Get-ChildItem -Path $wallpaperDir -File -ErrorAction SilentlyContinue |
                     Where-Object { $allowedExt -contains $_.Extension.ToLower() } |
+                    Select-Object -ExpandProperty Name | Sort-Object
+                Send-JsonResponse $response @{success=$true; files=@($files)}
+            }
+            elseif ($path -eq '/api/audio-files' -and $method -eq 'GET') {
+                $files = Get-ChildItem -Path $audioDir -File -ErrorAction SilentlyContinue |
+                    Where-Object { $audioExt -contains $_.Extension.ToLower() } |
                     Select-Object -ExpandProperty Name | Sort-Object
                 Send-JsonResponse $response @{success=$true; files=@($files)}
             }
