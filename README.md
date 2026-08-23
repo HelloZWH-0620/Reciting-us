@@ -4,7 +4,7 @@
 
 > 一款帮助中国高中生背诵和学习文言文与古诗词的辅助工具
 
-**当前版本：0.2.2（开发中）**
+**当前版本：0.3.0（开发中）**
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -155,7 +155,7 @@ Reciting-us/
 - **浏览器**：Chrome、Edge、Firefox 等现代浏览器（推荐使用 Chrome 或 Edge）
 - **网络**：离线可用（AI 功能需要联网）
 
-### 方式一：一键安装（推荐）
+### 一键安装
 
 1. **下载项目**
    ```bash
@@ -176,52 +176,15 @@ Reciting-us/
    - 启动本地 HTTP 服务器（端口 8000）
    - 打开浏览器访问 `http://localhost:8000/app.html`
 
-### 方式二：手动启动
-
-如果不想创建快捷方式，也可以手动启动：
-
-1. 打开 PowerShell，进入 `Memorization UI/setuptools` 目录：
-   ```powershell
-   cd "Memorization UI/setuptools"
-   ```
-
-2. 运行启动脚本：
-   ```powershell
-   .\start.bat
-   ```
-
-   该脚本会：
-   - 将上级目录写入 `config.json`
-   - 启动 PowerShell 服务器（默认端口 8000）
-   - 等待 2 秒后自动打开浏览器
-
-3. 或直接使用 PowerShell 启动服务器（可自定义端口）：
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File "Memorization UI/setuptools/server.ps1" [端口号]
-   ```
-
-   然后在浏览器中访问 `http://localhost:端口号/app.html`。
-
-### 方式三：开发模式
-
-项目根目录下有一个简易的 PowerShell 服务器 `__psserver.ps1`，可用于快速测试：
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
-```
-
-> 该脚本监听端口 8765，仅提供静态文件服务，不支持壁纸上传等 API 功能。
-
----
-
 ## 首次使用指南
 
-1. **开箱引导（OOBE）** — 首次打开应用会进入引导流程，介绍主要功能
+1. **开箱引导（OOBE）** — 首次打开应用会进入引导流程，介绍主要功能（开发中）
 2. **浏览课文** — 在侧边栏选择课文分类（文言文/古诗词），点击篇目进入学习
 3. **切换学习模式** — 在课文页面顶部切换「显示/背诵/练习/词语」模式
 4. **开始练习** — 进入「互动练习」页面，选择练习类型开始答题
 5. **查看统计** — 在统计页面查看学习数据图表
 6. **自定义壁纸** — 在设置中上传喜欢的图片作为应用背景
+7. **AI辅助** —可以用AI了说是
 
 ---
 
@@ -236,6 +199,10 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 限制�
 5. 保存配置后即可使用 AI 出题、语法检查等功能
 
 ---
+
+## 卸载
+
+双击uninstall即可（少量情况下需要手动删除config文件）
 
 ## 技术栈
 
