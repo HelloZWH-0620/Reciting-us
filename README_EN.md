@@ -4,8 +4,8 @@
 
 > A local web app designed to help Chinese high school students memorize and study classical Chinese prose and poems.
 
-**Current version: 0.2.2 (in development)**
-
+[![Latest Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?label=Latest)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
+[![Pre-Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=Test)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -116,6 +116,9 @@ The application includes a built-in data visualization module with the following
 ---
 
 ## Project Structure
+
+> [!IMPORTANT]
+> The project is still under testing, and its structure may change periodically. The structure shown here does not represent the final structure.
 
 ```
 Reciting-us/
@@ -264,7 +267,12 @@ AI features are proxied through the local server to bypass browser CORS restrict
 
 ## Contribution Guide
 
-Contributions are welcome. You can participate in the following ways:
+We recommend joining our QQ group [950739151](https://qun.qq.com/universal-share/share?ac=1&authKey=xb2zqLolbPjWo5ukfQNE4FIXNikYa25bAZdOdhJ9tPwDnyeiGq7FtGe4xflFlxdl&busi_data=eyJncm91cENvZGUiOiI5NTA3MzkxNTEiLCJ0b2tlbiI6IjNsQm1WVlBtdVFPdk5qc1BmT0JHSTZ3cXlIV2wyMnFtdE1nNHhhdXlSWDNkRmFGdjF5MEx3TkFJK09pSGVHajUiLCJ1aW4iOiIyODA5ODc0NjI1In0%3D&data=bsTmftVzmLq9iWmvpCXoInjn7UgcuOhndlMPrXR_DH3JQlDsBTLG-mHm0OcCIdqgqBK-fljO_-w80hYzsr4Ahg&svctype=4&tempid=h5_group_info) for a better collaboration experience.
+
+We welcome anyone who would like to implement new features or improvements for this application to submit a [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls).
+
+
+Here are some suggested areas to explore:
 
 1. **Add Text Content** — Add new passages in `config/articles.json` or `config/poem.json`
 2. **Add Practice Questions** — Add new questions in `config/game.json`

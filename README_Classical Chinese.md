@@ -4,8 +4,8 @@
 
 > 助黉门学子诵习文言诗词之利器也
 
-**今版：〇·二·二（方在营缮，未竟全功）**
-
+[![正式之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?label=正式版)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
+[![测试之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=测试版)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -117,6 +117,9 @@
 ---
 
 ## 项目结构
+
+> [!important]
+> 项目尚在试行，结构或时有变更。此处所列结构，非最终定制。
 
 ```
 Reciting-us/
@@ -265,7 +268,12 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 之限�
 
 ## 参与之法
 
-欢迎诸君贡献！可经以下途径参与：
+荐诸君入吾等 QQ 群组：[950739151](https://qun.qq.com/universal-share/share?ac=1&authKey=xb2zqLolbPjWo5ukfQNE4FIXNikYa25bAZdOdhJ9tPwDnyeiGq7FtGe4xflFlxdl&busi_data=eyJncm91cENvZGUiOiI5NTA3MzkxNTEiLCJ0b2tlbiI6IjNsQm1WVlBtdVFPdk5qc1BmT0JHSTZ3cXlIV2wyMnFtdE1nNHhhdXlSWDNkRmFGdjF5MEx3TkFJK09pSGVHajUiLCJ1aW4iOiIyODA5ODc0NjI1In0%3D&data=bsTmftVzmLq9iWmvpCXoInjn7UgcuOhndlMPrXR_DH3JQlDsBTLG-mHm0OcCIdqgqBK-fljO_-w80hYzsr4Ahg&svctype=4&tempid=h5_group_info) 以共襄协作之益。
+
+凡欲为此应用增设新能或加以改良者，皆欢迎提交 [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls)。
+
+
+略列可供参考之方向如下：
 
 1. **补充课文数据** — 于 `config/articles.json` 或 `config/poem.json` 中添加新的课文内容
 2. **添加练习题目** — 于 `config/game.json` 中添加新的练习题
