@@ -119,7 +119,7 @@
     .art-split.no-split .art-translation{display:none}
     .art-split.no-split .art-divider{display:none}
     .art-split.no-split .art{width:100%}
-    .art-split:not(.no-split){display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row dense;position:relative;transition:none}
+    .art-split:not(.no-split){display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:row dense;position:relative;transition:none;gap:14px}
     .art-split:not(.no-split)::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border);pointer-events:none}
     .art-split:not(.no-split) .art,
     .art-split:not(.no-split) .art-translation,
@@ -134,10 +134,13 @@
     /* 分栏模式下按行对照：压缩段落间距，避免一侧高、另一侧留白过大 */
     .art-split:not(.no-split) .art-body > p{margin-bottom:0.3em}
     .art-split:not(.no-split) .art-translation > .art-body > p{margin-bottom:0.3em;padding-left:0}
-    .art-split:not(.no-split) .art-translation > .art-body > p.notes-row{font-family:'Microsoft YaHei','Segoe UI',sans-serif;line-height:1.7;color:var(--fg)}
+    .art-split:not(.no-split) .art-translation > .art-body > p.notes-row{font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;line-height:1.7;color:var(--fg)}
+    /* 字解模式（散文）：跳过空行后用约一行的段间距替代 */
+    .art-split.notes-mode.para-gap .art-body > p{margin-bottom:1.15em}
+    .art-split.notes-mode.para-gap .art-body > p:last-child{margin-bottom:0}
     @keyframes transSlide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
     .art-divider{width:1px;background:var(--border);flex-shrink:0;align-self:stretch;margin:0 0}
-    .art-translation .art-title{font-size:26px;font-weight:700;color:var(--fg);text-align:center}
+    .art-translation .art-title{font-size:25px;font-weight:700;color:var(--fg);text-align:center}
     .art-translation .art-body{font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;color:var(--fg);line-height:2}
     .art-translation .art-body p{margin-bottom:0.8em;padding-left:20px}
     .art-split:not(.no-split) .art-translation > .art-author{visibility:hidden;pointer-events:none}
@@ -207,7 +210,7 @@
     .study-content-empty{padding:24px;text-align:center;color:var(--sub);font-size:13px}
 
     /* ===== APPRECIATION 赏析文本框 ===== */
-    .art-appreciation{margin-top:24px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;font-size:15px;line-height:2;color:var(--fg);white-space:pre-wrap;display:none}
+    .art-appreciation{margin-top:24px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;font-size:15px;line-height:1.6;color:var(--fg);white-space:pre-wrap;display:none}
     .art-appreciation-title{font-family:'Microsoft YaHei',sans-serif;font-size:13px;color:var(--sub);font-weight:600;margin-bottom:10px;letter-spacing:1px}
 
     /* ===== MODE SELECTOR (翻译/字解/仅原文) ===== */
@@ -235,7 +238,7 @@
     .notes-list-explain{font-size:13px;color:var(--sub);line-height:1.7;font-family:'Microsoft YaHei',sans-serif}
     /* 字解模式：右侧按行对齐的字解条目 */
     .notes-row{margin:0;padding:0;min-height:1.5em}
-    .notes-row-item{display:block;font-size:inherit;line-height:1.7;color:var(--fg);font-family:'Microsoft YaHei','Segoe UI',sans-serif;padding:2px 0}
+    .notes-row-item{display:block;font-size:inherit;line-height:1.7;color:var(--fg);font-family:'LXGW WenKai','KaiTi','STKaiti','楷体',serif;padding:2px 0}
     .notes-row-idx{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;font-size:10px;font-family:'Microsoft YaHei',sans-serif;background:var(--orange);color:#fff;border-radius:50%!important;margin-right:6px;vertical-align:middle}
 
     /* 在线查询（兜底 + 对照）*/
@@ -337,6 +340,7 @@
       .example-view{padding:20px 12px}
       .c-inner{padding:44px 8px 40px 16px}
       .art-title{font-size:22px}
+      .art-translation .art-title{font-size:21px}
       .author-tag-btn{font-size:16px}
       .player{height:48px;padding:0 6px;gap:2px}
       .p-btn{min-width:30px;min-height:30px;font-size:11px}
@@ -359,6 +363,7 @@
       .c-inner{padding:40px 8px 36px}
       .art-body{font-size:14px;line-height:1.8}
       .art-title{font-size:20px}
+      .art-translation .art-title{font-size:19px}
       .art-author{font-size:16px}
       .author-tag-btn{font-size:16px}
       .author-card{width:100%;min-width:0}
@@ -566,6 +571,7 @@
       .c-inner{max-width:100%!important;padding:0!important}
       .art-body{font-size:14px!important;color:#000!important}
       .art-title{font-size:20px!important;color:#000!important}
+      .art-translation .art-title{font-size:19px!important}
       .art-author,.author-tag-btn{color:#000!important}
       .author-tag-btn{border-color:#999!important;background:transparent!important}
       body{background:white!important}
@@ -651,7 +657,6 @@
         </div>
 
         <div class="art-appreciation" id="artAppreciation">
-          <div class="art-appreciation-title">📖赏析</div>
           <div id="artAppreciationBody"></div>
         </div>
       </div>
@@ -1780,7 +1785,37 @@ document.addEventListener('DOMContentLoaded', function() {
     getWallpaper: function(){ return this.get('wallpaper', {current:'bg.png', rotate:false, interval:30, index:0}); },
     setWallpaper: function(v){ this.set('wallpaper', v); },
     getAIConfig: function(){ return this.get('aiConfig', {apiUrl:'', apiKey:'', model:'', quizType:'any'}); },
-    setAIConfig: function(v){ this.set('aiConfig', v); }
+    setAIConfig: function(v){ this.set('aiConfig', v); },
+    /* 学习时间统计 */
+    getStudyTime: function(){ return this.get('studyTime', {today:0}); },
+    addStudyTime: function(min){
+      var t = this.getStudyTime();
+      if (typeof t !== 'object' || t === null) t = {today:0};
+      t.today = (t.today || 0) + min;
+      this.set('studyTime', t);
+      var today = new Date();
+      var fmt = today.getFullYear() + '-' + ((today.getMonth()+1)+'').padStart(2,'0') + '-' + (today.getDate()+'').padStart(2,'0');
+      var days = this.get('studyDays', []);
+      if (days.indexOf(fmt) < 0) { days.push(fmt); this.set('studyDays', days); }
+    },
+    /* 连续学习天数（从昨天往前数） */
+    getStreak: function(){
+      var days = this.get('studyDays', []);
+      var set = {};
+      for (var i=0;i<days.length;i++) set[days[i]] = 1;
+      var streak = 0;
+      var d = new Date();
+      d.setDate(d.getDate() - 1);
+      while (true) {
+        var fmt = d.getFullYear() + '-' + ((d.getMonth()+1)+'').padStart(2,'0') + '-' + (d.getDate()+'').padStart(2,'0');
+        if (!set[fmt]) break;
+        streak++;
+        d.setDate(d.getDate() - 1);
+      }
+      return { days: streak };
+    },
+    getLastState: function(){ return this.get('lastState', null); },
+    setLastState: function(s){ this.set('lastState', s); }
   };
 
   /* ===== USERDATA: 文件存储层（桌面端持久化） ===== */
@@ -1857,6 +1892,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return Promise.all(promises);
     }
   };
+
+  // 暴露到全局，供 OOBE 等顶层 IIFE 访问
+  window.UserDataAPI = UserDataAPI;
 
   // Wrap Store.set to also sync to userdata (fire-and-forget)
   var _origStoreSet = Store.set.bind(Store);
@@ -2494,6 +2532,10 @@ document.addEventListener('DOMContentLoaded', function() {
       (function(btn) {
         btn.onclick = function() {
           var w = btn.getAttribute('data-word');
+          // 高亮当前选中的虚词按钮（与朝代按钮同款橙色渐变）
+          var all = navEl.querySelectorAll('.sbtn[data-word]');
+          for (var k = 0; k < all.length; k++) all[k].classList.remove('dynasty-sel');
+          btn.classList.add('dynasty-sel');
           renderWordCard(w);
         };
         btn.oncontextmenu = function(e) {
@@ -2523,7 +2565,7 @@ document.addEventListener('DOMContentLoaded', function() {
       html += '</div>';
     }
     html += '</div>';
-    html += '<div class="word-card-footer"><button class="word-card-btn" id="wordCardGameBtn">词卡 · 百词斩模式</button></div>';
+    html += '<div class="word-card-footer"><button class="word-card-btn" id="wordCardGameBtn">词卡练习👏</button></div>';
     html += '</div>';
     hideAllViews();
     viewWordGame.classList.remove('hidden');
@@ -2807,11 +2849,12 @@ document.addEventListener('DOMContentLoaded', function() {
       html += '<p>' + escapeHtml(tLines[i]) + '</p>';
     }
     transBody.innerHTML = html;
-    // 检测译文中是否含"上阕/下阕"等词牌分阕标记
-    // 若有，则译文是按"上阕：... 下阕：..."两段组织的，与左侧逐句原文无法逐行对齐
-    // 此时跳过补空 <p> 与强制 gridRow 对齐，让两侧各自自然排列
+    // 检测译文中是否含"上阕/下阕"等词牌分阕标记，或标题中含"·"（词牌名）
+    // 这两种情况译文与左侧逐句原文无法逐行对齐，跳过补空 <p> 与强制 gridRow 对齐
     var hasCipaiMark = /上\s*[阕阙]|下\s*[阕阙]/.test(art.translation);
-    if (!hasCipaiMark) {
+    var hasDotTitle = art.title && String(art.title).indexOf('·') !== -1;
+    var noAlign = hasCipaiMark || hasDotTitle;
+    if (!noAlign) {
       // 补齐行数：较短一侧补空 <p>，避免一侧多出导致大面积留白
       var leftBody = document.getElementById('artBody');
       var leftCount = leftBody ? leftBody.children.length : 0;
@@ -2833,8 +2876,8 @@ document.addEventListener('DOMContentLoaded', function() {
     for (var i = 0; i < rightItems.length; i++) {
     rightItems[i].style.fontSize = bodyFontSize + 'px';
     }
-    if (hasCipaiMark) {
-      // 词牌译文：清除强制 gridRow，让左右两列自然排列
+    if (noAlign) {
+      // 词牌/含"·"标题译文：清除强制 gridRow，让左右两列自然排列
       clearSplitRows();
     } else {
       alignSplitRows();
@@ -6110,6 +6153,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function setArtMode(mode) {
     artMode = mode;
+    artSplit.classList.remove('notes-mode');
+    artSplit.classList.remove('para-gap');
     modeSelectBtn.textContent = mode === 'orig-only' ? '仅原文'
       : (mode === 'translation' ? '翻译' : '字解');
     modeSelectBtn.classList.toggle('on', mode !== 'orig-only');
@@ -6160,6 +6205,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     // 1. 先渲染左侧原文（按行，高亮 pos）
+    artSplit.classList.add('notes-mode');
     renderTextWithNotes(art);
 
     var transBox = document.getElementById('artTransBox');
@@ -6167,13 +6213,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var transTitle = document.getElementById('artTransTitle');
     transBox.style.display = '';
     document.getElementById('artDivider').style.display = '';
-    transTitle.textContent = '字解（共 ' + art.notes.length + ' 条）';
+    transTitle.textContent = '字解';
 
     // 2. 按原文行拆分右侧字解，每行只显示该行包含的字解，与左侧逐行对齐
     var lines = String(art.text || '').split('\n');
     var html = '';
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i];
+      if (!line.trim()) continue; // 跳过空行，段落间距由 para-gap 的 margin 控制
       var parts = [];
       for (var j = 0; j < art.notes.length; j++) {
         var n = art.notes[j];
@@ -6214,6 +6261,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 字解模式按行拆分，便于右侧字解按行对齐
     var paras = String(txt).split('\n');
     var html = '';
+    var hasEmptyLine = false;
     // 按 pos 长度倒序，避免短串先替换导致长串匹配不到
     var notes = (art.notes || []).slice().map(function(n, i) {
       return { pos: n.pos || n.phrase || '', idx: i };
@@ -6222,6 +6270,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     for (var i = 0; i < paras.length; i++) {
       var p = paras[i];
+      if (!p.trim()) { hasEmptyLine = true; continue; } // 跳过空行，段间距用 margin 控制
       if (hlKw) p = highlight(p, hlKw);
       p = p.replace(/\n/g, '<br>');
       // 在段落内逐句标记 pos（按句号、问号、感叹号、分号切分）
@@ -6229,6 +6278,8 @@ document.addEventListener('DOMContentLoaded', function() {
       html += '<p>' + p + '</p>';
     }
     artBody.innerHTML = html;
+    // 含空行分段（散文）时，用约一行的段间距替代空行占位
+    artSplit.classList.toggle('para-gap', hasEmptyLine);
     artBody.style.fontSize = bodyFontSize + 'px';
   }
 
@@ -6814,29 +6865,34 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.focus();
   }
 
-  function shouldShow(){
-    // 1. localStorage 快速检查
-    if (localStorage.getItem('bsw_oobeCompleted') === '1') return Promise.resolve(false);
-    // 2. userdata 文件检查
-    return UserDataAPI.read(OOBE_FILE).then(function(res){
-      if (res && res.data && res.data && res.data[OOBE_FLAG_KEY]) {
-        localStorage.setItem('bsw_oobeCompleted', '1');
-        return false;
-      }
-      return true;
-    }).catch(function(){ return true; });
-  }
+  // OOBE 引导检查与 hydrate 挂钩：
+  // UserDataAPI 定义在 DOMContentLoaded 回调内，此顶层 IIFE 可能访问不到，
+  // 包一层 try 避免启动时 ReferenceError（失败则跳过引导，不影响核心功能）。
+  try {
+    function shouldShow(){
+      // 1. localStorage 快速检查
+      if (localStorage.getItem('bsw_oobeCompleted') === '1') return Promise.resolve(false);
+      // 2. userdata 文件检查
+      return UserDataAPI.read(OOBE_FILE).then(function(res){
+        if (res && res.data && res.data && res.data[OOBE_FLAG_KEY]) {
+          localStorage.setItem('bsw_oobeCompleted', '1');
+          return false;
+        }
+        return true;
+      }).catch(function(){ return true; });
+    }
 
-  // 在 UserDataAPI.hydrate 之后检查
-  var origHydrate = UserDataAPI.hydrate.bind(UserDataAPI);
-  UserDataAPI.hydrate = function(){
-    return origHydrate().then(function(r){
-      return shouldShow().then(function(need){
-        if (need) setTimeout(show, 600);
-        return r;
+    // 在 UserDataAPI.hydrate 之后检查
+    var origHydrate = UserDataAPI.hydrate.bind(UserDataAPI);
+    UserDataAPI.hydrate = function(){
+      return origHydrate().then(function(r){
+        return shouldShow().then(function(need){
+          if (need) setTimeout(show, 600);
+          return r;
+        });
       });
-    });
-  };
+    };
+  } catch(e) {}
 })();
 </script>
 </body>

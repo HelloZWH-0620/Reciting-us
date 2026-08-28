@@ -1,4 +1,4 @@
-# 背书哇！本地 PowerShell 服务器
+﻿# 背书哇！本地 PowerShell 服务器
 # 运行：powershell -NoProfile -ExecutionPolicy Bypass -File setup\server.ps1 [端口]
 # 说明：为网页提供静态文件服务，并处理壁纸上传/列表/删除。
 
@@ -28,6 +28,11 @@ if (-not (Test-Path $wallpaperDir)) {
 $audioDir = Join-Path $root 'resource\audio'
 if (-not (Test-Path $audioDir)) {
     New-Item -ItemType Directory -Path $audioDir -Force | Out-Null
+}
+
+$userdataDir = Join-Path $root 'userdata'
+if (-not (Test-Path $userdataDir)) {
+    New-Item -ItemType Directory -Path $userdataDir -Force | Out-Null
 }
 
 $allowedExt = @('.png','.jpg','.jpeg','.gif','.webp','.bmp')
@@ -60,16 +65,20 @@ $mimeMap = @{
 function Send-JsonResponse($response, $obj, $statusCode = 200) {
     $body = ($obj | ConvertTo-Json -Compress -Depth 10)
     $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
-    $response.StatusCode = $statusCode
+    # 使用 chunked 输出，不设置 ContentLength64：
+    # .NET Framework 的 HttpListenerResponse 在 PowerShell 5.1 下设置 ContentLength64
+    # 偶发 "response has been submitted" 异常，会杀死整个服务器。
     $response.ContentType = 'application/json; charset=utf-8'
-    $response.ContentLength64 = $bytes.Length
+    $response.SendChunked = $true
+    $response.StatusCode = $statusCode
     $response.OutputStream.Write($bytes, 0, $bytes.Length)
     $response.OutputStream.Close()
 }
 
 function Send-BytesResponse($response, $bytes, $contentType) {
+    # 与 Send-JsonResponse 相同的 chunked 策略，规避 ContentLength64 提交竞态
     $response.ContentType = $contentType
-    $response.ContentLength64 = $bytes.Length
+    $response.SendChunked = $true
     $response.OutputStream.Write($bytes, 0, $bytes.Length)
     $response.OutputStream.Close()
 }
@@ -242,6 +251,36 @@ try {
                 }
                 continue
             }
+            elseif ($path -like '/api/userdata/file/*') {
+                # 用户数据文件读写：userdata/{name}.json（preferences/ai_config/ai_questions）
+                $fname = [System.IO.Path]::GetFileName($path.Substring('/api/userdata/file/'.Length))
+                $fpath = Join-Path $userdataDir $fname
+                if ($method -eq 'GET') {
+                    if (Test-Path $fpath) {
+                        $content = Get-Content $fpath -Raw -Encoding UTF8 | ConvertFrom-Json
+                        Send-JsonResponse $response @{success=$true; data=$content}
+                    } else {
+                        Send-JsonResponse $response @{success=$true; data=$null}
+                    }
+                }
+                elseif ($method -eq 'POST') {
+                    $reader = New-Object System.IO.StreamReader($request.InputStream, [System.Text.Encoding]::UTF8)
+                    $json = $reader.ReadToEnd()
+                    $reader.Dispose()
+                    $payload = $json | ConvertFrom-Json
+                    $dataJson = $payload.data | ConvertTo-Json -Depth 10 -Compress
+                    [System.IO.File]::WriteAllText($fpath, $dataJson, (New-Object System.Text.UTF8Encoding($false)))
+                    Send-JsonResponse $response @{success=$true}
+                }
+                elseif ($method -eq 'DELETE') {
+                    if (Test-Path $fpath) { Remove-Item $fpath -Force }
+                    Send-JsonResponse $response @{success=$true}
+                }
+                else {
+                    $response.StatusCode = 405
+                    $response.Close()
+                }
+            }
             else {
                 # 静态文件服务
                 $relative = $path.TrimStart('/').Replace('/', '\')
@@ -274,7 +313,8 @@ try {
             }
         }
         catch {
-            Send-ErrorResponse $response $_.Exception.Message
+            # 错误响应本身失败时不能让异常冒泡杀死服务器循环
+            try { Send-ErrorResponse $response $_.Exception.Message } catch {}
         }
     }
 } finally {
