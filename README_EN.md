@@ -9,7 +9,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> **Current version**: v2.0.0 (stable channel, released 2026-08-28) — see [Memorization UI/config/version.json](Memorization UI/config/version.json) for details.
+> **Current version**: v0.3.1 (stable channel, released 2026-09-02) — see [Memorization UI/config/version.json](Memorization UI/config/version.json) for details.
 
 ---
 
@@ -144,7 +144,7 @@ Reciting-us/
     │   ├── poem.json                  # Poetry dataset (independent poetry collection)
     │   ├── game.json                  # Exercise question bank (72 questions: function-word / dictation / example matching)
     │   ├── writer.json                # Author information (18 authors with dynasties and biographies)
-    │   ├── version.json               # Version info (current v2.0.0; see notes field)
+    │   ├── version.json               # Version info (current v0.3.1; see notes field)
     │   └── bundled.js                 # Inlined fallback data (used by app.html under file://)
     ├── resource/
     │   ├── OOBE/                      # First-run onboarding images (page1.png ~ page3.png)

@@ -9,7 +9,7 @@
 ![平台](https://img.shields.io/badge/platform-Windows-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
-> **当前版本**：v2.0.0（稳定版，channel: stable，发布于 2026-08-28）— 版本详情见 [Memorization UI/config/version.json](Memorization UI/config/version.json)。
+> **当前版本**：v0.3.1（稳定版，channel: stable，发布于 2026-09-02）— 版本详情见 [Memorization UI/config/version.json](Memorization UI/config/version.json)。
 
 ---
 
@@ -145,7 +145,7 @@ Reciting-us/
     │   ├── poem.json                  # 古诗词数据（独立诗词集）
     │   ├── game.json                  # 练习题库（72 道题目：虚词辨析 / 填空默写 / 例句匹配）
     │   ├── writer.json                # 作者信息（18 位作者的朝代与生平简介）
-    │   ├── version.json               # 版本信息（当前 v2.0.0，详见文件内 notes）
+    │   ├── version.json               # 版本信息（当前 v0.3.1，详见文件内 notes）
     │   └── bundled.js                 # 内联兜底数据（file:// 场景下供 app.html 回退）
     ├── resource/
     │   ├── OOBE/                      # 开箱引导图片（page1.png ~ page3.png）
