@@ -9,7 +9,7 @@
 ![平台](https://img.shields.io/badge/platform-Windows-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
-> **当前版本**：v0.3.1（稳定版，channel: stable，发布于 2026-09-02）— 版本详情见 [Memorization UI/config/version.json](Memorization UI/config/version.json)。
+> 有关各版本的详情，参见 [Memorization UI/config/version.json](Memorization UI/config/version.json) 或 [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
 
 ---
 

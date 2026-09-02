@@ -9,7 +9,7 @@
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> **Current version**: v0.3.1 (stable channel, released 2026-09-02) — see [Memorization UI/config/version.json](Memorization UI/config/version.json) for details.
+> For details about each version, see [Memorization UI/config/version.json](Memorization UI/config/version.json) or [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/).
 
 ---
 
