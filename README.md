@@ -138,7 +138,6 @@ Reciting-us/
     ├── uninstall.bat                  # 卸载脚本（调用 uninstall.ps1）
     ├── package.ps1                    # 安装引导脚本（创建桌面/开始菜单快捷方式）
     ├── uninstall.ps1                  # 卸载逻辑
-    ├── 卸载方法.txt                    # 卸载说明
     ├── config/
     │   ├── manifest.json              # PWA 应用清单（应用名称、图标等）
     │   ├── articles.json              # 课文数据（文言文，含原文、译文、注释、赏析）
@@ -232,6 +231,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
 > 该脚本监听端口 8765，仅提供静态文件服务，不支持壁纸上传等 API 功能。
 
 ---
+
+## 卸载方法
+
+如需卸载「背书哇」，请按以下步骤操作：
+
+1. 双击运行 `Memorization UI/uninstall.bat`（图标为黑色齿轮者即是）；
+2. 删除 `setuptools` 文件夹下的 `config` **文件**（注意：是文件，不是文件夹！）；
+3. 若你不需要在另一台设备上继续使用，可删除 `userdata` 下的全部文件；否则，可将所需文件拷贝到新设备以延续学习进度。
+
+> 提示：第 2 步删除的是安装时生成的配置文件 `setuptools/config`（记录项目路径），不影响你的课文数据；学习记录保存在 `userdata/` 中。
 
 ## 首次使用指南
 

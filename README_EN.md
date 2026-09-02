@@ -137,7 +137,6 @@ Reciting-us/
     ├── uninstall.bat                  # Uninstall script (invokes uninstall.ps1)
     ├── package.ps1                    # Installation bootstrap script (creates desktop/start menu shortcuts)
     ├── uninstall.ps1                  # Uninstall logic
-    ├── 卸载方法.txt                    # Uninstall instructions
     ├── config/
     │   ├── manifest.json              # PWA manifest (app name, icons, etc.)
     │   ├── articles.json              # Text content (classical Chinese, including original text, translations, annotations, appreciation)
@@ -231,6 +230,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
 > This script listens on port 8765 and only provides static file service; it does not support wallpaper upload or API features.
 
 ---
+
+## Uninstall
+
+To uninstall "Memorize It!", follow these steps:
+
+1. Double-click `Memorization UI/uninstall.bat` (the one whose icon is a black gear);
+2. Delete the `config` **file** under the `setuptools` folder (note: it is a file, not a folder!);
+3. If you do not need to keep using the app on another device, delete all files under `userdata`. Otherwise, copy the files you need to the new device to continue your progress.
+
+> Note: Step 2 removes the `setuptools/config` file generated at install time (it records the project path) and does not affect your lesson data; your learning records live in `userdata/`.
 
 ## First-Time Guide
 
