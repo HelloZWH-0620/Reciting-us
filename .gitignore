@@ -10,8 +10,6 @@ Memorization UI/resource/background/
 # ===== 课文朗读音频（可选资源，体积较大，按需另行提供） =====
 Memorization UI/resource/audio/
 
-# ===== 旧版 / 临时页面（如仍需保留，请移出版本控制或自行调整） =====
-Memorization UI/war4.html
 
 # ===== 操作系统 / 编辑器垃圾文件 =====
 .DS_Store
