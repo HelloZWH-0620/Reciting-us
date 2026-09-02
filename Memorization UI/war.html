@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>绝密档案 — 二战战略卡牌推演</title>
+  <style>
+    :root {
+      --paper: #f0e6d2;
+      --paper-line: #e0d5c0;
+      --ink: #2c2416;
+      --ink-faded: #6b5d4f;
+      --stamp: #b83a3a;
+      --stamp-light: rgba(184, 58, 58, 0.15);
+      --army-a: #8B4513;
+      --army-b: #2F4F4F;
+      --green: #4a5d23;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #2a2520;
+      font-family: 'Courier New', 'Noto Serif SC', 'SimSun', serif;
+      color: var(--ink);
+      min-height: 100vh;
+      background-image: radial-gradient(circle at 50% 50%, #3a3530 0%, #2a2520 100%);
+    }
+
+    /* 文件外框 */
+    .file-folder {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: var(--paper);
+      min-height: 90vh;
+      position: relative;
+      box-shadow:
+        0 0 0 1px #c0b5a0,
+        0 0 0 4px #d0c5b0,
+        0 0 0 5px #a09080,
+        0 10px 40px rgba(0,0,0,0.6);
+      padding: 40px;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(160,150,130,0.08) 40px),
+        radial-gradient(circle at 15% 40%, rgba(139,69,19,0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 70%, rgba(139,69,19,0.06) 0%, transparent 45%);
+    }
+
+    /* 做旧边缘 */
+    .file-folder::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      border: 1px solid rgba(160,150,130,0.3);
+      pointer-events: none;
+      box-shadow: inset 0 0 60px rgba(139,69,19,0.05);
+    }
+
+    /* 绝密印章 */
+    .stamp {
+      position: absolute;
+      top: 30px;
+      right: 50px;
+      width: 110px;
+      height: 110px;
+      border: 3px solid var(--stamp);
+      border-radius: 50%;
+      color: var(--stamp);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 15px;
+      line-height: 1.3;
+      transform: rotate(-18deg);
+      opacity: 0.75;
+      pointer-events: none;
+      box-shadow: 0 0 0 4px var(--stamp-light) inset;
+      text-shadow: 0 0 3px rgba(184,58,58,0.2);
+      z-index: 10;
+    }
+
+    .stamp::before {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border: 1px solid var(--stamp);
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+
+    /* 文件抬头 */
+    .file-header {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--ink-faded);
+      letter-spacing: 2px;
+    }
+
+    /* 导航标签 */
+    .tab-nav {
+      display: flex;
+      border-bottom: 3px double var(--ink);
+      margin-bottom: 30px;
+      position: relative;
+      padding-left: 10px;
+    }
+
+    .tab-btn {
+      background: #e0d5c0;
+      border: 2px solid var(--ink);
+      border-bottom: none;
+      padding: 10px 28px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--ink-faded);
+      cursor: pointer;
+      margin-right: 6px;
+      position: relative;
+      top: 3px;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+    }
+
+    .tab-btn:hover {
+      background: #d8cdb8;
+      color: var(--ink);
+    }
+
+    .tab-btn.active {
+      background: var(--paper);
+      color: var(--ink);
+      z-index: 2;
+      top: 3px;
+      border-bottom: 3px solid var(--paper);
+      margin-bottom: -3px;
+    }
+
+    /* 内容区 */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.6s;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 首页 ===== */
+    .home-box {
+      border: 3px double var(--ink);
+      padding: 50px 40px;
+      text-align: center;
+      position: relative;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .home-box h1 {
+      font-size: 44px;
+      margin: 0 0 15px;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--ink);
+      display: inline-block;
+      padding-bottom: 10px;
+    }
+
+    .home-box .doc-id {
+      font-size: 13px;
+      color: var(--ink-faded);
+      margin-top: 15px;
+      letter-spacing: 1px;
+    }
+
+    .home-box .doc-id span {
+      display: inline-block;
+      margin: 0 15px;
+    }
+
+    .camps {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin-top: 40px;
+    }
+
+    .camp {
+      width: 220px;
+      border: 2px solid var(--ink);
+      padding: 25px;
+      background: rgba(255,255,255,0.2);
+      position: relative;
+    }
+
+    .camp::before {
+      content: '阵营档案';
+      position: absolute;
+      top: -12px;
+      left: 15px;
+      background: var(--paper);
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .camp-badge {
+      width: 90px;
+      height: 90px;
+      border: 3px solid;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .camp-a .camp-badge { border-color: var(--army-a); color: var(--army-a); }
+    .camp-b .camp-badge { border-color: var(--army-b); color: var(--army-b); }
+
+    .camp h3 { margin: 10px 0 5px; font-size: 22px; }
+    .camp p { font-size: 14px; color: var(--ink-faded); line-height: 1.5; margin: 0; }
+
+    .enter-btn {
+      margin-top: 40px;
+      padding: 14px 50px;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: bold;
+      background: var(--ink);
+      color: var(--paper);
+      border: 2px solid var(--ink);
+      cursor: pointer;
+      letter-spacing: 4px;
+      transition: all 0.3s;
+    }
+
+    .enter-btn:hover {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    /* ===== 规则页 ===== */
+    .rules-layout {
+      display: flex;
+      gap: 25px;
+    }
+
+    .rules-toc {
+      width: 200px;
+      border: 2px solid var(--ink);
+      padding: 15px;
+      background: rgba(255,255,255,0.2);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .rules-toc h4 {
+      margin: 0 0 12px;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .rules-toc a {
+      display: block;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 6px 0;
+      font-size: 14px;
+      border-bottom: 1px dotted var(--ink-faded);
+      transition: padding-left 0.2s;
+    }
+
+    .rules-toc a:hover {
+      padding-left: 8px;
+      font-weight: bold;
+    }
+
+    .rules-body {
+      flex: 1;
+    }
+
+    .rule-block {
+      margin-bottom: 30px;
+      border: 1px solid var(--ink-faded);
+      padding: 25px;
+      background: rgba(255,255,255,0.2);
+      position: relative;
+    }
+
+    .rule-block::before {
+      content: attr(data-num);
+      position: absolute;
+      top: -14px;
+      left: 20px;
+      background: var(--paper);
+      padding: 2px 10px;
+      font-weight: bold;
+      font-size: 18px;
+      border: 1px solid var(--ink-faded);
+    }
+
+    .rule-block h3 {
+      margin: 5px 0 15px;
+      font-size: 20px;
+      border-bottom: 1px dashed var(--ink-faded);
+      padding-bottom: 8px;
+    }
+
+    .rule-block p, .rule-block li {
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .rule-block ul {
+      padding-left: 20px;
+      margin: 10px 0;
+    }
+
+    .rule-block li {
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      background: rgba(184, 58, 58, 0.1);
+      padding: 1px 4px;
+      font-weight: bold;
+      border-bottom: 1px solid var(--stamp);
+    }
+
+    .key-point {
+      border-left: 4px solid var(--stamp);
+      padding: 10px 15px;
+      margin: 15px 0;
+      background: rgba(184, 58, 58, 0.05);
+      font-size: 14px;
+    }
+
+    /* ===== 图鉴页 ===== */
+    .gallery-section {
+      margin-bottom: 30px;
+    }
+
+    .gallery-title {
+      font-size: 20px;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gallery-title::before {
+      content: '▍';
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 20px;
+    }
+
+    .card-unit {
+      border: 2px solid var(--ink);
+      padding: 0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #f8f4ec;
+      position: relative;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-unit:hover {
+      transform: translateY(-6px) rotate(-1deg);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .card-unit .card-top {
+      padding: 12px;
+      border-bottom: 1px solid var(--ink-faded);
+      background: rgba(0,0,0,0.03);
+    }
+
+    .card-unit .card-type {
+      font-size: 11px;
+      color: var(--ink-faded);
+      letter-spacing: 2px;
+    }
+
+    .card-unit .card-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 8px 0 0;
+    }
+
+    .card-unit .card-body {
+      flex: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink-faded);
+    }
+
+    .card-unit .card-footer {
+      padding: 10px;
+      border-top: 1px solid var(--ink-faded);
+      font-size: 12px;
+      background: rgba(0,0,0,0.03);
+    }
+
+    .card-unit.secret {
+      background: #e8e0d0;
+    }
+
+    .card-unit.secret .card-name {
+      font-size: 28px;
+      color: var(--ink-faded);
+    }
+
+    .card-unit.secret .reveal-btn {
+      margin-top: 10px;
+      padding: 5px 15px;
+      font-family: inherit;
+      font-size: 12px;
+      border: 1px solid var(--stamp);
+      background: transparent;
+      color: var(--stamp);
+      cursor: pointer;
+    }
+
+    .card-unit.secret .reveal-btn:hover {
+      background: var(--stamp);
+      color: white;
+    }
+
+    .card-unit.secret.revealed .card-name {
+      font-size: 20px;
+      color: var(--ink);
+    }
+
+    .faction-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .tag-a { color: var(--army-a); border-color: var(--army-a); }
+    .tag-b { color: var(--army-b); border-color: var(--army-b); }
+
+    /* ===== 地图页 ===== */
+    .map-layout {
+      display: flex;
+      gap: 25px;
+    }
+
+    .map-sidebar {
+      width: 240px;
+      border: 2px solid var(--ink);
+      padding: 20px;
+      background: rgba(255,255,255,0.2);
+      height: fit-content;
+    }
+
+    .map-sidebar h4 {
+      margin: 0 0 15px;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 8px;
+    }
+
+    .tool-group {
+      margin-bottom: 20px;
+    }
+
+    .tool-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--ink-faded);
+    }
+
+    .tool-btn {
+      display: block;
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      border: 1px solid var(--ink);
+      background: #e0d5c0;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      background: #d0c5b0;
+    }
+
+    .tool-btn.active {
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: bold;
+    }
+
+    .ori-toggle {
+      display: flex;
+      gap: 5px;
+    }
+
+    .ori-toggle button {
+      flex: 1;
+      padding: 6px;
+      border: 1px solid var(--ink);
+      background: #e0d5c0;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .ori-toggle button.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .map-main {
+      flex: 1;
+    }
+
+    .map-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 10px 15px;
+      border: 1px solid var(--ink);
+      background: rgba(255,255,255,0.2);
+      font-size: 14px;
+    }
+
+    .map-grid-box {
+      border: 3px solid var(--ink);
+      padding: 20px;
+      background: #d8d0c0;
+      position: relative;
+      overflow: auto;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(7, 42px);
+      grid-template-rows: repeat(10, 42px);
+      gap: 2px;
+      background: #8a8070;
+      border: 2px solid #5c4d3c;
+      width: fit-content;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .cell {
+      background: #c8c0b0;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .cell:hover {
+      background: #b8b0a0;
+    }
+
+    .cell.deploy-0 { background: rgba(139, 69, 19, 0.12); }
+    .cell.deploy-1 { background: rgba(47, 79, 79, 0.12); }
+
+    .cell.valid-move {
+      background: rgba(74, 93, 35, 0.5) !important;
+      box-shadow: inset 0 0 0 2px var(--green);
+    }
+
+    .cell.attack-target {
+      background: rgba(184, 58, 58, 0.4) !important;
+      box-shadow: inset 0 0 0 2px var(--stamp);
+    }
+
+    .map-card {
+      position: absolute;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.35);
+      transition: transform 0.2s, z-index 0s;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .map-card:hover {
+      transform: scale(1.08);
+      z-index: 20;
+    }
+
+    .map-card.selected {
+      border-color: var(--stamp);
+      box-shadow: 0 0 0 3px rgba(184,58,58,0.4), 3px 3px 6px rgba(0,0,0,0.35);
+      z-index: 15;
+    }
+
+    .map-card.vertical {
+      width: 42px;
+      height: 86px;
+    }
+
+    .map-card.horizontal {
+      width: 86px;
+      height: 42px;
+    }
+
+    .map-card.citizen { background: linear-gradient(135deg, #f0e6d2, #e8dcc8); }
+    .map-card.soldier { background: linear-gradient(135deg, #d4e0c0, #c4d0b0); }
+    .map-card.item { background: linear-gradient(135deg, #e0d4c0, #d8ccc0); }
+
+    .map-card .card-hp {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 10px;
+      color: var(--stamp);
+    }
+
+    .battle-log {
+      margin-top: 15px;
+      border: 2px solid var(--ink-faded);
+      padding: 12px;
+      height: 140px;
+      overflow-y: auto;
+      background: rgba(0,0,0,0.04);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .log-entry {
+      border-bottom: 1px dotted var(--ink-faded);
+      padding: 3px 0;
+      animation: logIn 0.3s;
+    }
+
+    @keyframes logIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .log-time {
+      color: var(--ink-faded);
+      font-size: 11px;
+      margin-right: 8px;
+    }
+
+    /* 模态框 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 37, 32, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--paper);
+      border: 3px solid var(--ink);
+      padding: 35px;
+      max-width: 480px;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(160,150,130,0.08) 40px);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      color: var(--ink-faded);
+    }
+
+    .modal-close:hover { color: var(--stamp); }
+
+    .modal-title {
+      font-size: 24px;
+      margin: 0 0 15px;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 10px;
+    }
+
+    .modal-meta {
+      font-size: 13px;
+      color: var(--ink-faded);
+      margin-bottom: 15px;
+    }
+
+    .modal-desc {
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .file-folder { padding: 20px; }
+      .camps { flex-direction: column; align-items: center; gap: 30px; }
+      .rules-layout { flex-direction: column; }
+      .rules-toc { width: 100%; position: static; }
+      .map-layout { flex-direction: column; }
+      .map-sidebar { width: 100%; }
+      .home-box h1 { font-size: 28px; letter-spacing: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="file-folder">
+  <div class="stamp">绝密<br>TOP SECRET<br>// 194X</div>
+  
+  <div class="file-header">
+    最高统帅部 · 战略推演司 · 机密作战文件 · 编号：WII-CARD-035
+  </div>
+
+  <!-- 导航 -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="home">作战概要</button>
+    <button class="tab-btn" data-tab="rules">作战条例</button>
+    <button class="tab-btn" data-tab="cards">装备图鉴</button>
+    <button class="tab-btn" data-tab="map">沙盘推演</button>
+  </div>
+
+  <!-- 首页 -->
+  <section id="home" class="tab-content active">
+    <div class="home-box">
+      <h1>绝密作战档案</h1>
+      <div style="font-size: 16px; letter-spacing: 6px; color: var(--ink-faded);">双人战略卡牌推演系统</div>
+      <div class="doc-id">
+        <span>密级：绝密</span>
+        <span>编制日期：194X年</span>
+        <span>下发范围：指挥官级</span>
+      </div>
+      
+      <div style="max-width: 600px; margin: 30px auto 0; text-align: left; font-size: 15px; line-height: 2; border: 1px solid var(--ink-faded); padding: 20px; background: rgba(255,255,255,0.2);">
+        <p><strong>【作战目标】</strong> 保护己方元首，查明并击杀敌方元首。</p>
+        <p><strong>【战场规模】</strong> 7×5 战术网格，双方共享战场，各自控制面前 7×2 部署区。</p>
+        <p><strong>【兵力构成】</strong> 群众卡（3张，身份隐蔽）+ 士兵卡（5张，牌堆抽取）+ 道具卡（3种，战场补给）。</p>
+        <p><strong>【行动原则】</strong> 每回合仅可执行一项行动：摸牌、放置或移动。</p>
+      </div>
+
+      <div class="camps">
+        <div class="camp camp-a">
+          <div class="camp-badge">A</div>
+          <h3>A 阵营</h3>
+          <p>棕色标识<br>负责正面突击与快速推进</p>
+        </div>
+        <div class="camp camp-b">
+          <div class="camp-badge">B</div>
+          <h3>B 阵营</h3>
+          <p>深灰标识<br>擅长防御工事与纵深部署</p>
+        </div>
+      </div>
+
+      <button class="enter-btn" onclick="switchTab('map')">▶ 进入沙盘推演</button>
+    </div>
+  </section>
+
+  <!-- 规则页 -->
+  <section id="rules" class="tab-content">
+    <div class="rules-layout">
+      <div class="rules-toc">
+        <h4>目录索引</h4>
+        <a href="#r-basic">一、基本规则</a>
+        <a href="#r-citizen">二、群众卡条例</a>
+        <a href="#r-soldier">三、士兵卡条例</a>
+        <a href="#r-item">四、道具卡条例</a>
+        <a href="#r-move">五、移动与战斗</a>
+      </div>
+      
+      <div class="rules-body">
+        <div class="rule-block" id="r-basic" data-num="一">
+          <h3>基本规则</h3>
+          <p>本推演为<span class="highlight">双人对抗制</span>，双方共享同一张 7×5 战术地图。地图由 35 个小矩形组成，小矩形长为宽的两倍。</p>
+          <ul>
+            <li><strong>胜利条件：</strong>击杀敌方元首。己方元首阵亡则立即战败。</li>
+            <li><strong>回合制：</strong>每回合仅可执行一项行动：摸牌、放置或移动。</li>
+            <li><strong>先手判定：</strong>随机分配，双方各有 50% 概率获得先手。</li>
+            <li><strong>卡牌朝向：</strong>竖放占据 1×1 小矩形；横放占据 2×0.5 小矩形（即 2 宽 × 1 基础格）。</li>
+          </ul>
+          <div class="key-point">注意：所有群众卡须于战前秘密部署于己方 7×2 部署区内，身份仅己方知晓。</div>
+        </div>
+
+        <div class="rule-block" id="r-citizen" data-num="二">
+          <h3>群众卡条例</h3>
+          <p>双方开局各持有 3 张群众卡，身份对敌方绝对保密，仅在阵亡后公开。</p>
+          <ul>
+            <li><strong>元首：</strong>决定胜负的核心。必须不惜一切代价保护。</li>
+            <li><strong>教官：</strong>存活时，可将抽到的敌方士兵放置于战场，经过 <span class="highlight">4 个己方回合</span>后自动策反为己方士兵。教官阵亡后，敌方士兵卡只能作为 1 血护栏放置。</li>
+            <li><strong>百姓：</strong>无任何特殊能力。用于混淆敌方判断，间接保护元首与教官。</li>
+          </ul>
+          <div class="key-point">群众卡基础血量均为 1，可装备道具。</div>
+        </div>
+
+        <div class="rule-block" id="r-soldier" data-num="三">
+          <h3>士兵卡条例</h3>
+          <p>士兵卡从共通牌堆中抽取，卡面印有 <span class="tag-a">A 阵营</span> 或 <span class="tag-b">B 阵营</span> 标识。双方兵种及数量一致。</p>
+          <ul>
+            <li><strong>冲锋兵（×3）：</strong>可一次性移动 2 个单位。前进路径受阻时，对阻碍处造成 <span class="highlight">1 点伤害</span>并在受阻前位置停下。亦可对相邻敌方发动零距冲锋。</li>
+            <li><strong>爆破兵（×2）：</strong>一次性移动 1 个单位，撞击造成 1 点伤害。<span class="highlight">死亡被动：</span>以自身为中心 3×3 范围内，选取一个包含中心的 2×2 区域，区域内所有单位受到 1 点 AOE 伤害。</li>
+          </ul>
+          <div class="key-point">士兵基础血量为 1。抽到己方士兵可直接投入战斗；抽到敌方士兵需依赖教官策反。</div>
+        </div>
+
+        <div class="rule-block" id="r-item" data-num="四">
+          <h3>道具卡条例</h3>
+          <p>道具卡放置于目标单位之上即可装备，此后随该单位移动而移动。</p>
+          <ul>
+            <li><strong>左轮手枪：</strong>下次伤害 +1。群众装备后获得对相邻单位造成 1 点伤害的能力（一次性）。</li>
+            <li><strong>护甲：</strong>装备单位血量上限 +1（当前血量同步 +1）。</li>
+            <li><strong>护栏：</strong>可放置于任意位置。血量 2，阻挡任何单位穿越。被冲锋兵撞击时受到 1 点伤害，冲锋兵停于护栏前。</li>
+          </ul>
+        </div>
+
+        <div class="rule-block" id="r-move" data-num="五">
+          <h3>移动与战斗条例</h3>
+          <p>移动仅可沿地图长边或短边单一方向垂直进行。</p>
+          <ul>
+            <li><strong>竖放移动：</strong>短边（水平）移动 1 基础格；长边（垂直）移动 2 基础格。</li>
+            <li><strong>横放移动：</strong>短边（水平）移动 2 基础格；长边（垂直）移动 1 基础格。</li>
+            <li><strong>冲锋兵倍率：</strong>上述距离 ×2。</li>
+          </ul>
+          <div class="key-point">群众卡、爆破兵每次仅可移动 1 个单位；冲锋兵可移动 2 个单位。移动时不可斜向行进。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 图鉴页 -->
+  <section id="cards" class="tab-content">
+    <div class="gallery-section">
+      <div class="gallery-title">群众卡（身份隐蔽）</div>
+      <div class="card-grid" id="citizen-grid">
+        <div class="card-unit secret" data-id="leader">
+          <div class="card-top">
+            <div class="card-type">CITIZEN // 群众</div>
+            <div class="card-name">???</div>
+          </div>
+          <div class="card-body">
+            <p>此档案已被加密。<br>点击右侧按钮审阅真实身份。</p>
+            <button class="reveal-btn" onclick="revealCard(this, 'leader')">审阅档案</button>
+          </div>
+          <div class="card-footer">血量：1 | 可装备</div>
+        </div>
+        <div class="card-unit secret" data-id="instructor">
+          <div class="card-top">
+            <div class="card-type">CITIZEN // 群众</div>
+            <div class="card-name">???</div>
+          </div>
+          <div class="card-body">
+            <p>此档案已被加密。<br>点击右侧按钮审阅真实身份。</p>
+            <button class="reveal-btn" onclick="revealCard(this, 'instructor')">审阅档案</button>
+          </div>
+          <div class="card-footer">血量：1 | 可装备</div>
+        </div>
+        <div class="card-unit secret" data-id="civilian">
+          <div class="card-top">
+            <div class="card-type">CITIZEN // 群众</div>
+            <div class="card-name">???</div>
+          </div>
+          <div class="card-body">
+            <p>此档案已被加密。<br>点击右侧按钮审阅真实身份。</p>
+            <button class="reveal-btn" onclick="revealCard(this, 'civilian')">审阅档案</button>
+          </div>
+          <div class="card-footer">血量：1 | 可装备</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-section">
+      <div class="gallery-title">士兵卡</div>
+      <div class="card-grid">
+        <div class="card-unit" onclick="showModal('冲锋兵', 'SOLDIER', 'A/B 阵营', '可移动 2 个单位。路径受阻时对阻挡者造成 1 点伤害并停下。可对相邻敌方发动零距冲锋（视为不移动的冲锋）。', '血量：1 | 移动：2')">
+          <div class="card-top">
+            <div class="card-type">SOLDIER // 士兵</div>
+            <div class="card-name">冲锋兵</div>
+          </div>
+          <div class="card-body">
+            <p>高机动突击单位。<br>擅长快速穿插与正面突破。</p>
+            <span class="faction-tag tag-a">A 阵营</span>
+            <span class="faction-tag tag-b">B 阵营</span>
+          </div>
+          <div class="card-footer">血量：1 | 移动：2</div>
+        </div>
+        <div class="card-unit" onclick="showModal('爆破兵', 'SOLDIER', 'A/B 阵营', '移动 1 个单位，撞击造成 1 点伤害。死亡时触发被动：在 3×3 范围内选取包含自身的 2×2 区域，造成 1 点 AOE 伤害。', '血量：1 | 移动：1')">
+          <div class="card-top">
+            <div class="card-type">SOLDIER // 士兵</div>
+            <div class="card-name">爆破兵</div>
+          </div>
+          <div class="card-body">
+            <p>工兵单位。<br>阵亡时引发区域爆炸，请谨慎处理。</p>
+            <span class="faction-tag tag-a">A 阵营</span>
+            <span class="faction-tag tag-b">B 阵营</span>
+          </div>
+          <div class="card-footer">血量：1 | 移动：1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-section">
+      <div class="gallery-title">道具卡</div>
+      <div class="card-grid">
+        <div class="card-unit" onclick="showModal('左轮手枪', 'ITEM', '通用', '装备后下次伤害 +1。群众装备后可对相邻单位造成 1 点伤害（一次性）。造成伤害后左轮被消耗。', '可装备')">
+          <div class="card-top">
+            <div class="card-type">ITEM // 道具</div>
+            <div class="card-name">左轮手枪</div>
+          </div>
+          <div class="card-body">
+            <p>近战自卫武器。<br>赋予群众一次反击能力。</p>
+          </div>
+          <div class="card-footer">一次性 | 伤害加成</div>
+        </div>
+        <div class="card-unit" onclick="showModal('护甲', 'ITEM', '通用', '装备后血量上限 +1，当前血量同步 +1。可叠加于士兵或群众。', '可装备')">
+          <div class="card-top">
+            <div class="card-type">ITEM // 道具</div>
+            <div class="card-name">护甲</div>
+          </div>
+          <div class="card-body">
+            <p>防护装备。<br>提升单位生存能力。</p>
+          </div>
+          <div class="card-footer">被动 | 血量 +1</div>
+        </div>
+        <div class="card-unit" onclick="showModal('护栏', 'ITEM', '通用', '可放置于任意位置。血量 2，完全阻断通行。被冲锋兵撞击时受到 1 点伤害，冲锋兵停于护栏前。', '可放置')">
+          <div class="card-top">
+            <div class="card-type">ITEM // 道具</div>
+            <div class="card-name">护栏</div>
+          </div>
+          <div class="card-body">
+            <p>防御工事。<br>用于封锁关键通道与保护侧翼。</p>
+          </div>
+          <div class="card-footer">血量：2 | 阻挡通行</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 地图页 -->
+  <section id="map" class="tab-content">
+    <div class="map-layout">
+      <div class="map-sidebar">
+        <h4>▍指挥面板</h4>
+        
+        <div class="tool-group">
+          <label>放置群众卡</label>
+          <button class="tool-btn" data-tool="leader" onclick="selectTool(this, 'leader')">元首</button>
+          <button class="tool-btn" data-tool="instructor" onclick="selectTool(this, 'instructor')">教官</button>
+          <button class="tool-btn" data-tool="civilian" onclick="selectTool(this, 'civilian')">百姓</button>
+        </div>
+
+        <div class="tool-group">
+          <label>放置士兵卡</label>
+          <button class="tool-btn" data-tool="charge" onclick="selectTool(this, 'charge')">冲锋兵</button>
+          <button class="tool-btn" data-tool="demolition" onclick="selectTool(this, 'demolition')">爆破兵</button>
+        </div>
+
+        <div class="tool-group">
+          <label>放置道具</label>
+          <button class="tool-btn" data-tool="barricade" onclick="selectTool(this, 'barricade')">护栏</button>
+          <button class="tool-btn" data-tool="revolver" onclick="selectTool(this, 'revolver')">左轮</button>
+          <button class="tool-btn" data-tool="armor" onclick="selectTool(this, 'armor')">护甲</button>
+        </div>
+
+        <div class="tool-group">
+          <label>卡牌朝向</label>
+          <div class="ori-toggle">
+            <button class="ori-btn active" data-ori="vertical" onclick="setOrientation('vertical', this)">竖放</button>
+            <button class="ori-btn" data-ori="horizontal" onclick="setOrientation('horizontal', this)">横放</button>
+          </div>
+        </div>
+
+        <div class="tool-group">
+          <label>战场控制</label>
+          <button class="tool-btn" onclick="resetMap()" style="border-color: var(--stamp); color: var(--stamp);">重置沙盘</button>
+          <button class="tool-btn" onclick="togglePlayer()" style="margin-top: 5px;">切换回合</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--ink-faded); line-height: 1.6; margin-top: 15px; border-top: 1px solid var(--ink-faded); padding-top: 10px;">
+          <strong>操作指南：</strong><br>
+          1. 选择上方工具<br>
+          2. 点击地图格子放置<br>
+          3. 点击已放置卡牌选中<br>
+          4. 绿色高亮为可移动位置<br>
+          5. 再次点击绿色格子移动
+        </div>
+      </div>
+
+      <div class="map-main">
+        <div class="map-status">
+          <span id="player-indicator">当前回合：玩家 1（A 阵营）</span>
+          <span style="font-size: 12px; color: var(--ink-faded);">地图：7×10 基础格 | 部署区已标记</span>
+        </div>
+        
+        <div class="map-grid-box">
+          <div class="grid-container" id="map-grid"></div>
+        </div>
+
+        <div class="battle-log" id="battle-log">
+          <div class="log-entry"><span class="log-time">[系统]</span>沙盘推演系统已就绪。请选择工具开始部署。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title" id="modal-title">标题</div>
+    <div class="modal-meta" id="modal-meta">类型 | 阵营</div>
+    <div class="modal-desc" id="modal-desc">描述内容</div>
+  </div>
+</div>
+
+<script>
+  // ===== 标签切换 =====
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
+    document.getElementById(tabId)?.classList.add('active');
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // ===== 图鉴：解密群众卡 =====
+  const CITIZEN_DATA = {
+    leader: { name: '元首', desc: '决定游戏胜负的核心。被击杀则己方战败。必须不惜一切代价保护。' },
+    instructor: { name: '教官', desc: '存活时可策反敌方士兵（放置后第 4 回合转化）。阵亡后敌方士兵只能作 1 血护栏使用。' },
+    civilian: { name: '百姓', desc: '无特殊能力。用于混淆敌方判断，间接保护元首与教官。' }
+  };
+
+  function revealCard(btn, id) {
+    const card = btn.closest('.card-unit');
+    const data = CITIZEN_DATA[id];
+    card.classList.add('revealed');
+    card.querySelector('.card-name').textContent = data.name;
+    card.querySelector('.card-body').innerHTML = `<p>${data.desc}</p>`;
+    card.querySelector('.card-footer').innerHTML = `血量：1 | 身份：${data.name} <span style="color:var(--stamp);margin-left:5px;">[已解密]</span>`;
+  }
+
+  // ===== 模态框 =====
+  function showModal(name, type, faction, desc, footer) {
+    document.getElementById('modal-title').textContent = name;
+    document.getElementById('modal-meta').textContent = `${type} | ${faction}`;
+    document.getElementById('modal-desc').textContent = desc;
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function closeModal(e) {
+    if (!e || e.target.id === 'modal') {
+      document.getElementById('modal').classList.remove('active');
+    }
+  }
+
+  // ===== 地图系统 =====
+  const mapState = {
+    cards: [],
+    selectedTool: null,
+    orientation: 'vertical',
+    selectedCard: null,
+    currentPlayer: 0
+  };
+
+  const CARD_NAMES = {
+    leader: '元首', instructor: '教官', civilian: '百姓',
+    charge: '冲锋兵', demolition: '爆破兵',
+    revolver: '左轮', armor: '护甲', barricade: '护栏'
+  };
+
+  function initMap() {
+    const grid = document.getElementById('map-grid');
+    grid.innerHTML = '';
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 7; x++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        if (y < 4) cell.classList.add('deploy-0');
+        if (y >= 6) cell.classList.add('deploy-1');
+        cell.dataset.x = x;
+        cell.dataset.y = y;
+        cell.addEventListener('click', () => handleCellClick(x, y));
+        grid.appendChild(cell);
+      }
+    }
+  }
+
+  function selectTool(btn, tool) {
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mapState.selectedTool = tool;
+    mapState.selectedCard = null;
+    clearHighlights();
+    deselectCard();
+  }
+
+  function setOrientation(ori, btn) {
+    document.querySelectorAll('.ori-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mapState.orientation = ori;
+  }
+
+  function handleCellClick(x, y) {
+    if (mapState.selectedTool) {
+      placeCard(x, y, mapState.selectedTool, mapState.orientation, mapState.currentPlayer);
+    } else if (mapState.selectedCard !== null) {
+      const target = mapState.cards[mapState.selectedCard];
+      if (isValidMove(target, x, y)) {
+        moveCard(mapState.selectedCard, x, y);
+      } else {
+        const idx = findCardAt(x, y);
+        if (idx !== -1) selectCard(idx);
+        else deselectCard();
+      }
+    } else {
+      const idx = findCardAt(x, y);
+      if (idx !== -1) selectCard(idx);
+    }
+  }
+
+  function findCardAt(x, y) {
+    return mapState.cards.findIndex(c => 
+      (c.ori === 'vertical' && c.x === x && (c.y === y || c.y === y - 1)) ||
+      (c.ori === 'horizontal' && c.y === y && (c.x === x || c.x === x - 1))
+    );
+  }
+
+  function placeCard(x, y, type, ori, player) {
+    if (ori === 'vertical' && y > 8) { log('超出地图边界，无法竖放'); return; }
+    if (ori === 'horizontal' && x > 5) { log('超出地图边界，无法横放'); return; }
+    if (isOccupied(x, y, ori)) { log('该位置已被占用'); return; }
+
+    const card = {
+      id: Date.now() + Math.random(),
+      type, x, y, ori, player,
+      hp: type === 'barricade' ? 2 : (type === 'armor' ? 2 : 1)
+    };
+
+    mapState.cards.push(card);
+    renderCardElement(card);
+    log(`玩家${player+1} 在 (${x},${y}) ${ori==='vertical'?'竖放':'横放'} [${CARD_NAMES[type]}]`);
+    
+    // 模拟回合切换（仅演示）
+    // togglePlayer(); 
+  }
+
+  function isOccupied(x, y, ori) {
+    const cells = ori === 'vertical' ? [[x,y],[x,y+1]] : [[x,y],[x+1,y]];
+    for (const [cx, cy] of cells) {
+      if (findCardAt(cx, cy) !== -1) return true;
+    }
+    return false;
+  }
+
+  function renderCardElement(card) {
+    const grid = document.getElementById('map-grid');
+    const el = document.createElement('div');
+    const typeClass = ['leader','instructor','civilian'].includes(card.type) ? 'citizen' :
+                      ['charge','demolition'].includes(card.type) ? 'soldier' : 'item';
+    el.className = `map-card ${typeClass} ${card.ori}`;
+    el.style.left = (card.x * 44) + 'px';
+    el.style.top = (card.y * 44) + 'px';
+    el.dataset.id = card.id;
+    
+    let label = CARD_NAMES[card.type];
+    if (card.type === 'leader' || card.type === 'instructor' || card.type === 'civilian') {
+      label = card.type === 'leader' ? '元首' : card.type === 'instructor' ? '教官' : '百姓';
+    }
+    el.innerHTML = `<span>${label}</span><span class="card-hp">${card.hp}</span>`;
+    
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = mapState.cards.findIndex(c => c.id === card.id);
+      if (idx !== -1) selectCard(idx);
+    });
+    
+    grid.appendChild(el);
+  }
+
+  function selectCard(index) {
+    mapState.selectedCard = index;
+    mapState.selectedTool = null;
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+    clearHighlights();
+    document.querySelectorAll('.map-card').forEach(el => el.classList.remove('selected'));
+    
+    const card = mapState.cards[index];
+    const el = document.querySelector(`.map-card[data-id="${card.id}"]`);
+    if (el) el.classList.add('selected');
+
+    const moves = getValidMoves(card);
+    moves.forEach(([mx, my]) => {
+      const cell = document.querySelector(`.cell[data-x="${mx}"][data-y="${my}"]`);
+      if (cell) cell.classList.add('valid-move');
+    });
+    
+    log(`选中 [${CARD_NAMES[card.type]}] (${card.x},${card.y})，绿色区域为可移动位置`);
+  }
+
+  function getValidMoves(card) {
+    const moves = [];
+    const isCharge = card.type === 'charge';
+    const step = isCharge ? 2 : 1;
+
+    if (card.ori === 'vertical') {
+      const h = step * 1, v = step * 2;
+      [[h,0],[-h,0],[0,v],[0,-v]].forEach(([dx,dy]) => {
+        const nx = card.x + dx, ny = card.y + dy;
+        if (canMoveTo(card, nx, ny)) moves.push([nx, ny]);
+      });
+    } else {
+      const h = step * 2, v = step * 1;
+      [[h,0],[-h,0],[0,v],[0,-v]].forEach(([dx,dy]) => {
+        const nx = card.x + dx, ny = card.y + dy;
+        if (canMoveTo(card, nx, ny)) moves.push([nx, ny]);
+      });
+    }
+    return moves;
+  }
+
+  function canMoveTo(card, x, y) {
+    if (x < 0 || y < 0) return false;
+    if (card.ori === 'vertical') { if (x > 6 || y > 8) return false; }
+    else { if (x > 5 || y > 9) return false; }
+    return !isOccupied(x, y, card.ori);
+  }
+
+  function moveCard(index, x, y) {
+    const card = mapState.cards[index];
+    card.x = x; card.y = y;
+    const el = document.querySelector(`.map-card[data-id="${card.id}"]`);
+    if (el) {
+      el.style.left = (x * 44) + 'px';
+      el.style.top = (y * 44) + 'px';
+    }
+    log(`[${CARD_NAMES[card.type]}] 移动至 (${x},${y})`);
+    deselectCard();
+  }
+
+  function deselectCard() {
+    mapState.selectedCard = null;
+    clearHighlights();
+    document.querySelectorAll('.map-card').forEach(el => el.classList.remove('selected'));
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.cell.valid-move').forEach(c => c.classList.remove('valid-move'));
+  }
+
+  function togglePlayer() {
+    mapState.currentPlayer = mapState.currentPlayer === 0 ? 1 : 0;
+    updatePlayerIndicator();
+    log(`=== 切换至 玩家${mapState.currentPlayer+1}（${mapState.currentPlayer===0?'A':'B'}阵营） ===`);
+  }
+
+  function updatePlayerIndicator() {
+    const el = document.getElementById('player-indicator');
+    const camp = mapState.currentPlayer === 0 ? 'A' : 'B';
+    const color = mapState.currentPlayer === 0 ? 'var(--army-a)' : 'var(--army-b)';
+    el.innerHTML = `当前回合：玩家 ${mapState.currentPlayer+1}（<span style="color:${color};font-weight:bold;">${camp} 阵营</span>）`;
+  }
+
+  function resetMap() {
+    mapState.cards = [];
+    mapState.selectedCard = null;
+    mapState.selectedTool = null;
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.map-card').forEach(el => el.remove());
+    clearHighlights();
+    log('沙盘已重置。');
+  }
+
+  function log(msg) {
+    const logEl = document.getElementById('battle-log');
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    const time = new Date().toLocaleTimeString('zh-CN', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    entry.innerHTML = `<span class="log-time">[${time}]</span>${msg}`;
+    logEl.appendChild(entry);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // 初始化
+  initMap();
+  updatePlayerIndicator();
+</script>
+
+</body>
+</html>
