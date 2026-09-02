@@ -1,4 +1,4 @@
-简体中文 | [English](README_EN.md) | [文言文](README_Classical Chinese.md)
+简体中文 | [English](README_EN.md) | [文言文](README_Classical-Chinese.md)
 
 # 背书哇！
 

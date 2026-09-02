@@ -1,4 +1,4 @@
-[简体中文](README.md) | English | [文言文](README_Classical Chinese.md)
+[简体中文](README.md) | English | [文言文](README_Classical-Chinese.md)
 
 # Memorize It!
 
