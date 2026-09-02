@@ -1,4 +1,4 @@
-[简体中文](README.md) | English | [文言文](README_wenyanwen.md)
+[简体中文](README.md) | English | [文言文](README_Classical Chinese.md)
 
 # Memorize It!
 
@@ -8,6 +8,8 @@
 [![Pre-Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=Test)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+> **Current version**: v2.0.0 (stable channel, released 2026-08-28) — see [Memorization UI/config/version.json](Memorization UI/config/version.json) for details.
 
 ---
 
@@ -118,29 +120,43 @@ The application includes a built-in data visualization module with the following
 ## Project Structure
 
 > [!IMPORTANT]
-> The project is still under testing, and its structure may change periodically. The structure shown here does not represent the final structure.
+> The project is under active development, and its structure may change from time to time. The structure shown here is for reference only and does not represent the final structure.
 
 ```
 Reciting-us/
-├── README.md                          # Project explanation document
+├── README.md                          # Documentation (Simplified Chinese)
+├── README_EN.md                       # Documentation (English)
+├── README_Classical Chinese.md        # Documentation (Classical Chinese)
+├── LICENSE                            # MIT License
+├── PROVENANCE.md                      # Provenance & license notes
 ├── __psserver.ps1                     # Simple PowerShell test server for development
 └── Memorization UI/
     ├── app.html                       # Main application (single-page app with all front-end logic)
+    ├── war4.html                      # Legacy / fallback page
     ├── setup.bat                      # One-click installation script (installs fonts + launches the server)
+    ├── uninstall.bat                  # Uninstall script (invokes uninstall.ps1)
     ├── package.ps1                    # Installation bootstrap script (creates desktop/start menu shortcuts)
+    ├── uninstall.ps1                  # Uninstall logic
+    ├── 卸载方法.txt                    # Uninstall instructions
     ├── config/
     │   ├── manifest.json              # PWA manifest (app name, icons, etc.)
-    │   ├── articles.json              # Text content (classical Chinese + poetry, including original text, translations, annotations, and appreciation)
+    │   ├── articles.json              # Text content (classical Chinese, including original text, translations, annotations, appreciation)
     │   ├── poem.json                  # Poetry dataset (independent poetry collection)
-    │   ├── game.json                  # Exercise question bank (72 questions including function-word distinction, fill-in-the-blank dictation, and example matching)
-    │   └── writer.json                # Author information (18 authors with dynasties and biographies)
+    │   ├── game.json                  # Exercise question bank (72 questions: function-word / dictation / example matching)
+    │   ├── writer.json                # Author information (18 authors with dynasties and biographies)
+    │   ├── version.json               # Version info (current v2.0.0; see notes field)
+    │   └── bundled.js                 # Inlined fallback data (used by app.html under file://)
     ├── resource/
     │   ├── OOBE/                      # First-run onboarding images (page1.png ~ page3.png)
-    │   ├── background/                # Wallpaper resource directory (default: Default.jpg)
-    │   └── wordtype/                  # Font files (Regular.ttf)
+    │   ├── background/                # Wallpaper directory (default: background.png; user wallpapers not tracked)
+    │   ├── icon/                      # UI icons (*.svg, adaptive to light/dark themes)
+    │   ├── wordtype/                  # Font files (Regular.ttf)
+    │   └── audio/                     # Recitation audio (optional)
+    ├── userdata/                      # User runtime data (git-ignored)
     └── setuptools/
         ├── server.ps1                 # Local PowerShell HTTP server (provides static files + API)
         ├── start.bat                  # Startup script (starts the server + opens the browser)
+        ├── ai-hosts.txt               # Allow-list of upstream hosts reachable by the AI proxy
         ├── config.json                # Auto-generated configuration file after installation (records project path)
         ├── Setup.png                  # Installation guide image
         └── logoblack.ico              # Application icon

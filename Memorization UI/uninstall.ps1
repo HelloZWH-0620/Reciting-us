@@ -10,6 +10,7 @@ $lnkName = "$appName.lnk"
 $serverDir    = Join-Path $root 'setuptools'
 $serverScript = Join-Path $serverDir 'server.ps1'
 $configPath   = Join-Path $serverDir 'config.json'
+$userdataDir  = Join-Path $root 'userdata'
 
 $desktop   = [Environment]::GetFolderPath('Desktop')
 $startMenu = [Environment]::GetFolderPath('StartMenu')
@@ -47,7 +48,7 @@ Write-Host ""
 
 # ========== Step 1: Clear localStorage ==========
 # Replicates the "全部" reset button in app.html: localStorage.clear()
-Write-Host "[1/2] 清除应用数据 (localStorage)..." -ForegroundColor Yellow
+Write-Host "[1/3] 清除应用数据 (localStorage)..." -ForegroundColor Yellow
 
 $serverRunning = $false
 
@@ -86,15 +87,52 @@ if ($serverRunning) {
     }
 }
 
-# Kill all server.ps1 processes (whether we started them or they were already running)
+# ========== Step 2: Stop server, then clear user data ==========
+Write-Host "[2/3] 停止服务并清空用户数据 (userdata)..." -ForegroundColor Yellow
+
+# Stop all server.ps1 processes first so no file is locked
 try {
     Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" -ErrorAction SilentlyContinue |
         Where-Object { $_.CommandLine -like '*server.ps1*' } |
         ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 } catch {}
+Start-Sleep -Milliseconds 500
 
-# ========== Step 2: Delete shortcuts and config ==========
-Write-Host "[2/2] 删除快捷方式和配置文件..." -ForegroundColor Yellow
+# Delete the entire userdata directory (per-user profile_*.json files, etc.)
+if (Test-Path $userdataDir) {
+    try {
+        Remove-Item $userdataDir -Recurse -Force -ErrorAction Stop
+        Write-Host "  [OK] 已清空并删除 userdata 目录" -ForegroundColor Green
+    } catch {
+        Write-Host "  [!] 删除 userdata 失败: $_" -ForegroundColor Red
+    }
+} else {
+    Write-Host "  [-] userdata 目录不存在" -ForegroundColor DarkGray
+}
+
+# ========== Step 3: Delete config and shortcuts ==========
+Write-Host "[3/3] 删除配置文件与快捷方式..." -ForegroundColor Yellow
+
+# Delete config file (retry a few times in case it is briefly locked by the dying server)
+if (Test-Path $configPath) {
+    $deleted = $false
+    for ($i = 0; $i -lt 5; $i++) {
+        try {
+            Remove-Item $configPath -Force -ErrorAction Stop
+            $deleted = $true
+            break
+        } catch {
+            Start-Sleep -Milliseconds 400
+        }
+    }
+    if ($deleted) {
+        Write-Host "  [OK] 已删除配置文件 (config.json)" -ForegroundColor Green
+    } else {
+        Write-Host "  [!] 无法删除 config.json,请手动删除: $configPath" -ForegroundColor Red
+    }
+} else {
+    Write-Host "  [-] 配置文件不存在" -ForegroundColor DarkGray
+}
 
 # Delete desktop shortcut
 $desktopLnk = Join-Path $desktop $lnkName
@@ -112,14 +150,6 @@ if (Test-Path $startMenuLnk) {
     Write-Host "  [OK] 已删除开始菜单快捷方式" -ForegroundColor Green
 } else {
     Write-Host "  [-] 开始菜单快捷方式不存在" -ForegroundColor DarkGray
-}
-
-# Delete config file
-if (Test-Path $configPath) {
-    Remove-Item $configPath -Force
-    Write-Host "  [OK] 已删除配置文件 (config.json)" -ForegroundColor Green
-} else {
-    Write-Host "  [-] 配置文件不存在" -ForegroundColor DarkGray
 }
 
 # ========== Done ==========

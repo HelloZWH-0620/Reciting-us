@@ -1,4 +1,4 @@
-[简体中文](README.md) | [English](README_en.md) | 文言文
+[简体中文](README.md) | [English](README_EN.md) | 文言文
 
 # 背书哇！
 
@@ -8,6 +8,8 @@
 [![测试之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=测试版)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+> **今之版本**：v2.0.0（稳定通道，发布于 2026-08-28）— 详见 [Memorization UI/config/version.json](Memorization UI/config/version.json)。
 
 ---
 
@@ -119,30 +121,44 @@
 ## 项目结构
 
 > [!important]
-> 项目尚在试行，结构或时有变更。此处所列结构，非最终定制。
+> 项目方兴未艾，结构或时有变更。此处所列结构，仅供参考，非最终定制。
 
 ```
 Reciting-us/
-├── README.md                          # 项目说明文档
+├── README.md                          # 项目说明（简体中文）
+├── README_EN.md                       # 项目说明（English）
+├── README_Classical Chinese.md        # 项目说明（文言文）
+├── LICENSE                            # MIT 许可证
+├── PROVENANCE.md                      # 来源与许可证说明
 ├── __psserver.ps1                     # 简易 PowerShell 测试服务器（开发用）
 └── Memorization UI/
     ├── app.html                       # 主应用（单页应用，含所有前端逻辑）
+    ├── war4.html                      # 旧版 / 备用页面
     ├── setup.bat                      # 一键安装脚本（安装字体 + 启动服务器）
+    ├── uninstall.bat                  # 卸载脚本（调用 uninstall.ps1）
     ├── package.ps1                    # 安装引导脚本（创建桌面/开始菜单快捷方式）
+    ├── uninstall.ps1                  # 卸载之逻辑
+    ├── 卸载方法.txt                    # 卸载之法
     ├── config/
     │   ├── manifest.json              # PWA 应用清单（应用名称、图标等）
-    │   ├── articles.json              # 课文数据（文言文 + 古诗词，含原文、译文、注释、赏析）
+    │   ├── articles.json              # 课文数据（文言文，含原文、译文、注释、赏析）
     │   ├── poem.json                  # 古诗词数据（独立诗词集）
-    │   ├── game.json                  # 练习题库（72 道题目，含虚词辨析、填空默写、例句匹配）
-    │   └── writer.json                # 作者信息（18 位作者的朝代与生平简介）
+    │   ├── game.json                  # 练习题库（七十二题：虚词辨析、填空默写、例句匹配）
+    │   ├── writer.json                # 作者信息（一十八位作者之朝代与生平）
+    │   ├── version.json               # 版本信息（今为 v2.0.0，详见 notes）
+    │   └── bundled.js                 # 内联兜底数据（file:// 场景下供 app.html 回退）
     ├── resource/
     │   ├── OOBE/                      # 开箱引导图片（page1.png ~ page3.png）
-    │   ├── background/                # 壁纸资源目录（默认 Default.jpg）
-    │   └── wordtype/                  # 字体文件（Regular.ttf）
+    │   ├── background/                # 壁纸目录（默认 background.png；用户壁纸不入库）
+    │   ├── icon/                      # 界面图标（*.svg，明暗自适应）
+    │   ├── wordtype/                  # 字体文件（Regular.ttf）
+    │   └── audio/                     # 课文朗读音频（可选）
+    ├── userdata/                      # 用户运行时数据（git 忽略）
     └── setuptools/
         ├── server.ps1                 # 本地 PowerShell HTTP 服务器（提供静态文件 + API）
         ├── start.bat                  # 启动脚本（启动服务器 + 打开浏览器）
-        ├── config.json                # 安装后自动生成的配置文件（记录项目路径）
+        ├── ai-hosts.txt               # AI 代理可用之上游 Host 白名单
+        ├── config.json                # 安装后自动生成之配置文件（记录项目路径）
         ├── Setup.png                  # 安装引导画面图片
         └── logoblack.ico              # 应用图标
 ```

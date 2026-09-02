@@ -1,2 +1,22 @@
-# Auto detect text files and perform LF normalization
+# 自动检测文本文件并做行尾归一化
 * text=auto
+
+# Windows 脚本必须保持 CRLF，否则 PowerShell / CMD 可能无法正常执行
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 二进制资源：不做行尾转换，也不参与文本差异
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.bmp binary
+*.ico binary
+*.ttf binary
+*.mp3 binary
+*.woff2 binary
+
+# SVG 图标按文本处理，便于审阅差异
+*.svg text

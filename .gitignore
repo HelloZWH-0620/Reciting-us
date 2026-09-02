@@ -1,0 +1,20 @@
+# ===== 用户运行时数据（不纳入版本控制） =====
+Memorization UI/userdata/
+
+# ===== 壁纸资源 =====
+# 仅保留应用内置的默认壁纸 background.png（app.html 的默认背景），
+# 忽略用户后续上传的壁纸与示例图（如 Default.jpg），避免大文件入库。
+Memorization UI/resource/background/
+!Memorization UI/resource/background/background.png
+
+# ===== 课文朗读音频（可选资源，体积较大，按需另行提供） =====
+Memorization UI/resource/audio/
+
+# ===== 旧版 / 临时页面（如仍需保留，请移出版本控制或自行调整） =====
+Memorization UI/war4.html
+
+# ===== 操作系统 / 编辑器垃圾文件 =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini

@@ -1,0 +1,7 @@
+# AI 代理域名白名单追加配置
+# 每行一个域名，# 开头为注释。修改后需重启服务器（start.bat）生效。
+# 内置白名单：api.openai.com / api.deepseek.com / api.siliconflow.cn /
+#            dashscope.aliyuncs.com / open.bigmodel.cn / api.moonshot.cn /
+#            api.moonshot.com / localhost / 127.0.0.1
+# 如使用自定义服务商或中转站，在下方添加其域名，例如：
+# api.example-proxy.com

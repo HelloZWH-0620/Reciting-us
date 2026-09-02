@@ -37,6 +37,44 @@ if (-not (Test-Path $userdataDir)) {
 
 $allowedExt = @('.png','.jpg','.jpeg','.gif','.webp','.bmp')
 $audioExt = @('.mp3','.wav','.m4a','.aac')
+$maxUploadBytes = 8MB   # 上传壁纸解码后大小上限（M1 加固：原实现无大小校验）
+
+# AI 代理目标域名白名单（M1 加固：原实现可被当作 SSRF 跳板向任意外网地址转发）
+# 用户如需自定义服务商（如本地 Ollama、中转站），在 setuptools/ai-hosts.txt 每行写一个域名即可追加
+$aiAllowedHosts = @(
+    'api.openai.com',
+    'api.deepseek.com',
+    'api.siliconflow.cn',
+    'dashscope.aliyuncs.com',
+    'open.bigmodel.cn',
+    'api.moonshot.cn',
+    'api.moonshot.com',
+    'localhost',
+    '127.0.0.1'
+)
+$aiHostsFile = Join-Path $scriptDir 'ai-hosts.txt'
+if (Test-Path $aiHostsFile) {
+    try {
+        Get-Content $aiHostsFile -Encoding UTF8 | ForEach-Object {
+            $h = $_.Trim().ToLower()
+            if ($h -and -not $h.StartsWith('#') -and ($aiAllowedHosts -notcontains $h)) { $aiAllowedHosts += $h }
+        }
+    } catch {}
+}
+
+# 校验图片魔数与扩展名一致（M1 加固）
+function Test-ImageMagic([byte[]]$bytes, [string]$ext) {
+    if ($bytes.Length -lt 12) { return $false }
+    switch ($ext) {
+        '.png'  { return ($bytes[0] -eq 0x89) -and ($bytes[1] -eq 0x50) -and ($bytes[2] -eq 0x4E) -and ($bytes[3] -eq 0x47) }
+        '.jpg'  { return ($bytes[0] -eq 0xFF) -and ($bytes[1] -eq 0xD8) -and ($bytes[2] -eq 0xFF) }
+        '.jpeg' { return ($bytes[0] -eq 0xFF) -and ($bytes[1] -eq 0xD8) -and ($bytes[2] -eq 0xFF) }
+        '.gif'  { return ($bytes[0] -eq 0x47) -and ($bytes[1] -eq 0x49) -and ($bytes[2] -eq 0x46) }
+        '.bmp'  { return ($bytes[0] -eq 0x42) -and ($bytes[1] -eq 0x4D) }
+        '.webp' { return ($bytes[0] -eq 0x52) -and ($bytes[1] -eq 0x49) -and ($bytes[2] -eq 0x46) -and ($bytes[3] -eq 0x46) }
+        default { return $false }
+    }
+}
 
 $mimeMap = @{
     '.html' = 'text/html'
@@ -96,7 +134,7 @@ try {
     exit 1
 }
 
-Write-Host "服务器已启动: http://localhost:$Port/app0801.html"
+Write-Host "服务器已启动: http://localhost:$Port/app.html"
 Write-Host "项目目录: $root"
 Write-Host "壁纸目录: $wallpaperDir"
 
@@ -108,8 +146,8 @@ try {
         $path = $request.Url.LocalPath
         $method = $request.HttpMethod
 
-        # CORS 头
-        $response.Headers.Add('Access-Control-Allow-Origin', '*')
+        # CORS 头（M1 加固：收紧为同源。原实现 '*' 允许任意恶意网页静默调用本机 API）
+        $response.Headers.Add('Access-Control-Allow-Origin', "http://localhost:$Port")
         $response.Headers.Add('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS')
         $response.Headers.Add('Access-Control-Allow-Headers', 'Content-Type')
 
@@ -125,6 +163,20 @@ try {
                     Where-Object { $allowedExt -contains $_.Extension.ToLower() } |
                     Select-Object -ExpandProperty Name | Sort-Object
                 Send-JsonResponse $response @{success=$true; files=@($files)}
+            }
+            elseif ($path -eq '/api/version' -and $method -eq 'GET') {
+                # 版本信息（V3 §2.1）：供前端与后续更新器读取 config/version.json
+                $versionFile = Join-Path $root 'config\version.json'
+                if (Test-Path $versionFile) {
+                    try {
+                        $ver = Get-Content $versionFile -Raw -Encoding UTF8 | ConvertFrom-Json
+                        Send-JsonResponse $response @{success=$true; version=$ver.version; channel=$ver.channel; releasedAt=$ver.releasedAt; notes=$ver.notes}
+                    } catch {
+                        Send-ErrorResponse $response 'version.json 解析失败' 500
+                    }
+                } else {
+                    Send-ErrorResponse $response '缺少 config/version.json' 404
+                }
             }
             elseif ($path -eq '/api/audio-files' -and $method -eq 'GET') {
                 $files = Get-ChildItem -Path $audioDir -File -ErrorAction SilentlyContinue |
@@ -167,6 +219,14 @@ try {
                 }
 
                 $bytes = [System.Convert]::FromBase64String($base64)
+                if ($bytes.Length -gt $maxUploadBytes) {
+                    Send-ErrorResponse $response '图片超过 8MB 大小限制' 413
+                    continue
+                }
+                if (-not (Test-ImageMagic $bytes $ext)) {
+                    Send-ErrorResponse $response '图片内容与扩展名不符' 400
+                    continue
+                }
                 [System.IO.File]::WriteAllBytes($targetPath, $bytes)
                 Send-JsonResponse $response @{success=$true; filename=$safeName}
             }
@@ -195,6 +255,16 @@ try {
                 $targetUrl = $payload.url
                 if (-not $targetUrl) {
                     Send-ErrorResponse $response '缺少目标 URL' 400
+                    continue
+                }
+                # M1 加固：目标域名白名单校验（防 SSRF）。自定义服务商请编辑 setuptools/ai-hosts.txt
+                $targetHost = ''
+                try { $targetHost = [System.Uri]::new($targetUrl).Host.ToLower() } catch {
+                    Send-ErrorResponse $response '目标 URL 非法' 400
+                    continue
+                }
+                if ($aiAllowedHosts -notcontains $targetHost) {
+                    Send-ErrorResponse $response ("目标域名不在白名单: " + $targetHost + "。可在 setuptools/ai-hosts.txt 中添加后重启") 403
                     continue
                 }
                 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls13
@@ -251,13 +321,25 @@ try {
                 }
                 continue
             }
+            elseif ($path -eq '/api/userdata/list' -and $method -eq 'GET') {
+                # 列出 userdata 目录下所有 .json 文件（含前缀文件名，供前端筛选用户配置文件）
+                $files = Get-ChildItem -Path $userdataDir -File -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Extension.ToLower() -eq '.json' } |
+                    Select-Object -ExpandProperty Name | Sort-Object
+                Send-JsonResponse $response @{success=$true; files=@($files)}
+            }
             elseif ($path -like '/api/userdata/file/*') {
                 # 用户数据文件读写：userdata/{name}.json（preferences/ai_config/ai_questions）
                 $fname = [System.IO.Path]::GetFileName($path.Substring('/api/userdata/file/'.Length))
                 $fpath = Join-Path $userdataDir $fname
                 if ($method -eq 'GET') {
                     if (Test-Path $fpath) {
-                        $content = Get-Content $fpath -Raw -Encoding UTF8 | ConvertFrom-Json
+                        try {
+                            $content = Get-Content $fpath -Raw -Encoding UTF8 | ConvertFrom-Json
+                        } catch {
+                            # 配置文件损坏（如写入被中断产生半截 JSON）时返回空数据，避免 500 导致无法登录
+                            $content = $null
+                        }
                         Send-JsonResponse $response @{success=$true; data=$content}
                     } else {
                         Send-JsonResponse $response @{success=$true; data=$null}
@@ -285,7 +367,7 @@ try {
                 # 静态文件服务
                 $relative = $path.TrimStart('/').Replace('/', '\')
                 if ([string]::IsNullOrWhiteSpace($relative)) {
-                    $relative = 'app0801.html'
+                    $relative = 'app.html'
                 }
                 $filePath = Join-Path $root $relative
                 $filePath = [System.IO.Path]::GetFullPath($filePath)
