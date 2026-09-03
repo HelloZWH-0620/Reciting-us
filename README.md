@@ -9,7 +9,7 @@
 ![平台](https://img.shields.io/badge/platform-Windows-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
-> 有关各版本的详情，参见 [Memorization UI/config/version.json](Memorization UI/config/version.json) 或 [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
+> 有关各版本的详情，参见 [version.json](https://github.com/HelloZWH-0620/Reciting-us/Memorization UI/config/version.json) 或 [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
 
 ---
 
