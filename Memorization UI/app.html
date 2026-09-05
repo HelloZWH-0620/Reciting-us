@@ -43,8 +43,8 @@
     @font-face{font-family:'LXGW WenKai';src:url('resource/wordtype/Regular.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
     *{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
     /* ===== 图标系统：用 mask + currentColor 引用 resource/icon/*.svg，自动适配明暗主题 ===== */
-    .ico{display:inline-block;width:18px;height:18px;flex-shrink:0;background:currentColor;
-      -webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
+    .ico{display:inline-block;width:18px;height:18px;flex-shrink:0;vertical-align:middle}
+    .ico svg{width:100%;height:100%;display:block}
     .ico-search{--ico:url("resource/icon/search.svg")}
     .ico-user{--ico:url("resource/icon/user.svg")}
     .ico-setting{--ico:url("resource/icon/setting.svg")}
@@ -883,9 +883,9 @@
   </div>
 
   <footer class="player" id="player">
-    <button class="p-btn" id="btnRW" title="后退5秒"><i class="ico ico-rw"></i></button>
+    <button class="p-btn" id="btnRW" title="后退5秒">-5</button>
     <button class="p-btn play" id="btnPP" title="播放/暂停 (Space)"><i class="ico ico-play" id="ppIco"></i></button>
-    <button class="p-btn" id="btnFF" title="前进5秒"><i class="ico ico-ff"></i></button>
+    <button class="p-btn" id="btnFF" title="前进5秒">+5</button>
     <button class="p-btn" id="speedBtn" title="倍速">1x</button>
     <button class="p-btn" id="loopBtn" title="单曲循环"><i class="ico ico-loop" id="loopIco"></i></button>
   <span class="p-title" id="pTitle"></span>
@@ -8295,6 +8295,49 @@ document.addEventListener('DOMContentLoaded', function () {
     scheduleProfileSave();
   });
 });
+
+// SVG 图标内联：将 SVG 直接嵌入 .ico 元素，SVG 使用 currentColor 继承父元素颜色
+// 解决 CSS mask 在 WebView 中不兼容导致图标显示为色块的问题
+var SVG_ICONS={
+  'ico-search':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>',
+  'ico-setting':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>',
+  'ico-sun':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M4.5 19.5l1.8-1.8M17.7 6.3l1.8-1.8"/></svg>',
+  'ico-night':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
+  'ico-enlarge':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L8.5 8.5 13 20"/><path d="M5.5 16h6"/><path d="M15 12h6M18 9v6"/></svg>',
+  'ico-reduce':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L8.5 8.5 13 20"/><path d="M5.5 16h6"/><path d="M15 12h6"/></svg>',
+  'ico-play':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  'ico-pause':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>',
+  'ico-loop':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H8a4 4 0 0 0 0 8h2"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h12a4 4 0 0 0 0-8h-2"/><text x="9.5" y="14.5" fill="currentColor" stroke="none" font-size="7" font-family="Arial" font-weight="bold">1</text></svg>',
+  'ico-list':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H8a4 4 0 0 0 0 8h2"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h12a4 4 0 0 0 0-8h-2"/></svg>',
+  'ico-tts':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>',
+  'ico-star':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.8.7-5.1 4.6 1.5 6.7L12 17.3 5.9 20.3l1.5-6.7L2.3 9l6.8-.7z"/></svg>',
+  'ico-unstar':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.8.7-5.1 4.6 1.5 6.7L12 17.3 5.9 20.3l1.5-6.7L2.3 9l6.8-.7z"/></svg>',
+  'ico-user':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>'
+};
+(function(){
+  function applyIco(el){
+    var cls=(el.className||'').split(/\s+/);
+    for(var i=0;i<cls.length;i++){
+      var c=cls[i];
+      if(c.indexOf('ico-')===0 && SVG_ICONS[c]){
+        el.innerHTML=SVG_ICONS[c];
+        return;
+      }
+    }
+  }
+  var obs=new MutationObserver(function(muts){
+    muts.forEach(function(m){if(m.type==='attributes'&&m.attributeName==='class')applyIco(m.target);});
+  });
+  function applyAll(){
+    var els=document.querySelectorAll('.ico');
+    for(var i=0;i<els.length;i++){
+      applyIco(els[i]);
+      obs.observe(els[i],{attributes:true,attributeFilter:['class']});
+    }
+  }
+  if(document.readyState!=='loading')applyAll();
+  else document.addEventListener('DOMContentLoaded',applyAll);
+})();
 </script>
 </body>
 </html>
