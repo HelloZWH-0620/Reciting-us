@@ -16,6 +16,7 @@
     <button class="head-btn" id="recitedBtn" title="标记已背诵"><i class="ico ico-unstar" id="recitedIco"></i>已背诵</button>
     <button class="head-btn" id="chainBtn" title="链式背诵(渐进消隐)">链式背诵</button>
     <button class="head-btn" id="readAloudBtn" title="全文朗读(逐句高亮)">朗读</button>
+      <button class="head-btn" id="pinyinBtn" title="拼音注音开关">拼音</button>
     <div class="mode-select-wrap">
       <button class="mode-select-btn" id="modeSelectBtn" type="button">仅原文</button>
       <div class="mode-select-menu" id="modeSelectMenu">
@@ -218,6 +219,8 @@
      此文件把 game.json / version.json 内联为全局变量，作为 file:// 场景的兜底数据源。
      由 gen_bundled_config.py 生成；带服务器时仍优先用 fetch 的最新 json。 -->
 <script src="config/bundled.js"></script>
+
+<script src="js/pinyin-dict.js"></script>
 
 <script src="js/app.main.js"></script>
 

@@ -51,8 +51,24 @@ function startAccountFlow(onDone) {
   function afterLogin(profileMeta, profileObj) {
     // profileMeta: {name, file, username, password, createdAt}
     window.__ACTIVE_PROFILE__ = profileMeta;
-    loadProfileIntoLocalStorage(profileObj);
-    renderStudyPanel(profileMeta);
+    // v0.38：AI 设置绑定到对应用户。旧版本曾把 AI 配置写在全局 ai_config.json，
+    // 档案数据缺 aiConfig 时一次性迁入该用户（此后随档案一起保存/恢复，互不串用）。
+    var ensure = Promise.resolve(profileObj);
+    if (!profileObj || !profileObj.data || !profileObj.data.aiConfig) {
+      ensure = api.read('ai_config.json').then(function (legacy) {
+        var cfg = legacy && (legacy.aiConfig || (legacy.apiUrl ? legacy : null));
+        if (cfg && (cfg.apiUrl || cfg.model)) {
+          profileObj = profileObj || {};
+          profileObj.data = profileObj.data || {};
+          profileObj.data.aiConfig = cfg;
+        }
+        return profileObj;
+      }).catch(function () { return profileObj; });
+    }
+    ensure.then(function (p) {
+      loadProfileIntoLocalStorage(p);
+      renderStudyPanel(profileMeta);
+    });
   }
 
   // 登录成功后：展示学习数据概览面板，点击“进入应用”才关闭账户浮层

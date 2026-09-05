@@ -53,13 +53,31 @@ CI：`.github/workflows/build.yml`（tag `v*` 触发；需在仓库 secrets 配�
 
 见 git 历史 v0.3.1 的 BUILD.md 第三节（rcedit 换图标 / zip 级换 APK 图标）。
 
-## 六、v3 蓝图落地对照
+## 六、版本记录
+
+### v0.38 · 2026-09-06
+
+1. **个人中心**：数据面板核查（无多余返回按钮）；**AI 设置绑定对应用户**——`ai_config__<档案>.json` 独立存取 + 档案 payload 随存随取 + 旧全局 `ai_config.json` 一次性迁入 + 新建用户隔离实测（互不串用）；`syncKey` 持久化挂钩恢复接线。
+2. **拼音功能（新增）**：顶栏「拼音」开关 → 正文 ruby 逐字注音；字典 `js/pinyin-dict.js`（3297 字，42KB，`build/gen-pinyin-dict.py` 生成）覆盖课文/UI 全部用字，缺字自动回退；MutationObserver 自动跟随重渲染。
+3. **翻译/注释字体统一**：阅读区（原文/译文/注释）统一内嵌霞鹜文楷，消除系统楷体/文楷混排错乱；`@font-face` 接入子集 `Regular.subset.woff2`（523KB，秒加载，TTF 兜底）；注释行字体规则不再受分栏模式限定。
+4. **虚词 AI 收集例句（新增）**：词卡新增「📚 AI 收集例句」——按义项分组收集教材课文例句，含未配置提醒/加载态/错误展示；修复上游错误对象显示 `[object Object]` 的问题。
+5. **作者朝代切换样式**：`.dynasty-sel` 增强（主色左竖条 + 加深渐变 + 加粗，暗色主题适配）。
+6. **练习模式目录视觉修复**：类型/返回/随机按钮改用 `.sbtn`（缩进统一）；修复「选中高亮被 `showPlaceholder→hideAllViews` 抹掉」的顺序缺陷；侧栏按钮焦点圈收敛（`.focus-visible` 内描边）。
+7. 版本号全链路 0.38.0（version.json / Directory.Build.props / Android 0.38 code 38）。
+
+回归证据：单元测试 56/56、冒烟 SMOKE_OK、浏览器实测（拼音 315 注音/朝代高亮/练习选中态保持/AI 例句全链路 401 错误路径/隔离性磁盘证据）。
+
+### v2.1 · 2026-09-05（模块化拆分）
+
+app.html 8081→231 行：`css/app.css` + `js/data/*5` + `js/app.main.js`（bootApp 整体，god-function 保作用域）+ `profile/error-display/account/reveal/boot` 顶层模块；CSS 外置后 16 处相对 url 修复；error-boundary 自检清单修正；Cache-Control 改 `no-cache`+ETag。
+
+## 七、v3 蓝图落地对照
 
 | Wave | 状态 | 说明 |
 |---|---|---|
 | Wave 0 源码恢复 | ✅ 完成 | ilspycmd 反编译 → 按蓝图重建 → 全绿 → 入库；资源漂移校验见 `DRIFT_REPORT.md` |
 | Wave 1 后端 C# 化 | ✅ 完成 | 有界并发/中间件/ETag/gzip/CSP/请求体限制/限流/断路器/SQLite WAL/原子迁移/AI 密钥托管/TTS 桥/health/log |
-| Wave 2 前端治理 | 🟡 部分 | liquid-glass 补齐、PWA 图标、error-boundary、migrate、断链清零 ✅；8059 行全量拆分模块（低风险渐进）⏳ |
-| Wave 3 发布与质量 | 🟡 部分 | pack/sign/CI/subset-font ✅、56 测试 ✅；字体子集实际运行与真机回归 ⏳ |
+| Wave 2 前端治理 | ✅ 完成 | 模块化拆分（入口 231 行）、断链清零、error-boundary、migrate、字体子集接入、拼音/AI 例句等新功能 |
+| Wave 3 发布与质量 | 🟡 部分 | pack/sign/CI/subset-font ✅、56 测试 ✅；真机回归 ⏳（需实体设备） |
 
-已知有意偏离 v3 文档的两处（均记录于代码注释）：AI 代理上游超时保留 120s（文档 30s，避免长文出题被截断）；数据迁移以 `web/`（程序集快照）为权威源而非 `Memorization UI/`（实测后者滞后）。
+已知有意偏离 v3 文档的记录（均写入代码注释）：AI 代理上游超时 120s（文档 30s）；前端权威源为 `web/`（程序集快照，实测 `Memorization UI/` 滞后）；`js/app.main.js`（bootApp god-function，5637 行）保持整体——拆分需重构函数作用域，风险不可接受，留待专项重构。`Memorization UI/` 自 v2.1 起不再同步（PowerShell 单文件模式兼容副本）。

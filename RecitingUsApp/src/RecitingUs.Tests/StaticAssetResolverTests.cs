@@ -36,7 +36,7 @@ public class StaticAssetResolverTests
         using var stream = StaticAssetResolver.Open("/app.html", out var mime, out _);
         Assert.NotNull(stream);
         Assert.StartsWith("text/html", mime);
-        Assert.True(stream!.Length > 100_000);
+        Assert.True(stream!.Length > 5_000); // v0.38 拆分后为 13KB 壳
     }
 
     [Fact]
