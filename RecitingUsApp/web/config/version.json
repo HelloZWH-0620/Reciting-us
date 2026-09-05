@@ -1,0 +1,6 @@
+{
+  "version": "2.0.0",
+  "channel": "stable",
+  "releasedAt": "2026-09-05",
+  "notes": "v2.0 重建版：源码恢复工程完成（C# 桌面/Android/核心三工程可编译入库）、本地服务器 v2（有界并发/ETag/gzip/CSP/限流/断路器/SQLite WAL）、前端修复（liquid-glass 补齐/PWA 图标/错误边界/数据迁移）、新增 /api/health 与 TTS 原生桥。"
+}

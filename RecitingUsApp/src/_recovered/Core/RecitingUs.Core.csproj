@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RecitingUs.Core</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="web.app.html" />
+    <None Remove="web.config.articles.json" />
+    <None Remove="web.config.game.json" />
+    <None Remove="web.config.manifest.json" />
+    <None Remove="web.config.poem.json" />
+    <None Remove="web.config.version.json" />
+    <None Remove="web.config.writer.json" />
+    <None Remove="web.config.bundled.js" />
+    <None Remove="web.resource.background.background.png" />
+    <None Remove="web.resource.OOBE.page1.png" />
+    <None Remove="web.resource.OOBE.page2.png" />
+    <None Remove="web.resource.OOBE.page3.png" />
+    <None Remove="web.resource.icon.-5.svg" />
+    <None Remove="web.resource.icon.-5.svg" />
+    <None Remove="web.resource.icon.enlarge.svg" />
+    <None Remove="web.resource.icon.listplayback.svg" />
+    <None Remove="web.resource.icon.night.svg" />
+    <None Remove="web.resource.icon.pause.svg" />
+    <None Remove="web.resource.icon.play.svg" />
+    <None Remove="web.resource.icon.reduce.svg" />
+    <None Remove="web.resource.icon.search.svg" />
+    <None Remove="web.resource.icon.setting.svg" />
+    <None Remove="web.resource.icon.singleloop.svg" />
+    <None Remove="web.resource.icon.star.svg" />
+    <None Remove="web.resource.icon.sun.svg" />
+    <None Remove="web.resource.icon.TTS.svg" />
+    <None Remove="web.resource.icon.unstar.svg" />
+    <None Remove="web.resource.wordtype.Regular.ttf" />
+    <EmbeddedResource Include="web.app.html" LogicalName="web/app.html" />
+    <EmbeddedResource Include="web.config.articles.json" LogicalName="web/config\articles.json" />
+    <EmbeddedResource Include="web.config.game.json" LogicalName="web/config\game.json" />
+    <EmbeddedResource Include="web.config.manifest.json" LogicalName="web/config\manifest.json" />
+    <EmbeddedResource Include="web.config.poem.json" LogicalName="web/config\poem.json" />
+    <EmbeddedResource Include="web.config.version.json" LogicalName="web/config\version.json" />
+    <EmbeddedResource Include="web.config.writer.json" LogicalName="web/config\writer.json" />
+    <EmbeddedResource Include="web.config.bundled.js" LogicalName="web/config\bundled.js" />
+    <EmbeddedResource Include="web.resource.background.background.png" LogicalName="web/resource\background\background.png" />
+    <EmbeddedResource Include="web.resource.OOBE.page1.png" LogicalName="web/resource\OOBE\page1.png" />
+    <EmbeddedResource Include="web.resource.OOBE.page2.png" LogicalName="web/resource\OOBE\page2.png" />
+    <EmbeddedResource Include="web.resource.OOBE.page3.png" LogicalName="web/resource\OOBE\page3.png" />
+    <EmbeddedResource Include="web.resource.icon.-5.svg" LogicalName="web/resource\icon\+5.svg" />
+    <EmbeddedResource Include="web.resource.icon.-5.svg" LogicalName="web/resource\icon\-5.svg" />
+    <EmbeddedResource Include="web.resource.icon.enlarge.svg" LogicalName="web/resource\icon\enlarge.svg" />
+    <EmbeddedResource Include="web.resource.icon.listplayback.svg" LogicalName="web/resource\icon\listplayback.svg" />
+    <EmbeddedResource Include="web.resource.icon.night.svg" LogicalName="web/resource\icon\night.svg" />
+    <EmbeddedResource Include="web.resource.icon.pause.svg" LogicalName="web/resource\icon\pause.svg" />
+    <EmbeddedResource Include="web.resource.icon.play.svg" LogicalName="web/resource\icon\play.svg" />
+    <EmbeddedResource Include="web.resource.icon.reduce.svg" LogicalName="web/resource\icon\reduce.svg" />
+    <EmbeddedResource Include="web.resource.icon.search.svg" LogicalName="web/resource\icon\search.svg" />
+    <EmbeddedResource Include="web.resource.icon.setting.svg" LogicalName="web/resource\icon\setting.svg" />
+    <EmbeddedResource Include="web.resource.icon.singleloop.svg" LogicalName="web/resource\icon\singleloop.svg" />
+    <EmbeddedResource Include="web.resource.icon.star.svg" LogicalName="web/resource\icon\star.svg" />
+    <EmbeddedResource Include="web.resource.icon.sun.svg" LogicalName="web/resource\icon\sun.svg" />
+    <EmbeddedResource Include="web.resource.icon.TTS.svg" LogicalName="web/resource\icon\TTS.svg" />
+    <EmbeddedResource Include="web.resource.icon.unstar.svg" LogicalName="web/resource\icon\unstar.svg" />
+    <EmbeddedResource Include="web.resource.wordtype.Regular.ttf" LogicalName="web/resource\wordtype\Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup />
+</Project>

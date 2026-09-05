@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>RecitingUs</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="-AvaloniaResources" />
+    <EmbeddedResource Include="-AvaloniaResources" LogicalName="!AvaloniaResources" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Avalonia.Controls">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.WebView">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.WebView.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.Markup.Xaml">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.Markup.Xaml.dll</HintPath>
+    </Reference>
+    <Reference Include="WebView.Core">
+      <HintPath>artifacts/desktop/win-x64/WebView.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="RecitingUs.Core">
+      <HintPath>artifacts/desktop/win-x64/RecitingUs.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.Base">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.Desktop">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.WebView.Desktop">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.WebView.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Avalonia.Themes.Fluent">
+      <HintPath>artifacts/desktop/win-x64/Avalonia.Themes.Fluent.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

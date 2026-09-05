@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- 必须 AppCompat：Avalonia Activity 基于 AppCompatActivity -->
+  <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@android:color/white</item>
+  </style>
+</resources>

@@ -1,0 +1,7 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:av="using:AvaloniaWebView"
+             x:Class="RecitingUs.App.MainView"
+             Background="White">
+  <av:WebView Name="WebViewControl" />
+</UserControl>

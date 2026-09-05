@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>RecitingUs.App</RootNamespace>
+    <AssemblyName>RecitingUs</AssemblyName>
+    <ApplicationId>com.recitingus.app</ApplicationId>
+    <ApplicationTitle>背书哇</ApplicationTitle>
+    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>2</ApplicationVersion>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers><!-- 减包：仅 arm64，覆盖 >98% 设备 -->
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot><!-- 防 UnsatisfiedLinkError: n_onCreate -->
+    <_DisableParallelAot>true</_DisableParallelAot>
+    <TrimMode>partial</TrimMode>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AndroidManifest>Platforms\Android\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="WebView.Avalonia" />
+    <PackageReference Include="WebView.Avalonia.Android" />
+    <!-- 直连引用以覆盖 Avalonia 11.0.0 的漏洞传递版本（NU1903） -->
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="Tmds.DBus.Protocol" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RecitingUs.Core\RecitingUs.Core.csproj" />
+  </ItemGroup>
+
+  <!-- 链接共享 App 壳（App/MainView/MainWindow 的 XAML + 代码后置），桌面 Program.cs 不参与 -->
+  <ItemGroup>
+    <AvaloniaXaml Include="..\RecitingUs.App\App.axaml" Link="App.axaml" />
+    <AvaloniaXaml Include="..\RecitingUs.App\MainWindow.axaml" Link="MainWindow.axaml" />
+    <AvaloniaXaml Include="..\RecitingUs.App\MainView.axaml" Link="MainView.axaml" />
+    <Compile Include="..\RecitingUs.App\App.axaml.cs" Link="App.axaml.cs" />
+    <Compile Include="..\RecitingUs.App\MainWindow.axaml.cs" Link="MainWindow.axaml.cs" />
+    <Compile Include="..\RecitingUs.App\MainView.axaml.cs" Link="MainView.axaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AndroidResource Include="Resources\**\*" />
+    <AndroidResource Include="Platforms\Android\Resources\**\*" />
+  </ItemGroup>
+</Project>

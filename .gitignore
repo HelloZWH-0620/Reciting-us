@@ -1,5 +1,6 @@
 # ===== 用户运行时数据（不纳入版本控制） =====
 Memorization UI/userdata/
+userdata/
 
 # ===== 壁纸资源 =====
 # 仅保留应用内置的默认壁纸 background.png（app.html 的默认背景），
@@ -10,12 +11,30 @@ Memorization UI/resource/background/
 # ===== 课文朗读音频（可选资源，体积较大，按需另行提供） =====
 Memorization UI/resource/audio/
 
+# ===== 依赖 / 构建输出 =====
+node_modules/
+dist/
 
-# ===== 操作系统 / 编辑器垃圾文件 =====
-.DS_Store
+# ===== Logs & temp =====
+*.log
 Thumbs.db
-ehthumbs.db
 Desktop.ini
+.DS_Store
 
 # ===== WorkBuddy 内部记忆（不对外发布） =====
 .workbuddy/
+
+# ===== .NET 构建中间产物 =====
+**/bin/
+**/obj/
+
+# 构建产物不入库（数百 MB 二进制）；构建用 RecitingUsApp/build/pack.ps1 复现
+RecitingUsApp/artifacts/
+
+# ⚠️ 签名密钥严禁入库（APK 换签名 = 用户数据清空）
+# 现存位置: RecitingUsApp/artifacts/recitingus-signing.keystore（已被上一条排除）
+# 备份策略见 RecitingUsApp/BUILD.md 第二节
+*.keystore
+
+# v0.38.1: 朗读音频 352MB 不入库——由 build/fetch-audio.py 从下载目录复制
+RecitingUsApp/web/resource/audio/

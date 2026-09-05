@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>RecitingUs.Core</RootNamespace>
+    <AssemblyName>RecitingUs.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <!-- 显式升级 SQLitePCLRaw 原生库（2.1.11 有已知高危漏洞 GHSA-2m69-gcr7-jv3q） -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
+  </ItemGroup>
+
+  <!-- 内嵌 Web 资源：仓库根 web/ 下全部文件，资源名形如 web/app.html、web/config\articles.json
+       （RecursiveDir 带反斜杠，WebAssets 读取时统一归一化为 /，与原程序集布局一致） -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\web\**\*" LogicalName="web/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

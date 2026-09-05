@@ -1,0 +1,67 @@
+name: Build & Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Python (fonttools)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fonttools
+        run: pip install fonttools brotli
+
+      - name: Run unit tests
+        run: dotnet test RecitingUsApp/src/RecitingUs.Tests/RecitingUs.Tests.csproj -c Release --nologo
+
+      - name: Build all (desktop + installer + APK)
+        env:
+          RECITINGUS_KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+        shell: pwsh
+        run: RecitingUsApp/build/pack.ps1 -Ver ${{ github.ref_name }}
+
+      - name: Verify APK signature
+        shell: pwsh
+        run: |
+          $bt = "$env:ANDROID_HOME\build-tools"
+          $apksigner = (Get-ChildItem $bt -Recurse -Filter apksigner.bat | Select-Object -First 1).FullName
+          & $apksigner verify (Get-Item RecitingUsApp/artifacts/android/apk/recitingus-*.apk).FullName
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: recitingus-release
+          path: |
+            RecitingUsApp/artifacts/installer/*.exe
+            RecitingUsApp/artifacts/android/apk/recitingus-*.apk
+            RecitingUsApp/artifacts/SHA256SUMS
+          if-no-files-found: error
+
+      # 正式发版：打 tag 时创建 Release 草稿（需在 repo secrets 配置 KEYSTORE_PASS）
+      - name: Draft Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            RecitingUsApp/artifacts/installer/*.exe
+            RecitingUsApp/artifacts/android/apk/recitingus-*.apk
+            RecitingUsApp/artifacts/SHA256SUMS
