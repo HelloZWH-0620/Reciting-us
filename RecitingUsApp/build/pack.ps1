@@ -8,8 +8,8 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
-$env:ANDROID_HOME = $env:ANDROID_HOME ?? "$env:LOCALAPPDATA\Android\Sdk"
-$env:JAVA_HOME = $env:JAVA_HOME ?? "C:\Program Files\Android\openjdk\jdk-21.0.8"
+if (-not $env:ANDROID_HOME) { $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk" }
+if (-not $env:JAVA_HOME) { $env:JAVA_HOME = "C:\Program Files\Android\openjdk\jdk-21.0.8" }
 
 # 0) 版本号：优先命令行，其次 git tag（vX.Y.Z）
 if ($Ver -eq "2.0.0") {

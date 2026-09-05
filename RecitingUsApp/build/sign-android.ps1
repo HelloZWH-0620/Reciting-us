@@ -6,7 +6,7 @@ param(
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
-$env:ANDROID_HOME = $env:ANDROID_HOME ?? "$env:LOCALAPPDATA\Android\Sdk"
+if (-not $env:ANDROID_HOME) { $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk" }
 
 if ($env:RECITINGUS_KEYSTORE_PASS) { $passSpec = "env:RECITINGUS_KEYSTORE_PASS" }
 elseif ($PlainPass) { $passSpec = "pass:$PlainPass" }
