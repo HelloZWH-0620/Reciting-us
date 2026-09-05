@@ -656,7 +656,9 @@ public static class Router
 
         resp.ContentType = mime;
         if (etag is not null) resp.Headers["ETag"] = etag;
-        resp.Headers["Cache-Control"] = "public, max-age=3600";
+        // 本地回环 RTT≈0：no-cache（每次带 ETag 回源，未变即 304）比 max-age 更正确——
+        // 版本升级/热更后浏览器立即可见，不会被陈旧缓存卡住
+        resp.Headers["Cache-Control"] = "no-cache";
 
         var acceptEncoding = ctx.Request.Headers["Accept-Encoding"] ?? "";
         if (IsCompressible(mime) && acceptEncoding.Contains("gzip", StringComparison.OrdinalIgnoreCase))

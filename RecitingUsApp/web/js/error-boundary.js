@@ -24,9 +24,11 @@
     report('error', 'unhandledrejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
   });
 
-  // 模块加载自检（拆分/热更后兜底提示，避免白屏无解）
+  // 模块加载自检（拆分/热更后兜底提示，避免白屏无解）。
+  // 只检查"解析期"必须存在的全局量；Store/UserDataAPI/renderArticleNav 等是
+  // bootApp() 运行后才暴露的函数局部量，首启未登录时本就不存在，不可在此检查。
   function checkModulesLoaded() {
-    var required = ['Store', 'UserDataAPI', 'renderArticleNav'];
+    var required = ['bootApp', 'startAccountFlow', 'escapeHtml', 'D', 'AUTHORS', 'JUSHI', 'CILEI'];
     var missing = [];
     for (var i = 0; i < required.length; i++) {
       if (typeof window[required[i]] === 'undefined') missing.push(required[i]);
