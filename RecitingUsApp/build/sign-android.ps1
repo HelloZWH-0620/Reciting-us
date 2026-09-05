@@ -1,4 +1,4 @@
-# APK 对齐 + 签名 + 校验（v3 §9.2）
+﻿# APK 对齐 + 签名 + 校验（v3 §9.2）
 # 口令从环境变量 RECITINGUS_KEYSTORE_PASS 读取；本地调试可用 -PlainPass 显式传入（勿写入脚本/仓库）
 param(
     [string]$Ver = "2.0.0",
@@ -19,7 +19,9 @@ $apksigner = (Get-ChildItem $bt -Recurse -Filter apksigner.bat | Sort-Object Ful
 $keystore = "$root\artifacts\recitingus-signing.keystore"
 if (-not (Test-Path $keystore)) { throw "找不到签名密钥: $keystore（务必另行备份！）" }
 
-$unsigned = Get-ChildItem "$root\artifacts\android\apk\*.apk" -Exclude *-Signed.apk, *-aligned.apk, recitingus-*.apk |
+# .NET Android Release 默认产出 com.recitingus.app-Signed.apk（debug key 签名）；
+# apksigner 重签时会替换全部既有签名，因此 -Signed.apk 可直接作为输入
+$unsigned = Get-ChildItem "$root\artifacts\android\apk\*.apk" -Exclude aligned.apk, recitingus-*.apk |
     Sort-Object LastWriteTime -Desc | Select-Object -First 1
 if (-not $unsigned) { throw "apk 目录中未找到未签名产物" }
 $aligned = "$root\artifacts\android\apk\aligned.apk"

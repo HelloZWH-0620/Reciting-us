@@ -1,4 +1,4 @@
-# 背书哇一键构建三端（v3 §9.1）
+﻿# 背书哇一键构建三端（v3 §9.1）
 # 用法: ./build/pack.ps1 [-Ver 2.0.0]
 # 产物: artifacts/desktop/win-x64/ + artifacts/installer/*.exe + artifacts/android/apk/*.apk + SHA256SUMS
 param(
