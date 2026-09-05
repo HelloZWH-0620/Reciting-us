@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="resource/logomini.ico" type="image/x-icon">
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="config/manifest.json">
   <title>背书哇</title>
   <style>
     :root{
@@ -43,10 +43,9 @@
     @font-face{font-family:'LXGW WenKai';src:url('resource/wordtype/Regular.ttf') format('truetype');font-weight:normal;font-style:normal;font-display:swap}
     *{margin:0;padding:0;box-sizing:border-box;border-radius:0!important}
     /* ===== 图标系统：用 mask + currentColor 引用 resource/icon/*.svg，自动适配明暗主题 ===== */
-    .ico{display:inline-block;width:18px;height:18px;flex-shrink:0;vertical-align:middle}
-    .ico svg{width:100%;height:100%;display:block}
+    .ico{display:inline-block;width:18px;height:18px;flex-shrink:0;background:currentColor;
+      -webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
     .ico-search{--ico:url("resource/icon/search.svg")}
-    .ico-user{--ico:url("resource/icon/user.svg")}
     .ico-setting{--ico:url("resource/icon/setting.svg")}
     .ico-sun{--ico:url("resource/icon/sun.svg")}
     .ico-night{--ico:url("resource/icon/night.svg")}
@@ -117,11 +116,6 @@
     button:not(.study-tab)::before,.author-card::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:var(--rv,0);border-radius:inherit;background:radial-gradient(circle 70px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.15),rgba(255,255,255,.05) 45%,transparent 80%)}
     /* 边框高光：光斑经 mask 只显示 1.5px 边缘环，强度明显高于背景——边缘先被照亮 */
     button:not(.study-tab)::after,.author-card::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:var(--rv,0);padding:1.5px;border-radius:inherit;background:radial-gradient(circle 60px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.9),rgba(255,255,255,.28) 45%,transparent 80%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
-    /* 按压反馈（Win10）：按钮如中心固定的卡片，按压点向下"挤压"（3D 倾斜），松手弹回 */
-    button:not(.study-tab),.author-card{transition:transform .18s ease}
-    button:not(.study-tab):active,.author-card:active{transform:perspective(600px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(.99);transition:transform .05s ease}
-    button:not(.study-tab):active::before,.author-card:active::before{opacity:1;background:radial-gradient(circle 110px at var(--mx,50%) var(--my,50%),rgba(255,255,255,.24),rgba(255,255,255,.09) 45%,transparent 80%)}
-    button:not(.study-tab):active::after,.author-card:active::after{opacity:1;background:radial-gradient(circle 95px at var(--mx,50%) var(--my,50%),rgba(255,255,255,1),rgba(255,255,255,.4) 45%,transparent 80%)}
     .sbtn:active{background:var(--active)}
     /* 目录按钮之间留一点缝隙 */
     .side .sbtn,.side .nav-parent,.side .nav-child{margin-bottom:2px}
@@ -139,7 +133,6 @@
     .nav-child:active{background:var(--active)}
     .nav-child.sel{background:linear-gradient(90deg,rgba(0,102,204,.05) 0%,rgba(0,102,204,.12) 50%,rgba(0,102,204,.22) 100%);color:var(--fg)}
     .more-wrap{border-top:1px solid var(--border);display:flex;align-items:center;padding:6px 8px;gap:4px}
-    .mine-wrap{border-top:none;padding-bottom:2px}
     .more-wrap .sbtn{flex:1;font-size:13px;color:var(--sub);min-height:36px}
     .util-btn{height:36px;min-width:36px;padding:0 8px;border:none;background:var(--card);cursor:pointer;font-family:'Microsoft YaHei',sans-serif;font-size:15px;color:var(--fg);display:flex;align-items:center;justify-content:center;transition:background .1s}
     .util-btn:hover{background:var(--hover)}
@@ -745,10 +738,6 @@
     </div>
     <div class="side-div"></div>
     <nav class="side-nav" id="nav"></nav>
-    <div class="more-wrap mine-wrap">
-      <button class="sbtn" id="mineBtn"><i class="ico ico-user"></i>我的</button>
-      <button class="util-btn" style="visibility:hidden" tabindex="-1" aria-hidden="true"></button>
-    </div>
     <div class="more-wrap">
       <button class="sbtn" id="moreBtn"><i class="ico ico-setting"></i>更多</button>
       <button class="util-btn" id="themeBtn" title="切换主题"><i class="ico ico-sun" id="themeIco"></i></button>
@@ -883,9 +872,9 @@
   </div>
 
   <footer class="player" id="player">
-    <button class="p-btn" id="btnRW" title="后退5秒">-5</button>
+    <button class="p-btn" id="btnRW" title="后退5秒"><i class="ico ico-rw"></i></button>
     <button class="p-btn play" id="btnPP" title="播放/暂停 (Space)"><i class="ico ico-play" id="ppIco"></i></button>
-    <button class="p-btn" id="btnFF" title="前进5秒">+5</button>
+    <button class="p-btn" id="btnFF" title="前进5秒"><i class="ico ico-ff"></i></button>
     <button class="p-btn" id="speedBtn" title="倍速">1x</button>
     <button class="p-btn" id="loopBtn" title="单曲循环"><i class="ico ico-loop" id="loopIco"></i></button>
   <span class="p-title" id="pTitle"></span>
@@ -1871,6 +1860,8 @@ if (typeof D !== 'undefined' && Array.isArray(D)) {
 </script>
 
 <script src="liquid-glass.js"></script>
+<script src="js/error-boundary.js"></script>
+<script src="js/migrate.js"></script>
 
 <!-- 打包为桌面端/安卓 App 时页面以 file:// 加载，fetch('config/*.json') 会被 CORS 拦截。
      此文件把 game.json / version.json 内联为全局变量，作为 file:// 场景的兜底数据源。
@@ -2522,7 +2513,7 @@ function bootApp() {
     searchIn.value = '';
     hlKw = '';
     searchNav.classList.add('hidden');
-    TTS.stop();
+    try { TTS.stop(); } catch(e) {}
     renderSidebar();
 
     if (newMode === 'learn') {
@@ -6226,7 +6217,7 @@ function bootApp() {
     // 保存当前音频进度再切换
     if (cur && resolveAudio(cur) && cur.id !== id && audioEl.duration) Store.setAudio(cur.id, audioEl.currentTime);
     cur = art;
-    TTS.stop();
+    try { TTS.stop(); } catch(e) {}
     showArticleView();
     artTitle.textContent = cur.title;
     artAuthor.innerHTML = '';
@@ -6549,7 +6540,7 @@ function bootApp() {
     if (playing) {
       playing = false; setPpIcon(false); audioEl.pause();
     } else {
-      TTS.stop();
+      try { TTS.stop(); } catch(e) {}
       playing = true; setPpIcon(true);
       var result = audioEl.play();
       if (result && typeof result.catch === 'function') result.catch(function() { playing=false; setPpIcon(false); });
@@ -6656,11 +6647,11 @@ function bootApp() {
         self.chunkIdx++;
         self.speakNext();
       };
-      this.synth.speak(u);
+      if(this.synth) this.synth.speak(u);
     },
     pause: function(){
       this.paused = true;
-      this.synth.cancel();
+      if(this.synth) this.synth.cancel();
       authorTtsBtn.classList.remove('tts-playing');
     },
     resume: function(){
@@ -6670,7 +6661,7 @@ function bootApp() {
     },
     stop: function(){
       this.active = false; this.paused = false;
-      this.synth.cancel();
+      if(this.synth) this.synth.cancel();
       authorTtsBtn.classList.remove('tts-playing');
       this.highlightClear();
     },
@@ -7493,6 +7484,27 @@ function escapeHtml(s) {
 
 function ProfileAPI() {
   var BASE = '/api/userdata';
+  var isFileProtocol = location.protocol === 'file:';
+
+  // ===== file:// 下使用 localStorage 兜底存储（WebView 无服务器场景） =====
+  var LOCAL_PREFIX = 'bsw_localfile_';
+  function localRead(name) {
+    try { var raw = localStorage.getItem(LOCAL_PREFIX + name); return raw ? JSON.parse(raw) : null; }
+    catch (e) { return null; }
+  }
+  function localWrite(name, obj) {
+    try { localStorage.setItem(LOCAL_PREFIX + name, JSON.stringify(obj)); return { success: true }; }
+    catch (e) { return { success: false, error: '本地存储已满或不可用' }; }
+  }
+  function localList() {
+    var files = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(LOCAL_PREFIX) === 0) files.push(k.slice(LOCAL_PREFIX.length));
+    }
+    return files;
+  }
+
   function req(url, opts) {
     opts = opts || {};
     return fetch(url, opts).then(function (r) {
@@ -7504,6 +7516,7 @@ function ProfileAPI() {
   return {
     // 列出 userdata 下所有 .json 文件名；ok=false 表示服务器不可达（如未通过 启动.bat 打开）
     list: function () {
+      if (isFileProtocol) { return Promise.resolve({ files: localList(), ok: false }); }
       return req(BASE + '/list').then(function (r) {
         if (r && r.success && Array.isArray(r.files)) return { files: r.files, ok: true };
         // 服务器不可用（如 file:// 直接打开）时回退到本地缓存的账户索引
@@ -7514,11 +7527,13 @@ function ProfileAPI() {
       });
     },
     read: function (name) {
+      if (isFileProtocol) { return Promise.resolve(localRead(name)); }
       return req(BASE + '/file/' + encodeURIComponent(name)).then(function (r) {
         return (r && r.success) ? r.data : null;
       });
     },
     write: function (name, obj) {
+      if (isFileProtocol) { return Promise.resolve(localWrite(name, obj)); }
       return req(BASE + '/file/' + encodeURIComponent(name), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -7637,244 +7652,6 @@ window.AccountLogout = function () {
     Promise.resolve(saveProfile()).catch(function () {}).then(function () { location.reload(); });
   } catch (e) { location.reload(); }
   setTimeout(function () { try { location.reload(); } catch (e) {} }, 1500); // 兜底
-};
-
-// “我的”：左侧目录栏上滑变为多用户切换目录，右侧上滑变为学习数据看板（左侧选谁右侧显示谁）
-window.openMinePanel = function () {
-  var cur = window.__ACTIVE_PROFILE__;
-  if (!cur) { if (window.AccountLogout) window.AccountLogout(); return; }
-  if (document.getElementById('mineNav')) { if (window.closeMinePanel) window.closeMinePanel(); return; } // 已打开则视为关闭
-  var api = ProfileAPI();
-
-  // 面板样式（只注入一次）：左栏与右侧内容区各有一块从底部上滑的覆盖层
-  if (!document.getElementById('minePanelStyle')) {
-    var st = document.createElement('style');
-    st.id = 'minePanelStyle';
-    st.textContent =
-      '#mineNav{position:fixed;z-index:900;background:var(--card);display:flex;flex-direction:column;overflow-y:auto;opacity:0;transform:scale(.98);pointer-events:none;transition:opacity .2s ease,transform .2s ease}' +
-      '#mineNav.on{opacity:1;transform:scale(1);pointer-events:auto}' +
-      '#mineDash{position:fixed;z-index:900;background:var(--bg);overflow-y:auto;opacity:0;transform:scale(.98);pointer-events:none;transition:opacity .2s ease,transform .2s ease}' +
-      '#mineDash.on{opacity:1;transform:scale(1);pointer-events:auto}' +
-      '.mine-anim{transition:opacity .2s ease,transform .2s ease}' +
-      '.mine-host{opacity:0!important;transform:scale(1.05)!important;pointer-events:none}' +
-      '.mine-back{flex:0 0 auto!important}' +
-      '.mine-nav-title{font-size:12px;color:var(--sub);padding:14px 18px 6px;font-family:"Microsoft YaHei",sans-serif}' +
-      '.mine-nav-item{gap:10px!important}' +
-      '.mine-nav-item .ac-avatar{width:30px;height:30px;flex:0 0 30px;font-size:14px}' +
-      '.mine-nav-item .m-txt{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1}' +
-      '.mine-nav-item .m-un{font-size:14px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}' +
-      '.mine-nav-item .m-pn{font-size:11px;color:var(--sub)}' +
-      '.mine-nav-item .mine-cur-tag{margin-left:auto;font-size:11px;color:var(--pri);flex:0 0 auto}' +
-      '.mine-loading{text-align:center;color:var(--sub);padding:32px 0;font-size:13px;font-family:"Microsoft YaHei",sans-serif}' +
-      '.mine-dash-close{position:absolute;top:14px;right:16px;width:34px;height:34px;border:1px solid var(--border);border-radius:9px;background:var(--card);color:var(--sub);cursor:pointer;font-size:14px;font-family:inherit;z-index:5}' +
-      '.mine-dash-close:hover{color:var(--fg);background:var(--hover)}' +
-      '.dash-wrap{max-width:860px;margin:0 auto;padding:44px 36px 48px;font-family:"Microsoft YaHei",sans-serif}' +
-      '.dash-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}' +
-      '.dash-avatar{width:64px;height:64px;border-radius:50%;flex:0 0 64px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;background:linear-gradient(135deg,#0078d4,#00b4d8)}' +
-      '.dash-name{font-size:24px;font-weight:700}' +
-      '.dash-sub{font-size:13px;color:var(--sub);margin-top:2px}' +
-      '.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}' +
-      '.dash-cell{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 12px;text-align:center;box-shadow:0 2px 10px var(--shadow)}' +
-      '.dash-num{font-size:36px;font-weight:700;color:#0a84ff;line-height:1.1}' +
-      '.dash-lab{font-size:13px;color:var(--sub);margin-top:8px}' +
-      '.dash-err{color:#e5484d;font-size:12px;min-height:16px;margin:10px 0 0}';
-    document.head.appendChild(st);
-  }
-
-  function bswGet(key, def) {
-    try { var v = localStorage.getItem('bsw_' + key); return v === null ? def : JSON.parse(v); }
-    catch (e) { return def; }
-  }
-  function streakOf(days) {
-    var set = {};
-    for (var i = 0; i < days.length; i++) set[days[i]] = 1;
-    var n = 0;
-    var d = new Date();
-    if (!set[d.getFullYear() + '-' + ((d.getMonth() + 1) + '').padStart(2, '0') + '-' + (d.getDate() + '').padStart(2, '0')]) d.setDate(d.getDate() - 1);
-    while (true) {
-      var fmt = d.getFullYear() + '-' + ((d.getMonth() + 1) + '').padStart(2, '0') + '-' + (d.getDate() + '').padStart(2, '0');
-      if (!set[fmt]) break;
-      n++;
-      d.setDate(d.getDate() - 1);
-    }
-    return n;
-  }
-  function liveData() {
-    return {
-      studyTime: bswGet('studyTime', { today: 0, total: 0 }),
-      recited: bswGet('recited', []),
-      studyDays: bswGet('studyDays', []),
-      feihuaBest: bswGet('feihuaBest', 0)
-    };
-  }
-
-  var side = document.querySelector('.side');
-  var content = document.getElementById('contentArea');
-  var nav = document.createElement('div');
-  nav.id = 'mineNav';
-  nav.innerHTML =
-    '<button class="sbtn mine-back" id="mineBack"><span style="font-size:16px;line-height:1">‹</span>返回目录</button>' +
-    '<div class="mine-nav-title">我的 · 点击选择要查看的用户</div>' +
-    '<div id="mineNavList"><div class="mine-loading">正在加载…</div></div>';
-  var dash = document.createElement('div');
-  dash.id = 'mineDash';
-  dash.innerHTML = '<div class="mine-loading">正在加载…</div>';
-
-  // 覆盖层挂到 body（独立图层，不叠放旧界面内容），按原区域矩形 fixed 定位
-  var nr = side.getBoundingClientRect(), cr = content.getBoundingClientRect();
-  nav.style.left = nr.left + 'px'; nav.style.top = nr.top + 'px';
-  nav.style.width = nr.width + 'px'; nav.style.height = nr.height + 'px';
-  dash.style.left = cr.left + 'px'; dash.style.top = cr.top + 'px';
-  dash.style.width = cr.width + 'px'; dash.style.height = cr.height + 'px';
-  document.body.appendChild(nav);
-  document.body.appendChild(dash);
-
-  var accounts = [], selIdx = -1;
-
-  // Win10 设置页式切换：原界面快速淡化并微微放大消失，新界面从略小渐变放大进入
-  side.classList.add('mine-anim', 'mine-host');
-  content.classList.add('mine-anim', 'mine-host');
-  requestAnimationFrame(function () { requestAnimationFrame(function () {
-    nav.classList.add('on'); dash.classList.add('on');
-  }); });
-  window.closeMinePanel = function () {
-    nav.classList.remove('on'); dash.classList.remove('on');
-    side.classList.remove('mine-host');
-    content.classList.remove('mine-host');
-    setTimeout(function () { nav.remove(); dash.remove(); }, 240);
-  };
-  nav.querySelector('#mineBack').onclick = function () { window.closeMinePanel(); };
-
-  function renderNavList() {
-    var box = nav.querySelector('#mineNavList');
-    var html = '';
-    for (var i = 0; i < accounts.length; i++) {
-      var a = accounts[i];
-      html += '<button class="sbtn mine-nav-item' + (i === selIdx ? ' sel' : '') + '" data-i="' + i + '">' +
-        '<span class="ac-avatar">' + escapeHtml((a.username || a.name).slice(0, 1)) + '</span>' +
-        '<span class="m-txt"><span class="m-un">' + escapeHtml(a.username) + '</span>' +
-        '<span class="m-pn">配置：' + escapeHtml(a.name) + (a.hasPw ? ' · 🔒' : '') + '</span></span>' +
-        (a.file === cur.file ? '<span class="mine-cur-tag">当前</span>' : '') +
-        '</button>';
-    }
-    box.innerHTML = html;
-    var items = box.querySelectorAll('.mine-nav-item');
-    for (var j = 0; j < items.length; j++) {
-      items[j].onclick = function () {
-        var i2 = +this.getAttribute('data-i');
-        if (i2 === selIdx) return;
-        selIdx = i2;
-        var its = box.querySelectorAll('.mine-nav-item');
-        for (var k = 0; k < its.length; k++) its[k].className = 'sbtn mine-nav-item' + (k === selIdx ? ' sel' : '');
-        renderDash();
-      };
-    }
-  }
-  function statsCells(d) {
-    var st = d.studyTime || {};
-    if (typeof st !== 'object' || st === null) st = {};
-    var recited = (d.recited || []).length;
-    var days = (d.studyDays || []).length;
-    var fw = typeof d.feihuaBest === 'number' ? d.feihuaBest : 0;
-    function cell(n, l) { return '<div class="dash-cell"><div class="dash-num">' + n + '</div><div class="dash-lab">' + l + '</div></div>'; }
-    return '<div class="dash-grid">' +
-      cell(st.today || 0, '今日学习 (分钟)') + cell(st.total || 0, '累计学习 (分钟)') + cell(streakOf(d.studyDays || []), '连续打卡 (天)') +
-      cell(days, '累计学习 (天)') + cell(recited, '已背篇目') + cell(fw, '飞花令最佳 (连)') + '</div>';
-  }
-  function renderDash() {
-    var a = accounts[selIdx];
-    if (!a) return;
-    if (a.file === cur.file) { drawDash(a, liveData(), null); }
-    else if (a.__data) { drawDash(a, a.__data, null); }
-    else {
-      dash.innerHTML = '<div class="mine-loading">正在读取「' + escapeHtml(a.username) + '」的数据…</div>';
-      api.read(a.file).then(function (obj) {
-        if (!obj || !obj.username || !dash.isConnected || accounts[selIdx] !== a) return;
-        a.__obj = obj; a.__data = obj.data || {};
-        drawDash(a, a.__data, null);
-      }).catch(function (e) { drawDash(a, {}, (e && e.message) || '读取失败：本地服务不可用'); });
-    }
-  }
-  function drawDash(a, d, errMsg) {
-    var isCur = a.file === cur.file;
-    dash.innerHTML =
-      '<button class="mine-dash-close" id="mineClose" title="返回目录">✕</button>' +
-      '<div class="dash-wrap">' +
-        '<div class="dash-head">' +
-          '<div class="dash-avatar">' + escapeHtml((a.username || '').slice(0, 1)) + '</div>' +
-          '<div><div class="dash-name">' + escapeHtml(a.username) + '</div>' +
-          '<div class="dash-sub">配置：' + escapeHtml(a.name) + (isCur ? ' · 当前使用' : '') + '</div></div>' +
-          (isCur ? '' : '<button class="ac-btn primary" id="dashSwitch" style="margin-left:auto;width:auto;padding:12px 22px">切换到此用户</button>') +
-        '</div>' +
-        '<div class="dash-err" id="dashErr">' + (errMsg ? escapeHtml(errMsg) : '') + '</div>' +
-        statsCells(d) +
-      '</div>';
-    dash.querySelector('#mineClose').onclick = function () { window.closeMinePanel(); };
-    if (!isCur) dash.querySelector('#dashSwitch').onclick = function () { askSwitch(a); };
-  }
-  function askSwitch(a) {
-    var errEl = dash.querySelector('#dashErr');
-    var obj = a.__obj;
-    if (!obj) {
-      api.read(a.file).then(function (o) { a.__obj = o; askSwitch(a); })
-        .catch(function () { if (errEl) errEl.textContent = '读取失败：本地服务不可用'; });
-      return;
-    }
-    if (obj.password && obj.password.length) {
-      var area = document.createElement('div');
-      area.style.marginTop = '14px';
-      area.innerHTML =
-        '<div class="ac-field" style="max-width:320px;margin-bottom:8px"><label>「' + escapeHtml(a.username) + '」已设置密码，请输入以切换</label>' +
-        '<input type="password" id="dashPw" autocomplete="current-password"></div>' +
-        '<div style="display:flex;gap:8px;max-width:320px"><button class="ac-btn primary" id="dashPwGo" style="flex:1">确认切换</button>' +
-        '<button class="ac-btn ghost" id="dashPwBack" style="flex:1;width:auto;margin-top:0">取消</button></div>';
-      dash.querySelector('.dash-head').insertAdjacentElement('afterend', area);
-      area.querySelector('#dashPwGo').onclick = function () {
-        hashPassword(area.querySelector('#dashPw').value).then(function (h) {
-          if (h === obj.password) doSwitch(a, obj);
-          else if (errEl) errEl.textContent = '密码错误';
-        }).catch(function (e) { if (errEl) errEl.textContent = '校验异常：' + ((e && e.message) || e); });
-      };
-      area.querySelector('#dashPwBack').onclick = function () { area.remove(); };
-      var pi = area.querySelector('#dashPw'); if (pi) pi.focus();
-    } else {
-      doSwitch(a, obj);
-    }
-  }
-  function doSwitch(a, obj) {
-    var errEl = dash.querySelector('#dashErr');
-    if (errEl) errEl.textContent = '正在保存当前数据并切换…';
-    Promise.resolve(saveProfile()).catch(function () {}).then(function () {
-      loadProfileIntoLocalStorage(obj);
-      try { localStorage.setItem('bsw_switchTarget', JSON.stringify({ name: a.name, file: a.file, username: a.username || obj.username })); } catch (e) {}
-      location.reload();
-    });
-  }
-
-  api.list().then(function (res) {
-    var files = (res.files || []).filter(function (f) { return f.indexOf('profile_') === 0 && f.slice(-5) === '.json'; });
-    return Promise.all(files.map(function (f) {
-      var name = f.slice('profile_'.length, -5);
-      return api.read(f).then(function (o) {
-        if (!o || !o.username) return null;
-        return { name: name, file: f, username: o.username, hasPw: !!(o.password && o.password.length), __obj: o, __data: o.data || {} };
-      }).catch(function () { return null; });
-    })).then(function (list) {
-      accounts = list.filter(Boolean);
-      if (!accounts.length) {
-        nav.querySelector('#mineNavList').innerHTML = '<div class="mine-loading">没有用户</div>';
-        dash.innerHTML = '<div class="mine-loading">没有用户数据</div>';
-        return;
-      }
-      selIdx = 0;
-      for (var i = 0; i < accounts.length; i++) if (accounts[i].file === cur.file) { selIdx = i; break; }
-      renderNavList();
-      renderDash();
-    });
-  }).catch(function () {
-    nav.querySelector('#mineNavList').innerHTML = '<div class="mine-loading">本地服务未连接，无法读取账户列表</div>';
-    dash.innerHTML = '<div class="mine-loading">本地服务未连接，无法读取账户列表。请通过 start.bat 启动服务。</div>';
-  });
 };
 
 // 全局错误显示：任何未捕获的 JS 错误/Promise 拒绝都在屏幕底部显示红条，避免"点了没反应"
@@ -8003,6 +7780,16 @@ function startAccountFlow(onDone) {
       '</div>' +
       '<button class="ac-btn primary" id="acEnterBtn">进入应用</button>';
     card.querySelector('#acEnterBtn').onclick = function () { closeAndBoot(profileMeta); };
+  }
+
+  function cacheAccountIndex(name, file, username) {
+    try {
+      var idx = JSON.parse(localStorage.getItem('bsw_accountIndex') || '[]');
+      if (!idx.some(function (a) { return a.file === file; })) {
+        idx.push({ name: name, file: file, username: username });
+        localStorage.setItem('bsw_accountIndex', JSON.stringify(idx));
+      }
+    } catch (e) {}
   }
 
   function loginWith(profileMeta) {
@@ -8218,16 +8005,6 @@ function startAccountFlow(onDone) {
       cachedAccounts = valid;
       purgeAccountIndex(valid);
       if (valid.length === 0) { renderFirstCreate(); return; }
-      // “我的”面板切换用户后的自动登录：读取切换目标并直接走登录（有密码则要求输入）
-      var pend = null;
-      try { pend = JSON.parse(localStorage.getItem('bsw_switchTarget') || 'null'); } catch (e) {}
-      if (pend && pend.file) {
-        localStorage.removeItem('bsw_switchTarget');
-        var m = null;
-        for (var pi = 0; pi < valid.length; pi++) if (valid[pi].file === pend.file) { m = valid[pi]; break; }
-        loginWith(m || pend);
-        return;
-      }
       renderPicker();
     });
   }).catch(function () {
@@ -8260,27 +8037,10 @@ function startAccountFlow(onDone) {
   function schedule() { if (!raf) raf = requestAnimationFrame(update); }
   document.addEventListener('mousemove', function (e) { px = e.clientX; py = e.clientY; schedule(); }, { passive: true });
   window.addEventListener('scroll', schedule, { passive: true });
-  // Win10 按压"挤压"：按钮如中心固定的卡片，按压点沿 3D 方向下沉（越靠边越明显），松手弹回
-  document.addEventListener('pointerdown', function (e) {
-    var b = e.target.closest ? e.target.closest('button:not(.study-tab),.author-card') : null;
-    if (!b) return;
-    var r = b.getBoundingClientRect();
-    var nx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2)));
-    var ny = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2)));
-    var MAX = 7; // 最大倾角（度）：按到边角时最明显
-    b.style.setProperty('--ry', (nx * MAX).toFixed(2) + 'deg');  // 按右侧→右缘下沉
-    b.style.setProperty('--rx', (-ny * MAX).toFixed(2) + 'deg'); // 按底部→底缘下沉
-  }, true);
-  document.addEventListener('pointerup', function () {
-    var els = document.querySelectorAll('[style*="--rx"]');
-    for (var i = 0; i < els.length; i++) { els[i].style.removeProperty('--rx'); els[i].style.removeProperty('--ry'); }
-  }, true);
 })();
 document.addEventListener('DOMContentLoaded', function () {
   var sb = document.getElementById('switchUserBtn');
   if (sb) sb.onclick = function () { if (window.AccountLogout) window.AccountLogout(); };
-  var mb = document.getElementById('mineBtn');
-  if (mb) mb.onclick = function () { if (window.openMinePanel) window.openMinePanel(); };
 
   // 全局：页面隐藏/关闭时尽量落盘，确保数据写入用户 JSON 文件
   document.addEventListener('visibilitychange', function () {
@@ -8295,49 +8055,6 @@ document.addEventListener('DOMContentLoaded', function () {
     scheduleProfileSave();
   });
 });
-
-// SVG 图标内联：将 SVG 直接嵌入 .ico 元素，SVG 使用 currentColor 继承父元素颜色
-// 解决 CSS mask 在 WebView 中不兼容导致图标显示为色块的问题
-var SVG_ICONS={
-  'ico-search':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>',
-  'ico-setting':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>',
-  'ico-sun':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M4.5 19.5l1.8-1.8M17.7 6.3l1.8-1.8"/></svg>',
-  'ico-night':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
-  'ico-enlarge':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L8.5 8.5 13 20"/><path d="M5.5 16h6"/><path d="M15 12h6M18 9v6"/></svg>',
-  'ico-reduce':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L8.5 8.5 13 20"/><path d="M5.5 16h6"/><path d="M15 12h6"/></svg>',
-  'ico-play':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
-  'ico-pause':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>',
-  'ico-loop':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H8a4 4 0 0 0 0 8h2"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h12a4 4 0 0 0 0-8h-2"/><text x="9.5" y="14.5" fill="currentColor" stroke="none" font-size="7" font-family="Arial" font-weight="bold">1</text></svg>',
-  'ico-list':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H8a4 4 0 0 0 0 8h2"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h12a4 4 0 0 0 0-8h-2"/></svg>',
-  'ico-tts':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9v6h4l5 4V5L7 9H3z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a7 7 0 0 1 0 13"/></svg>',
-  'ico-star':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.8.7-5.1 4.6 1.5 6.7L12 17.3 5.9 20.3l1.5-6.7L2.3 9l6.8-.7z"/></svg>',
-  'ico-unstar':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.8.7-5.1 4.6 1.5 6.7L12 17.3 5.9 20.3l1.5-6.7L2.3 9l6.8-.7z"/></svg>',
-  'ico-user':'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>'
-};
-(function(){
-  function applyIco(el){
-    var cls=(el.className||'').split(/\s+/);
-    for(var i=0;i<cls.length;i++){
-      var c=cls[i];
-      if(c.indexOf('ico-')===0 && SVG_ICONS[c]){
-        el.innerHTML=SVG_ICONS[c];
-        return;
-      }
-    }
-  }
-  var obs=new MutationObserver(function(muts){
-    muts.forEach(function(m){if(m.type==='attributes'&&m.attributeName==='class')applyIco(m.target);});
-  });
-  function applyAll(){
-    var els=document.querySelectorAll('.ico');
-    for(var i=0;i<els.length;i++){
-      applyIco(els[i]);
-      obs.observe(els[i],{attributes:true,attributeFilter:['class']});
-    }
-  }
-  if(document.readyState!=='loading')applyAll();
-  else document.addEventListener('DOMContentLoaded',applyAll);
-})();
 </script>
 </body>
 </html>
