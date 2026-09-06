@@ -576,7 +576,7 @@ public static class Router
         try
         {
             using var reader = new StreamReader(ctx.Request.InputStream, Encoding.UTF8);
-            payload = JsonSerializer.Deserialize<TtsSpeakPayload>(await reader.ReadToEndAsync().ConfigureAwait(false));
+            payload = JsonSerializer.Deserialize<TtsSpeakPayload>(await reader.ReadToEndAsync().ConfigureAwait(false), _caseInsensitive);
         }
         catch (JsonException) { }
 

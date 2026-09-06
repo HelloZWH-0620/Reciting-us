@@ -14,8 +14,10 @@ namespace RecitingUs.App;
     ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
 public class MainActivity : AvaloniaMainActivity<App>
 {
+    // UseAndroid() 注册 Avalonia 主平台服务（缺失会在 AppBuilder.Setup 抛
+    // "No runtime platform services configured"）；UseAndroidWebView() 注册 WebView 平台
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder) =>
-        builder.UseAndroidWebView();
+        builder.UseAndroid().UseAndroidWebView();
 
     protected override void OnCreate(Bundle? savedInstanceState)
     {

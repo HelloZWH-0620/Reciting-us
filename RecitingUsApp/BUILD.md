@@ -67,6 +67,14 @@ CI：`.github/workflows/build.yml`（tag `v*` 触发；需在仓库 secrets 配�
 
 回归证据：单元测试 56/56、冒烟 SMOKE_OK、浏览器实测（拼音 315 注音/朝代高亮/练习选中态保持/AI 例句全链路 401 错误路径/隔离性磁盘证据）。
 
+### 模拟器回归（Android 15 x86_64 AVD，2026-09-06）
+
+安装→首启 OOBE→建户→课文渲染（霞鹜文楷）→上次状态恢复 全通过；内置服务器 API（health/version/tts/app.html）经 `adb forward` 全 200；**原生 TTS 桥 available:true + speak 204 实际合成**；生命周期 OnPause→503 / OnResume→200；返回键最小化不退出；桌面图标渲染正确；崩溃 0。冷启动 COLD 2559ms（Debug 未裁剪构建，仅参考；Release+AOT 真机为准）。
+
+回归抓到并修复 2 个 Android 端真实缺陷（桌面端不会暴露）：
+1. `MainActivity.CustomizeAppBuilder` 缺 `UseAndroid()` → 启动即崩 "No runtime platform services configured"（v3 蓝图示例的缺陷）；
+2. `/api/tts/speak` payload 反序列化大小写敏感 → 前端小写 `text` 恒 400，朗读不可用。
+
 ### v2.1 · 2026-09-05（模块化拆分）
 
 app.html 8081→231 行：`css/app.css` + `js/data/*5` + `js/app.main.js`（bootApp 整体，god-function 保作用域）+ `profile/error-display/account/reveal/boot` 顶层模块；CSS 外置后 16 处相对 url 修复；error-boundary 自检清单修正；Cache-Control 改 `no-cache`+ETag。
