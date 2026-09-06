@@ -67,6 +67,14 @@ CI：`.github/workflows/build.yml`（tag `v*` 触发；需在仓库 secrets 配�
 
 回归证据：单元测试 56/56、冒烟 SMOKE_OK、浏览器实测（拼音 315 注音/朝代高亮/练习选中态保持/AI 例句全链路 401 错误路径/隔离性磁盘证据）。
 
+### v0.38.1 · 2026-09-06（音频内置 + 图标更新）
+
+- **安装包内置音频**：72 篇高考必背古诗文真人朗读（aac）按课文标题命名复制进 `web/resource/audio/`（+9 个标题注记别名，共 86 文件 352MB），随 Core.dll 内嵌进桌面与 Android 安装包；`/api/audio-files` 合并内嵌清单，播放器按标题自动命中（60/80 课文有音频，其余为初中篇目本就无音频）。
+- **应用图标全面更新**（黑底金卷轴书新设计）：桌面 EXE `app.ico`、Inno `logoblack.ico`、favicon、PWA 8 尺寸、Android 全密度 mipmap（方形+圆形）。
+- 版本 0.38.1 / Android versionCode 39。
+- 音频源文件不入 git（352MB）：`build/fetch-audio.py` 在打包时从下载目录复制（源目录可参数化），`.gitignore` 已排除 `web/resource/audio/`。
+- 产物实测：APK 276MB adb 安装到真机（6b8aebc9）成功，冷启动 1363ms，`/api/audio-files` 86 项、内嵌音频 `/resource/audio/论语十二章.aac` 200（6MB）；桌面 86 项、`陈情表.aac` 200（8.1MB）、TTS 204。
+
 ### 模拟器回归（Android 15 x86_64 AVD，2026-09-06）
 
 安装→首启 OOBE→建户→课文渲染（霞鹜文楷）→上次状态恢复 全通过；内置服务器 API（health/version/tts/app.html）经 `adb forward` 全 200；**原生 TTS 桥 available:true + speak 204 实际合成**；生命周期 OnPause→503 / OnResume→200；返回键最小化不退出；桌面图标渲染正确；崩溃 0。冷启动 COLD 2559ms（Debug 未裁剪构建，仅参考；Release+AOT 真机为准）。

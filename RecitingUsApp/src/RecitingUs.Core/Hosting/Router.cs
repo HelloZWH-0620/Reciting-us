@@ -120,7 +120,7 @@ public static class Router
                 ApiResponse.Json(resp, new { success = true, files = ListFiles(server, "wallpapers", MimeMap.IsImage) });
                 return;
             case ("/api/audio-files", "GET"):
-                ApiResponse.Json(resp, new { success = true, files = ListFiles(server, "audio", MimeMap.IsAudio) });
+                ApiResponse.Json(resp, new { success = true, files = ListAudioFiles(server) });
                 return;
             case ("/api/upload-wallpaper", "POST"):
                 await UploadWallpaperAsync(ctx, server).ConfigureAwait(false);
@@ -217,6 +217,21 @@ public static class Router
     }
 
     // ---------------- 文件列表 / 壁纸 ----------------
+
+    /// <summary>音频清单 = 用户自定义目录 + 程序集内嵌 resource/audio/（v0.38：随安装包含音频）。</summary>
+    private static string[] ListAudioFiles(EmbeddedHttpServer server)
+    {
+        var embedded = WebAssets.AllPaths()
+            .Where(p => p.StartsWith("/resource/audio/", StringComparison.OrdinalIgnoreCase))
+            .Select(p => p.Substring("/resource/audio/".Length))
+            .Where(fn => MimeMap.IsAudio(fn));
+        var merged = ListFiles(server, "audio", MimeMap.IsAudio)
+            .Concat(embedded)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        return merged;
+    }
 
     private static string[] ListFiles(EmbeddedHttpServer server, string subDir, Func<string, bool> filter)
     {

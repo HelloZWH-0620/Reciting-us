@@ -3,8 +3,6 @@ Memorization UI/userdata/
 userdata/
 
 # ===== 壁纸资源 =====
-# 仅保留应用内置的默认壁纸 background.png（app.html 的默认背景），
-# 忽略用户后续上传的壁纸与示例图（如 Default.jpg），避免大文件入库。
 Memorization UI/resource/background/
 !Memorization UI/resource/background/background.png
 

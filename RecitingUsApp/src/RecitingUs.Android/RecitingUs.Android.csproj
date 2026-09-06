@@ -6,8 +6,8 @@
     <AssemblyName>RecitingUs</AssemblyName>
     <ApplicationId>com.recitingus.app</ApplicationId>
     <ApplicationTitle>背书哇</ApplicationTitle>
-    <ApplicationDisplayVersion>0.38</ApplicationDisplayVersion>
-    <ApplicationVersion>38</ApplicationVersion>
+    <ApplicationDisplayVersion>0.38.1</ApplicationDisplayVersion>
+    <ApplicationVersion>39</ApplicationVersion>
     <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
     <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers><!-- 减包：仅 arm64，覆盖 >98% 设备 -->
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot><!-- 防 UnsatisfiedLinkError: n_onCreate -->

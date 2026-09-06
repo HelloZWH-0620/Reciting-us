@@ -25,6 +25,9 @@ foreach ($js in @("liquid-glass.js", "js\error-boundary.js", "js\migrate.js", "c
     if (-not (Test-Path "$web\$js")) { throw "缺少前端资源: web\$js" }
 }
 
+# 0.7) 音频入库（72 篇朗读 aac，v0.38.1；源目录缺省时跳过）
+python "$PSScriptRootetch-audio.py"
+
 # 0.9) 字体子集化（可选：需 python + fonttools；未安装则跳过并沿用整字库）
 $subsetFont = "$PSScriptRoot\subset-font.py"
 if (Get-Command python -ErrorAction SilentlyContinue) {
