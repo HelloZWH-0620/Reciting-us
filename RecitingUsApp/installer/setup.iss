@@ -1,6 +1,6 @@
 ﻿#define MyAppName "背书哇"
 #define MyAppNameEngine "RecitingUs"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "0.38.1"
 #define MyAppPublisher "RecitingUs"
 #define MyAppExeName "RecitingUs.exe"
 
