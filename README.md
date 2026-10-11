@@ -150,7 +150,7 @@ Reciting-us/
 
 从 [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases) 下载与设备平台对应的发布附件：
 
-- **Windows**：下载 `RecitingUs-Setup-<版本>.exe` 并运行安装程序；安装后从开始菜单或桌面快捷方式启动。桌面发布为自包含程序，但仍需 Microsoft Edge WebView2 Runtime；若系统缺少该运行时，请按应用提示安装，或根据 [此处的引导](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download) 安装。
+- **Windows**：下载 `RecitingUs-Setup-<版本>.exe` 并运行安装程序；安装后从开始菜单或桌面快捷方式启动。桌面发布需 Microsoft Edge WebView2 Runtime；若系统缺少该运行时，请按应用提示安装，或根据 [此处的引导](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download) 安装。
 - **Android**：下载 `recitingus-<版本>.apk` 并安装。
 
 应用主要功能可离线使用；AI 功能需要网络连接及用户自行配置的 AI 服务。

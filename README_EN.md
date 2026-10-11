@@ -149,7 +149,7 @@ Reciting-us/
 
 Download the release for your device platform from [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases):
 
-- **Windows**: Download `RecitingUs-Setup-<version>.exe` and run the installer. Launch the app from the Start menu or desktop shortcut. The desktop app is self-contained but still requires Microsoft Edge WebView2 Runtime. If it is missing, follow the in-app prompt or [these installation instructions](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download).
+- **Windows**: Download `RecitingUs-Setup-<version>.exe` and run the installer. Launch the app from the Start menu or desktop shortcut. The desktop app requires Microsoft Edge WebView2 Runtime. If it is missing, follow the in-app prompt or [these installation instructions](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download).
 - **Android**: Download and install `recitingus-<version>.apk`.
 
 The app's main features work offline. AI features require an internet connection and an AI service configured by the user.
