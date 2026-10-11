@@ -9,7 +9,7 @@
 ![平台](https://img.shields.io/badge/platform-Windows%20%7C%20Android-blueviolet)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
-> 有关各版本的详情，参见  [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
+> 有关各版本的详情或下载应用，参见  [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
 
 ---
 
@@ -120,6 +120,9 @@
 
 ## 项目结构
 
+> [!important]
+> 项目正处于开发阶段，结构会不定期改动。此处的结构不代表最终结构。
+
 ```
 Reciting-us/
 ├── README.md / README_EN.md / README_Classical-Chinese.md
@@ -145,10 +148,10 @@ Reciting-us/
 
 ## 下载与运行
 
-从 [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/latest) 下载正式版；测试版请在 [Releases 列表](https://github.com/HelloZWH-0620/Reciting-us/releases/) 中选择带有 Pre-release 标记的版本。下载与设备平台对应的发布附件：
+从 [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases) 下载与设备平台对应的发布附件：
 
 - **Windows**：下载 `RecitingUs-Setup-<版本>.exe` 并运行安装程序；安装后从开始菜单或桌面快捷方式启动。桌面发布为自包含程序，但仍需 Microsoft Edge WebView2 Runtime；若系统缺少该运行时，请按应用提示安装，或根据 [此处的引导](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download) 安装。
-- **Android**：下载 `recitingus-<版本>.apk` 并安装。发布包面向 `arm64-v8a` 设备；如系统阻止安装，请按系统提示允许从当前来源安装应用。
+- **Android**：下载 `recitingus-<版本>.apk` 并安装。
 
 应用主要功能可离线使用；AI 功能需要网络连接及用户自行配置的 AI 服务。
 
@@ -195,7 +198,7 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 限制�
 | 多端应用 | .NET 10、C#、Avalonia；Windows 桌面端与 Android 端 |
 | 前端 | HTML / CSS / JavaScript，资源位于 `RecitingUsApp/web/` 并嵌入应用 |
 | 共享核心 | 本地 HTTP API、SQLite、AI 代理、TTS 平台抽象 |
-| 旧版兼容程序 | `Memorization UI/` 中的 Web 应用与 PowerShell HTTP 服务器 |
+| Web 核心程序 | `Memorization UI/` 中的 Web 应用与 PowerShell HTTP 服务器 |
 
 ---
 
