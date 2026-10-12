@@ -6,18 +6,18 @@
 
 [![正式之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?label=正式版)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
 [![测试之 Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=测试版)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![平台](https://img.shields.io/badge/platform-Windows%20%7C%20Android-blueviolet)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> 欲知诸版本之详，参阅 [Memorization UI/config/version.json](Memorization UI/config/version.json) 或 [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
+> 欲知诸版本之详，或下载应用，参阅 [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
 
 ---
 
 ## 项目缘起
 
-「背书哇！」者，专为高中语文文言诗词背诵而设之本地网页应用也。集课文研习、多方习练、AI 辅弼出题、间隔重复记忆、学业统计诸能于一体，助学子高效掌握必背篇目。
+「背书哇！」者，助学子研习、背诵文言诗词之应用也。其具课文研习、互动习练、间隔复习、学业统计与可选 AI 辅弼诸能。
 
-其架构乃纯前端单页应用，无须 Node.js 诸般依赖，但凭 Windows PowerShell 即可起本地服务器。凡数据悉存于浏览器 localStorage，隐私固安，无须注册账号。
+此仓库今存二种应用形态：荐用 `RecitingUsApp/` 中之 .NET 多端应用，兼有 Windows 桌面版与 Android 版；`Memorization UI/` 则为旧 Web/PowerShell 兼容程序，仍留仓中。多端应用之网页资源在 `RecitingUsApp/web/`，由共用核心项目打包；旧目录之文件不与主应用自动同步。应用数据存于本地；AI 功能须自行配置兼容 OpenAI 接口之服务。
 
 ### 核心特色
 
@@ -121,126 +121,52 @@
 ## 项目结构
 
 > [!important]
-> 项目方兴未艾，结构或时有变更。此处所列结构，仅供参考，非最终定制。
+> 项目今正开发，目录结构或时有更易。下列所示非最终定式。
 
 ```
 Reciting-us/
-├── README.md                          # 项目说明（简体中文）
-├── README_EN.md                       # 项目说明（English）
-├── README_Classical Chinese.md        # 项目说明（文言文）
-├── LICENSE                            # MIT 许可证
-├── PROVENANCE.md                      # 来源与许可证说明
-├── __psserver.ps1                     # 简易 PowerShell 测试服务器（开发用）
-└── Memorization UI/
-    ├── app.html                       # 主应用（单页应用，含所有前端逻辑）
-    ├── war4.html                      # 旧版 / 备用页面
-    ├── setup.bat                      # 一键安装脚本（安装字体 + 启动服务器）
-    ├── uninstall.bat                  # 卸载脚本（调用 uninstall.ps1）
-    ├── package.ps1                    # 安装引导脚本（创建桌面/开始菜单快捷方式）
-    ├── uninstall.ps1                  # 卸载之逻辑
-    ├── config/
-    │   ├── manifest.json              # PWA 应用清单（应用名称、图标等）
-    │   ├── articles.json              # 课文数据（文言文，含原文、译文、注释、赏析）
-    │   ├── poem.json                  # 古诗词数据（独立诗词集）
-    │   ├── game.json                  # 练习题库（七十二题：虚词辨析、填空默写、例句匹配）
-    │   ├── writer.json                # 作者信息（一十八位作者之朝代与生平）
-    │   ├── version.json               # 版本信息（今为 v0.3.1，详见 notes）
-    │   └── bundled.js                 # 内联兜底数据（file:// 场景下供 app.html 回退）
-    ├── resource/
-    │   ├── OOBE/                      # 开箱引导图片（page1.png ~ page3.png）
-    │   ├── background/                # 壁纸目录（默认 background.png；用户壁纸不入库）
-    │   ├── icon/                      # 界面图标（*.svg，明暗自适应）
-    │   ├── wordtype/                  # 字体文件（Regular.ttf）
-    │   └── audio/                     # 课文朗读音频（可选）
-    ├── userdata/                      # 用户运行时数据（git 忽略）
-    └── setuptools/
-        ├── server.ps1                 # 本地 PowerShell HTTP 服务器（提供静态文件 + API）
-        ├── start.bat                  # 启动脚本（启动服务器 + 打开浏览器）
-        ├── ai-hosts.txt               # AI 代理可用之上游 Host 白名单
-        ├── config.json                # 安装后自动生成之配置文件（记录项目路径）
-        ├── Setup.png                  # 安装引导画面图片
-        └── logoblack.ico              # 应用图标
+├── README.md / README_EN.md / README_Classical-Chinese.md
+├── .github/workflows/build.yml     # Windows 与 Android 发布 CI
+├── Memorization UI/                # 旧 Web/PowerShell 兼容程序
+└── RecitingUsApp/                  # 今之 .NET 多端应用
+    ├── RecitingUs.slnx
+    ├── Directory.Build.props       # .NET 目标与共用编译设置
+    ├── Directory.Packages.props    # NuGet 包版本集中管理
+    ├── src/
+    │   ├── RecitingUs.Core/        # API、HTTP 服务、数据存储、平台抽象
+    │   ├── RecitingUs.App/         # Avalonia Windows 桌面端
+    │   ├── RecitingUs.Android/     # Android 应用与原生平台服务
+    │   ├── RecitingUs.Tests/       # xUnit 自动化测试
+    │   └── _recovered/             # 历史恢复资料，不参与构建
+    ├── web/                        # 多端应用前端权威源，随 Core 嵌入
+    ├── build/                      # 资源处理、发布、签名诸脚本
+    ├── installer/                  # Windows 安装包配置
+    └── BUILD.md                    # 结构与构建指南
 ```
 
 ---
 
-## 用法
+## 下载与运行
 
-### 所需环境
+于 [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/) 下载与所用设备相应之发布附件：
 
-- **操作系统**：Windows 7 及以上
-- **运行时**：Windows PowerShell（系统自带）
-- **浏览器**：Chrome、Edge、Firefox 等现代浏览器（推荐 Chrome 或 Edge）
-- **网络**：离线可用（AI 之能需联网）
+- **Windows**：下载 `RecitingUs-Setup-<版本>.exe` 并运行安装器；安装后自开始菜单或桌面快捷方式启之。桌面程序须有 Microsoft Edge WebView2 Runtime；若系统未有，可依应用提示安装，或循[此安装指引](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2/#download)办理。
+- **Android**：下载并安装 `recitingus-<版本>.apk`。
 
-### 其一：一键安装（荐）
+应用之主要功能可离线使用；AI 功能须联网，并由用户自行配置 AI 服务。
 
-1. **下载此项目**
-   ```bash
-   git clone https://github.com/HelloZWH-0620/Reciting-us.git
-   ```
+### 直接运行 Web 程序
 
-2. **运行安装脚本**
+若欲运行仓库中之 Web 程序，而非 Windows/Android 多端应用：
 
-   双击 `Memorization UI/setup.bat`，脚本将自动完成以下诸事：
-   - 安装自定义字体（Regular.ttf）于系统
-   - 创建桌面快捷方式「背书哇」
-   - 创建开始菜单快捷方式「背书哇」
-   - 于屏幕中央显示安装引导画面
-
-3. **启动应用**
-
-   安装既成，双击桌面或开始菜单中「背书哇」快捷方式即可启动。应用将自动：
-   - 启动本地 HTTP 服务器（端口八千）
-   - 打开浏览器访问 `http://localhost:8000/app.html`
-
-### 其二：手动启动
-
-若不愿创建快捷方式，亦可手动启动：
-
-1. 打开 PowerShell，进入 `Memorization UI/setuptools` 目录：
+1. [Fork 并克隆](https://github.com/HelloZWH-0620/Reciting-us/fork)仓库，或下载仓库 ZIP 并解压。
+2. 双击 `Memorization UI/setup.bat`，或运行 `Memorization UI/setuptools/start.bat`，以启本地服务器并开浏览器。
+3. 若欲手动启服务器，于仓库根目录之 PowerShell 运行：
    ```powershell
-   cd "Memorization UI/setuptools"
+   powershell -NoProfile -ExecutionPolicy Bypass -File ".\Memorization UI\setuptools\server.ps1" 8000
    ```
-
-2. 运行启动脚本：
-   ```powershell
-   .\start.bat
-   ```
-
-   该脚本将：
-   - 将上级目录写入 `config.json`
-   - 启动 PowerShell 服务器（默认端口八千）
-   - 待二秒后自动打开浏览器
-
-3. 或直接以 PowerShell 启动服务器（可自定义端口）：
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File "Memorization UI/setuptools/server.ps1" [端口号]
-   ```
-
-   然后于浏览器中访问 `http://localhost:端口号/app.html`。
-
-### 其三：开发模式
-
-项目根目录下有简易 PowerShell 服务器 `__psserver.ps1`，可用于快速测试：
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
-```
-
-> 该脚本监听端口八千七百六十五，仅提供静态文件服务，不支持壁纸上传等 API 之能。
-
----
-
-## 卸载之法
-
-若欲卸此「背书哇」，请依下列步骤而行：
-
-1. 双击 `Memorization UI/uninstall.bat`（图标为黑齿轮者是也）；
-2. 删 `setuptools` 夹下之 `config` **文件**（慎之：此乃文件，非文件夹也！）；
-3. 若无须于他器续用，可尽删 `userdata` 下诸文件；若欲迁移，则择所需者拷至新器，以续所学。
-
-> 注：第二步所删，乃安装时所生之配置文件 `setuptools/config`（记项目之路径），不损课文之数据；所学之迹，存于 `userdata/` 中。
+   而后访问 `http://localhost:8000/app.html`。
+4. 根目录之 `__psserver.ps1` 仅供快速静态预览，监听 8765 端口，不提供任何本地服务器 API。
 
 ## 初用指南
 
@@ -255,7 +181,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
 
 ## 配置 AI 之能
 
-AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 之限。配置步骤如下：
+AI 请求经本地服务器代理转发，以避浏览器 CORS 之限。配置步骤如下：
 
 1. 于应用设置页面寻得 AI 配置选项
 2. 填入所用 AI API 地址（兼容 OpenAI 接口格式）
@@ -269,17 +195,16 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 之限�
 
 | 组件 | 技术 |
 |------|------|
-| 前端 | 纯 HTML/CSS/JavaScript（单文件应用） |
-| 后端 | PowerShell HTTP 服务器（System.Net.HttpListener） |
-| 数据存储 | JSON 配置文件 + 浏览器 localStorage |
-| 图表 | Canvas 2D（自绘，无第三方依赖） |
-| PWA | Web App Manifest（可添至主屏幕） |
+| 多端应用 | .NET 10、C#、Avalonia；Windows 桌面与 Android |
+| 前端 | HTML / CSS / JavaScript，置于 `RecitingUsApp/web/` 并嵌入应用 |
+| 共用核心 | 本地 HTTP API、SQLite、AI 代理、TTS 平台抽象 |
+| 旧 Web 程序 | `Memorization UI/` 中之 Web 应用与 PowerShell HTTP 服务器 |
 
 ---
 
-## 本地服务器 API
+## 旧 Web 程序 API
 
-`setuptools/server.ps1` 提供以下 API 接口：
+下列接口仅由 `Memorization UI/setuptools/server.ps1` 提供，新桌面与 Android 应用不适用：
 
 | 接口 | 法 | 释 |
 |------|------|------|
@@ -291,36 +216,29 @@ AI 功能通过本地服务器代理转发请求，绕过浏览器 CORS 之限�
 
 ---
 
-## 参与之法
+## 贡献指南
 
 荐诸君入吾等 QQ 群组：[950739151](https://qun.qq.com/universal-share/share?ac=1&authKey=xb2zqLolbPjWo5ukfQNE4FIXNikYa25bAZdOdhJ9tPwDnyeiGq7FtGe4xflFlxdl&busi_data=eyJncm91cENvZGUiOiI5NTA3MzkxNTEiLCJ0b2tlbiI6IjNsQm1WVlBtdVFPdk5qc1BmT0JHSTZ3cXlIV2wyMnFtdE1nNHhhdXlSWDNkRmFGdjF5MEx3TkFJK09pSGVHajUiLCJ1aW4iOiIyODA5ODc0NjI1In0%3D&data=bsTmftVzmLq9iWmvpCXoInjn7UgcuOhndlMPrXR_DH3JQlDsBTLG-mHm0OcCIdqgqBK-fljO_-w80hYzsr4Ahg&svctype=4&tempid=h5_group_info) 以共襄协作之益。
 
-凡欲为此应用增设新能或加以改良者，皆欢迎提交 [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls)。
+有 Bug 或建议，请至 [Issues](https://github.com/HelloZWH-0620/Reciting-us/issues) 提交；欲贡献改进，请提 [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls)。多端应用之主要贡献目录如下：
 
+- **应用逻辑与平台功能**：`RecitingUsApp/src/RecitingUs.Core/`、`RecitingUsApp/src/RecitingUs.App/`、`RecitingUsApp/src/RecitingUs.Android/`。
+- **前端、课文与配置数据**：`RecitingUsApp/web/`。此乃多端应用所用之权威版本；勿以 `Memorization UI/` 中旧文件为同步源。
+- **自动化测试**：`RecitingUsApp/src/RecitingUs.Tests/`。
+- **构建、打包与安装器**：`RecitingUsApp/build/`、`RecitingUsApp/installer/`；.NET 版本与 NuGet 包版本，分别由 `Directory.Build.props`、`Directory.Packages.props` 管理。
 
-略列可供参考之方向如下：
+### 本地开发与验证
 
-1. **补充课文数据** — 于 `config/articles.json` 或 `config/poem.json` 中添加新的课文内容
-2. **添加练习题目** — 于 `config/game.json` 中添加新的练习题
-3. **完善作者信息** — 于 `config/writer.json` 中补充或修正作者资料
-4. **提交 Issue** — 报告 Bug 或提出功能建议
-5. **提交 Pull Request** — 修复问题或开发新功能
+开发多端应用须有 .NET 10 SDK。克隆仓库后，于仓库根目录运行：
 
-### 添加课文之格式
-
-于 `config/articles.json` 之 `articles` 数组中添加新对象：
-
-```json
-{
-  "id": "唯一标识",
-  "title": "课文标题",
-  "author": "作者",
-  "authorId": "对应 writer.json 中的 id",
-  "cat": "wenyanwen 或 gushici",
-  "audio": "",
-  "text": "课文原文（段落间用 \\n\\n 分隔）"
-}
+```powershell
+dotnet test .\RecitingUsApp\src\RecitingUs.Tests\RecitingUs.Tests.csproj
+dotnet build .\RecitingUsApp\src\RecitingUs.App\RecitingUs.App.csproj -c Debug
 ```
+
+首条命令运行核心单元测试；次条构建 Windows 桌面应用。开发 Android，另须 Android SDK、JDK 21 与 .NET Android workload。完整构建、发布及环境说明，见 [`RecitingUsApp/BUILD.md`](RecitingUsApp/BUILD.md)。提交前请运行相关测试，勿提交 API 密钥、签名密钥、构建产物或个人数据。
+
+若所维护者乃旧 Web/PowerShell 程序，请专改 `Memorization UI/`；其课文与配置数据，皆在该目录之 `config/` 中。
 
 ---
 

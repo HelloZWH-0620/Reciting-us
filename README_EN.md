@@ -2,22 +2,22 @@
 
 # Memorize It!
 
-> A local web app designed to help Chinese high school students memorize and study classical Chinese prose and poems.
+> An app that helps Chinese high school students study and memorize classical Chinese prose and poetry.
 
 [![Latest Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?label=Latest)](https://github.com/HelloZWH-0620/Reciting-us/releases/latest)
 [![Pre-Release](https://img.shields.io/github/v/release/HelloZWH-0620/Reciting-us?include_prereleases&label=Test)](https://github.com/HelloZWH-0620/Reciting-us/releases/)
-![Platform](https://img.shields.io/badge/platform-Windows-blue)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Android-blueviolet)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> For details about each version, see [Memorization UI/config/version.json](Memorization UI/config/version.json) or [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/).
+> For release details and app downloads, see [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/).
 
 ---
 
 ## Project Introduction
 
-“Memorize It!” is a local web application specifically designed for high school students to memorize classical Chinese prose and ancient poetry. It integrates textbook learning, multiple practice modes, AI-assisted question generation, spaced repetition, and learning statistics into one tool to help students efficiently master required memorization texts.
+“Memorize It!” helps students learn and memorize classical Chinese prose and poetry through text study, interactive practice, spaced repetition, learning statistics, and optional AI assistance.
 
-The project uses a pure front-end single-page application architecture. It does not require Node.js or other dependencies; it only needs Windows PowerShell to run a local server. All data is stored in the browser’s localStorage, ensuring privacy and security without requiring a user account.
+The repository contains two app variants. The recommended .NET multiplatform app in `RecitingUsApp/` provides Windows desktop and Android versions. `Memorization UI/` is the retained legacy Web/PowerShell app. The multiplatform app uses web assets from `RecitingUsApp/web/`, packaged by a shared core project; files in the legacy directory are not automatically synchronized with it. App data is stored locally. AI features require users to configure an OpenAI-compatible service.
 
 ### Core Features
 
@@ -120,126 +120,52 @@ The application includes a built-in data visualization module with the following
 ## Project Structure
 
 > [!IMPORTANT]
-> The project is under active development, and its structure may change from time to time. The structure shown here is for reference only and does not represent the final structure.
+> The project is actively under development, and its structure may change from time to time. The structure below is not final.
 
 ```
 Reciting-us/
-├── README.md                          # Documentation (Simplified Chinese)
-├── README_EN.md                       # Documentation (English)
-├── README_Classical Chinese.md        # Documentation (Classical Chinese)
-├── LICENSE                            # MIT License
-├── PROVENANCE.md                      # Provenance & license notes
-├── __psserver.ps1                     # Simple PowerShell test server for development
-└── Memorization UI/
-    ├── app.html                       # Main application (single-page app with all front-end logic)
-    ├── war4.html                      # Legacy / fallback page
-    ├── setup.bat                      # One-click installation script (installs fonts + launches the server)
-    ├── uninstall.bat                  # Uninstall script (invokes uninstall.ps1)
-    ├── package.ps1                    # Installation bootstrap script (creates desktop/start menu shortcuts)
-    ├── uninstall.ps1                  # Uninstall logic
-    ├── config/
-    │   ├── manifest.json              # PWA manifest (app name, icons, etc.)
-    │   ├── articles.json              # Text content (classical Chinese, including original text, translations, annotations, appreciation)
-    │   ├── poem.json                  # Poetry dataset (independent poetry collection)
-    │   ├── game.json                  # Exercise question bank (72 questions: function-word / dictation / example matching)
-    │   ├── writer.json                # Author information (18 authors with dynasties and biographies)
-    │   ├── version.json               # Version info (current v0.3.1; see notes field)
-    │   └── bundled.js                 # Inlined fallback data (used by app.html under file://)
-    ├── resource/
-    │   ├── OOBE/                      # First-run onboarding images (page1.png ~ page3.png)
-    │   ├── background/                # Wallpaper directory (default: background.png; user wallpapers not tracked)
-    │   ├── icon/                      # UI icons (*.svg, adaptive to light/dark themes)
-    │   ├── wordtype/                  # Font files (Regular.ttf)
-    │   └── audio/                     # Recitation audio (optional)
-    ├── userdata/                      # User runtime data (git-ignored)
-    └── setuptools/
-        ├── server.ps1                 # Local PowerShell HTTP server (provides static files + API)
-        ├── start.bat                  # Startup script (starts the server + opens the browser)
-        ├── ai-hosts.txt               # Allow-list of upstream hosts reachable by the AI proxy
-        ├── config.json                # Auto-generated configuration file after installation (records project path)
-        ├── Setup.png                  # Installation guide image
-        └── logoblack.ico              # Application icon
+├── README.md / README_EN.md / README_Classical-Chinese.md
+├── .github/workflows/build.yml       # Windows and Android release CI
+├── Memorization UI/                  # Legacy Web/PowerShell app
+└── RecitingUsApp/                    # Current .NET multiplatform app
+    ├── RecitingUs.slnx
+    ├── Directory.Build.props         # .NET targets and shared build settings
+    ├── Directory.Packages.props      # Central NuGet package versions
+    ├── src/
+    │   ├── RecitingUs.Core/          # APIs, HTTP server, data storage, platform abstractions
+    │   ├── RecitingUs.App/           # Avalonia Windows desktop app
+    │   ├── RecitingUs.Android/       # Android app and native platform services
+    │   ├── RecitingUs.Tests/          # xUnit automated tests
+    │   └── _recovered/               # Historical recovery files; not built
+    ├── web/                          # Authoritative web assets embedded by Core
+    ├── build/                        # Resource processing, publishing, and signing scripts
+    ├── installer/                    # Windows installer configuration
+    └── BUILD.md                      # Project structure and build guide
 ```
 
 ---
 
-## How to Use
+## Download and Run
 
-### System Requirements
+Download the release for your device platform from [GitHub Releases](https://github.com/HelloZWH-0620/Reciting-us/releases):
 
-- **Operating System**: Windows 7 and above
-- **Runtime**: Windows PowerShell (included with the system)
-- **Browser**: Chrome, Edge, Firefox, or other modern browsers (Chrome or Edge recommended)
-- **Network**: Offline usage is supported; AI features require internet access
+- **Windows**: Download `RecitingUs-Setup-<version>.exe` and run the installer. Launch the app from the Start menu or desktop shortcut. The desktop app requires Microsoft Edge WebView2 Runtime. If it is missing, follow the in-app prompt or [these installation instructions](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download).
+- **Android**: Download and install `recitingus-<version>.apk`.
 
-### Method 1: One-Click Installation (Recommended)
+The app's main features work offline. AI features require an internet connection and an AI service configured by the user.
 
-1. **Download the project**
-   ```bash
-   git clone https://github.com/HelloZWH-0620/Reciting-us.git
-   ```
+### Run the Web App Directly
 
-2. **Run the installation script**
+To run the repository's Web app instead of the Windows/Android multiplatform app:
 
-   Double-click `Memorization UI/setup.bat`. The script will automatically perform the following actions:
-   - Install the custom font (`Regular.ttf`)
-   - Create a desktop shortcut called “Memorize It!”
-   - Create a Start menu shortcut called “Memorize It!”
-   - Display the installation guide in the center of the screen
-
-3. **Launch the application**
-
-   After installation, double-click the desktop or Start menu shortcut to launch the app. It will automatically:
-   - Start the local HTTP server on port 8000
-   - Open the browser to visit `http://localhost:8000/app.html`
-
-### Method 2: Manual Startup
-
-If you do not want to create shortcuts, you can start it manually:
-
-1. Open PowerShell and enter the `Memorization UI/setuptools` directory:
+1. [Fork and clone](https://github.com/HelloZWH-0620/Reciting-us/fork) the repository, or download and extract its ZIP archive.
+2. Double-click `Memorization UI/setup.bat`, or run `Memorization UI/setuptools/start.bat` to start the local server and open the browser.
+3. To start the server manually, run this command in PowerShell from the repository root:
    ```powershell
-   cd "Memorization UI/setuptools"
+   powershell -NoProfile -ExecutionPolicy Bypass -File ".\Memorization UI\setuptools\server.ps1" 8000
    ```
-
-2. Run the startup script:
-   ```powershell
-   .\start.bat
-   ```
-
-   This script will:
-   - Write the parent directory path to `config.json`
-   - Start the PowerShell server (default port 8000)
-   - Wait 2 seconds and then automatically open the browser
-
-3. Alternatively, start the server directly in PowerShell (custom port is supported):
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File "Memorization UI/setuptools/server.ps1" [port]
-   ```
-
-   Then open the browser and visit `http://localhost:port/app.html`.
-
-### Method 3: Development Mode
-
-There is a simple PowerShell server at the project root, `__psserver.ps1`, for quick testing:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File __psserver.ps1
-```
-
-> This script listens on port 8765 and only provides static file service; it does not support wallpaper upload or API features.
-
----
-
-## Uninstall
-
-To uninstall "Memorize It!", follow these steps:
-
-1. Double-click `Memorization UI/uninstall.bat` (the one whose icon is a black gear);
-2. Delete the `config` **file** under the `setuptools` folder (note: it is a file, not a folder!);
-3. If you do not need to keep using the app on another device, delete all files under `userdata`. Otherwise, copy the files you need to the new device to continue your progress.
-
-> Note: Step 2 removes the `setuptools/config` file generated at install time (it records the project path) and does not affect your lesson data; your learning records live in `userdata/`.
+   Then visit `http://localhost:8000/app.html`.
+4. The root-level `__psserver.ps1` is only for a quick static preview on port 8765; it does not provide any local server APIs.
 
 ## First-Time Guide
 
@@ -268,17 +194,16 @@ AI features are proxied through the local server to bypass browser CORS restrict
 
 | Component | Technology |
 |-----------|------------|
-| Frontend | Pure HTML/CSS/JavaScript (single-file application) |
-| Backend | PowerShell HTTP server (`System.Net.HttpListener`) |
-| Data Storage | JSON configuration files + browser `localStorage` |
-| Charts | Canvas 2D (custom drawing, no third-party dependencies) |
-| PWA | Web App Manifest (supports adding to home screen) |
+| Multiplatform app | .NET 10, C#, and Avalonia; Windows desktop and Android |
+| Frontend | HTML / CSS / JavaScript in `RecitingUsApp/web/`, embedded in the app |
+| Shared core | Local HTTP APIs, SQLite, AI proxy, and TTS platform abstractions |
+| Legacy Web app | Web app and PowerShell HTTP server in `Memorization UI/` |
 
 ---
 
-## Local Server API
+## Legacy Web App API
 
-`setuptools/server.ps1` provides the following API endpoints:
+The following endpoints are provided only by `Memorization UI/setuptools/server.ps1`; they do not apply to the new desktop and Android apps:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -290,36 +215,29 @@ AI features are proxied through the local server to bypass browser CORS restrict
 
 ---
 
-## Contribution Guide
+## Contributing
 
 We recommend joining our QQ group [950739151](https://qun.qq.com/universal-share/share?ac=1&authKey=xb2zqLolbPjWo5ukfQNE4FIXNikYa25bAZdOdhJ9tPwDnyeiGq7FtGe4xflFlxdl&busi_data=eyJncm91cENvZGUiOiI5NTA3MzkxNTEiLCJ0b2tlbiI6IjNsQm1WVlBtdVFPdk5qc1BmT0JHSTZ3cXlIV2wyMnFtdE1nNHhhdXlSWDNkRmFGdjF5MEx3TkFJK09pSGVHajUiLCJ1aW4iOiIyODA5ODc0NjI1In0%3D&data=bsTmftVzmLq9iWmvpCXoInjn7UgcuOhndlMPrXR_DH3JQlDsBTLG-mHm0OcCIdqgqBK-fljO_-w80hYzsr4Ahg&svctype=4&tempid=h5_group_info) for a better collaboration experience.
 
-We welcome anyone who would like to implement new features or improvements for this application to submit a [Pull Request](https://github.com/HelloZWH-0620/Reciting-us/pulls).
+Report bugs and suggest improvements through [Issues](https://github.com/HelloZWH-0620/Reciting-us/issues), and contribute changes through [Pull Requests](https://github.com/HelloZWH-0620/Reciting-us/pulls). Main contribution areas for the multiplatform app:
 
+- **App logic and platform features**: `RecitingUsApp/src/RecitingUs.Core/`, `RecitingUsApp/src/RecitingUs.App/`, and `RecitingUsApp/src/RecitingUs.Android/`.
+- **Frontend, texts, and configuration data**: `RecitingUsApp/web/`. This is the authoritative version used by the multiplatform app; do not treat the legacy files under `Memorization UI/` as a synchronization source.
+- **Automated tests**: `RecitingUsApp/src/RecitingUs.Tests/`.
+- **Build, packaging, and installer**: `RecitingUsApp/build/` and `RecitingUsApp/installer/`. The .NET version and NuGet package versions are managed in `Directory.Build.props` and `Directory.Packages.props`, respectively.
 
-Here are some suggested areas to explore:
+### Local Development and Verification
 
-1. **Add Text Content** — Add new passages in `config/articles.json` or `config/poem.json`
-2. **Add Practice Questions** — Add new questions in `config/game.json`
-3. **Improve Author Information** — Supplement or correct author profiles in `config/writer.json`
-4. **Submit an Issue** — Report bugs or suggest new features
-5. **Submit a Pull Request** — Fix issues or develop new features
+The multiplatform app requires the .NET 10 SDK. After cloning the repository, run these commands from its root:
 
-### Adding a Passage Format
-
-Add a new object to the `articles` array in `config/articles.json`:
-
-```json
-{
-  "id": "unique identifier",
-  "title": "text title",
-  "author": "author",
-  "authorId": "matching id in writer.json",
-  "cat": "wenyanwen or gushici",
-  "audio": "",
-  "text": "original text (separate paragraphs with \n\n)"
-}
+```powershell
+dotnet test .\RecitingUsApp\src\RecitingUs.Tests\RecitingUs.Tests.csproj
+dotnet build .\RecitingUsApp\src\RecitingUs.App\RecitingUs.App.csproj -c Debug
 ```
+
+The first command runs the core unit tests; the second builds the Windows desktop app. Android development additionally requires the Android SDK, JDK 21, and the .NET Android workload. See [`RecitingUsApp/BUILD.md`](RecitingUsApp/BUILD.md) for full build, publishing, and environment instructions. Run relevant tests before submitting changes, and do not commit API keys, signing keys, build artifacts, or personal data.
+
+If you are maintaining the legacy Web/PowerShell app, make changes specifically under `Memorization UI/`; its text and configuration data are in that directory's `config/` folder.
 
 ---
 
