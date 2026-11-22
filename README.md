@@ -11,6 +11,10 @@
 
 > 有关各版本的详情或下载应用，参见  [Releases](https://github.com/HelloZWH-0620/Reciting-us/releases/)。
 
+> [!hint]
+> 安卓版已迁移至[此仓库](https://github.com/HelloZWH-0620/Recite-US_Android)。
+
+
 ---
 
 ## 项目介绍
