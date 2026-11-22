@@ -49,6 +49,8 @@ public sealed class EmbeddedHttpServer : IDisposable
 
         WebAssets.Initialize(typeof(EmbeddedHttpServer).Assembly);
         _cts = new CancellationTokenSource();
+        // 重启时清掉 Pause 状态：否则 Stop→Start 之后所有请求都会 503（前端表现为永久加载）
+        _paused = false;
         _startedAtUtc = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         Exception? lastError = null;

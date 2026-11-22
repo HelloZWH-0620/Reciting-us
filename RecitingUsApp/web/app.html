@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#f5f5f7">
+  <!-- 页面自带明暗主题（body.dark / color-scheme）：声明给 Android WebView，
+       避免系统深色模式对已适配深色的正文再做一次算法反色。 -->
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f5f7" id="themeColorMeta">
   <link rel="icon" href="resource/logomini.ico" type="image/x-icon">
   <link rel="manifest" href="config/manifest.json">
   <title>背书哇</title>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<button class="hamburger" id="hamburger" title="展开/收起侧边栏" aria-label="展开/收起侧边栏">☰</button>
+<button class="hamburger" id="hamburger" title="展开/收起侧边栏" aria-label="展开/收起侧边栏"><i class="ico ico-menu"></i></button>
 <div class="side-overlay" id="sideOverlay"></div>
   <div class="art-head-btns">
     <button class="head-btn" id="recitedBtn" title="标记已背诵"><i class="ico ico-unstar" id="recitedIco"></i>已背诵</button>

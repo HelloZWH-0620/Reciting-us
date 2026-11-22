@@ -172,10 +172,12 @@ function bootApp() {
     else scheduleProfileSave();
   };
 
-  // 账户登录时已把该用户 profile 载入 localStorage；此处直接套用主题即可
+  // 账户登录时已把该用户 profile 载入 localStorage；此处先套用一次主题，
+  // 避免深色用户在页面初始化阶段闪出浅色正文。
   try {
-    var theme = Store.getTheme();
-    document.documentElement.setAttribute('data-theme', theme);
+    var initialDark = Store.getTheme() === 'dark';
+    document.body.classList.toggle('dark', initialDark);
+    syncThemeDeclarations(initialDark);
   } catch(e){}
 
   /* ===== 拼音注音（v0.38）：文章正文 ruby 逐字注音，顶栏「拼音」开关 ===== */
@@ -254,7 +256,7 @@ function bootApp() {
       Store.set('pinyinMode', !pinyinOn());
       updatePinyinBtn();
       refreshPinyin();
-      showToast(pinyinOn() ? '拼音注音已开启' : '拼音注音已关闭', 'success');
+      // 按钮本身已有高亮反馈，可见的状态变化不再弹 toast
     };
     updatePinyinBtn();
   }
@@ -266,7 +268,10 @@ function bootApp() {
       if (_pinyinDebounce) clearTimeout(_pinyinDebounce);
       _pinyinDebounce = setTimeout(refreshPinyin, 60);
     });
-    _pinyinObs.observe(document.getElementById('artBody'), { childList: true, subtree: true });
+    // 只观察正文容器的直接子节点：整篇重渲染（innerHTML 替换）时才会触发。
+    // 开 subtree 时，annotatePinyin 内部替换文本节点会自我触发，导致每次注音
+    // 都要再全篇 TreeWalker 一遍，长文（上千个 ruby 节点）下尤其慢。
+    _pinyinObs.observe(document.getElementById('artBody'), { childList: true });
   } catch(e){}
 
   /* ===== 右上角通知系统（Windows 10 风格统一堆叠区） =====
@@ -428,10 +433,25 @@ function bootApp() {
   greet.textContent = greetMsg;
 
   /* ===== THEME ===== */
+  // 把主题声明同步到 <html> 与 <meta>：
+  //  1) dark 类挂到 documentElement，让 :root.dark 的深色变量生效；
+  //  2) color-scheme 告知 Android WebView「页面自带明暗配色」，从而跳过算法反色
+  //     （否则深色模式下已适配的浅色正文会被二次反转成深灰，几乎不可读）；
+  //  3) theme-color 同步系统状态栏颜色。
+  function syncThemeDeclarations(dark){
+    var root = document.documentElement;
+    root.classList.toggle('dark', dark);
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    root.style.colorScheme = dark ? 'dark' : 'light';
+    var meta = document.getElementById('themeColorMeta');
+    if (meta) meta.setAttribute('content', dark ? '#0d0d0d' : '#f5f5f7');
+  }
   function applyTheme(){
     var dark = Store.getTheme()==='dark';
     document.body.classList.toggle('dark', dark);
-    document.getElementById('themeIco').className = 'ico ' + (dark ? 'ico-night' : 'ico-sun');
+    syncThemeDeclarations(dark);
+    var ico = document.getElementById('themeIco');
+    if (ico) ico.className = 'ico ' + (dark ? 'ico-night' : 'ico-sun');
   }
   themeBtn.onclick = function(){
     Store.setTheme(Store.getTheme()==='dark' ? 'light' : 'dark');
@@ -4062,7 +4082,7 @@ function bootApp() {
           showToast('请先填写完整的 AI 配置并保存', 'warn');
           return;
         }
-        if (aiStatusEl) aiStatusEl.textContent = '正在测试连接...';
+        if (aiStatusEl) aiStatusEl.textContent = '正在测试连接…';
         try {
           var result = await callAI(cfg, '你好，请回复一个字：好', 8000);
           if (result && result.success) {
@@ -4189,9 +4209,9 @@ function bootApp() {
       showToast('请先在「更多」中配置 AI API 信息', 'warn');
       return null;
     }
-    if (aiGenerating) { showToast('AI 正在出题中，请稍候...', 'info'); return null; }
+    if (aiGenerating) { showToast('AI 正在出题中，请稍候…', 'info'); return null; }
     aiGenerating = true;
-    showToast('AI 正在为您出题，请稍候...', 'info');
+    showToast('AI 正在为您出题，请稍候…', 'info');
     var wordListText = WORD_LIST.join('、');
     var targetWord = focusWord || '随机';
     var prompt = '你是一位资深的高中语文老师。请为文言虚词练习生成5道四选一选择题。' +
@@ -4453,10 +4473,12 @@ function bootApp() {
     if (el) el.textContent = kb + ' KB（约 ' + Math.max(0, 5120 - parseFloat(kb)).toFixed(0) + ' KB 可用）';
   }
 
-  var saveScroll = throttle(function(){
+  // 滚动期间不再周期性写 localStorage / 同步用户数据：throttle 会在长滑动中
+  // 每 400ms 触发一次同步 I/O；改成 trailing debounce，停下后只写一次。
+  var saveScroll = debounce(function(){
     if(cur) Store.setScroll(cur.id, contentArea.scrollTop);
   }, 400);
-  contentArea.addEventListener('scroll', saveScroll);
+  contentArea.addEventListener('scroll', saveScroll, { passive: true });
 
   function getSiblingArticle(dir){
     var cat = cur.cat;
@@ -4647,7 +4669,7 @@ function bootApp() {
     if (willOpen) positionModeMenu();
   });
   window.addEventListener('resize', closeModeMenu);
-  window.addEventListener('scroll', closeModeMenu, true);
+  window.addEventListener('scroll', closeModeMenu, { capture: true, passive: true });
 
   function setArtMode(mode) {
     artMode = mode;
@@ -5145,8 +5167,8 @@ function bootApp() {
   var hamburger = document.getElementById('hamburger');
   var sideOverlay = document.getElementById('sideOverlay');
   var sideEl = document.getElementById('side');
-  function openSidebar(){ sideEl.classList.add('open'); sideOverlay.classList.add('show'); document.body.classList.add('sidebar-open'); hamburger.innerHTML = '✕'; hamburger.title = '收起侧边栏'; }
-  function closeSidebar(){ sideEl.classList.remove('open'); sideOverlay.classList.remove('show'); document.body.classList.remove('sidebar-open'); hamburger.innerHTML = '☰'; hamburger.title = '展开侧边栏'; }
+  function openSidebar(){ sideEl.classList.add('open'); sideOverlay.classList.add('show'); document.body.classList.add('sidebar-open'); hamburger.innerHTML = '<i class="ico ico-close"></i>'; hamburger.title = '收起侧边栏'; }
+  function closeSidebar(){ sideEl.classList.remove('open'); sideOverlay.classList.remove('show'); document.body.classList.remove('sidebar-open'); hamburger.innerHTML = '<i class="ico ico-menu"></i>'; hamburger.title = '展开侧边栏'; }
   hamburger.onclick = function(){ if(sideEl.classList.contains('open')) closeSidebar(); else openSidebar(); };
   sideOverlay.onclick = closeSidebar;
   // 点击侧边栏内任意按钮后关闭（移动端）
@@ -5492,8 +5514,8 @@ function bootApp() {
         '<span class="chain-level-tag">' + CHAIN_LEVELS[lv].tag + '</span>' +
         '<span class="chain-progress" id="chainProgress"></span>' +
         '<span class="spacer"></span>' +
-        '<button class="chain-btn" id="chainPrev">« 上一级</button>' +
-        '<button class="chain-btn" id="chainNext"' + (lv >= CHAIN_LEVELS.length - 1 || this.level >= CHAIN_LEVELS.length - 1 ? '' : '') + '>下一级 »</button>' +
+        '<button class="chain-btn" id="chainPrev">上一级</button>' +
+        '<button class="chain-btn" id="chainNext"' + (lv >= CHAIN_LEVELS.length - 1 || this.level >= CHAIN_LEVELS.length - 1 ? '' : '') + '>下一级</button>' +
         '<button class="chain-btn primary" id="chainExit">退出</button>' +
         '</div>';
       for (var i = 0; i < this.sentences.length; i++) {
@@ -5605,13 +5627,13 @@ function bootApp() {
 
   /* 今日/Home 模式已移除（用户改为账户登录制，无统一首页仪表盘） */
   /* 大面板不使用 LiquidGlass 位移滤镜，避免色散/透明导致的可读性问题；改用 CSS 半透明卡片 */
-  function glassCards(container) { /* dash cards use .dash-card background */ }
-  function glassAuthorCards(container) { /* author cards use .author-card background */ }
-  function glassExampleCards(container) { /* example cards use .example-card background */ }
-  function glassStudyPanel(container) { /* study panels use .study-panel background */ }
-  function glassArtAppreciation(container) { /* appreciation panels use .art-appreciation background */ }
-  function glassWordGame(container) { /* word game panels use .word-game / .word-card background */ }
-  function glassFlashcard(container) { /* flashcards use .flashcard background */ }
+  function glassCards(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassAuthorCards(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassExampleCards(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassStudyPanel(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassArtAppreciation(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassWordGame(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
+  function glassFlashcard(container) { window.liquidGlassRefresh && window.liquidGlassRefresh(); }
   /* 今日/Home 仪表盘已移除 */
 
   /* ---- ⑦ 液态玻璃:仅小元素保留，大面板禁用以保证高对比度 ---- */
@@ -5690,7 +5712,7 @@ function bootApp() {
     if (state.idx === total - 1) {
       next.textContent = '开始使用';
     } else {
-      next.textContent = '下一步 »';
+      next.textContent = '下一步';
     }
     overlay.querySelector('.oobe-pages').innerHTML = buildDots(total, state.idx);
   }
@@ -5707,15 +5729,15 @@ function bootApp() {
     overlay.className = 'oobe-overlay';
     overlay.innerHTML =
       '<div class="oobe-box">' +
-        '<span class="oobe-skip">跳过引导 ×</span>' +
+        '<span class="oobe-skip">跳过引导</span>' +
         '<img class="oobe-img" alt="">' +
         '<div class="oobe-pages"></div>' +
         '<div class="oobe-nav">' +
           '<div class="oobe-nav-left">' +
-            '<button class="oobe-btn oobe-btn-ghost oobe-prev">« 上一步</button>' +
+            '<button class="oobe-btn oobe-btn-ghost oobe-prev">上一步</button>' +
           '</div>' +
           '<div class="oobe-nav-right">' +
-            '<button class="oobe-btn oobe-btn-primary oobe-next">下一步 »</button>' +
+            '<button class="oobe-btn oobe-btn-primary oobe-next">下一步</button>' +
           '</div>' +
         '</div>' +
       '</div>';

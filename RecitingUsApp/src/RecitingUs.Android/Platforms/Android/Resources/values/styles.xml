@@ -3,5 +3,8 @@
   <!-- 必须 AppCompat：Avalonia Activity 基于 AppCompatActivity -->
   <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:windowBackground">@android:color/white</item>
+    <!-- WebView 内页面自带明暗主题（app.html 声明 color-scheme + body.dark）。
+         关闭应用级 Force Dark，避免系统深色模式把浅色正文二次反转为深灰。 -->
+    <item name="android:forceDarkAllowed">false</item>
   </style>
 </resources>
